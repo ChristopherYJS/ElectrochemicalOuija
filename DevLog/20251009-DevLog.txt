@@ -1,0 +1,18 @@
+23:16:43>>Traceback Error:[Errno 2] No such file or directory: 'uiMin.ui'
+[38;2;50;250;255mFile:  [38;2;255;255;255mc:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ElectrochemicalOuijaUI\PyProject\UIMainWindow.py	| [38;2;255;100;200mLine:  [38;2;255;255;255m34	| [38;2;250;250;0mFunction:  [38;2;255;255;255m<module>
+[38;2;50;250;255mFile:  [38;2;255;255;255mc:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ElectrochemicalOuijaUI\PyProject\UIMainWindow.py	| [38;2;255;100;200mLine:  [38;2;255;255;255m22	| [38;2;250;250;0mFunction:  [38;2;255;255;255m__init__
+[38;2;50;250;255mFile:  [38;2;255;255;255mc:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ElectrochemicalOuijaUI\PyProject\UIMainWindow.py	| [38;2;255;100;200mLine:  [38;2;255;255;255m26	| [38;2;250;250;0mFunction:  [38;2;255;255;255mLoadUI
+[38;2;50;250;255mFile:  [38;2;255;255;255mC:\Users\chrst\AppData\Roaming\Python\Python313\site-packages\PyQt5\uic\__init__.py	| [38;2;255;100;200mLine:  [38;2;255;255;255m241	| [38;2;250;250;0mFunction:  [38;2;255;255;255mloadUi
+[38;2;50;250;255mFile:  [38;2;255;255;255mC:\Users\chrst\AppData\Roaming\Python\Python313\site-packages\PyQt5\uic\Loader\loader.py	| [38;2;255;100;200mLine:  [38;2;255;255;255m66	| [38;2;250;250;0mFunction:  [38;2;255;255;255mloadUi
+[38;2;50;250;255mFile:  [38;2;255;255;255mC:\Users\chrst\AppData\Roaming\Python\Python313\site-packages\PyQt5\uic\uiparser.py	| [38;2;255;100;200mLine:  [38;2;255;255;255m1020	| [38;2;250;250;0mFunction:  [38;2;255;255;255mparse
+[38;2;50;250;255mFile:  [38;2;255;255;255mC:\Python313\Lib\xml\etree\ElementTree.py	| [38;2;255;100;200mLine:  [38;2;255;255;255m1210	| [38;2;250;250;0mFunction:  [38;2;255;255;255mparse
+[38;2;50;250;255mFile:  [38;2;255;255;255mC:\Python313\Lib\xml\etree\ElementTree.py	| [38;2;255;100;200mLine:  [38;2;255;255;255m562	| [38;2;250;250;0mFunction:  [38;2;255;255;255mparse
+23:17:08>>Traceback Error:[Errno 2] No such file or directory: 'uiMin.ui'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ElectrochemicalOuijaUI\PyProject\UIMainWindow.py	| 'Line:34	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ElectrochemicalOuijaUI\PyProject\UIMainWindow.py	| 'Line:22	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ElectrochemicalOuijaUI\PyProject\UIMainWindow.py	| 'Line:26	| Function:LoadUI
+File: C:\Users\chrst\AppData\Roaming\Python\Python313\site-packages\PyQt5\uic\__init__.py	| 'Line:241	| Function:loadUi
+File: C:\Users\chrst\AppData\Roaming\Python\Python313\site-packages\PyQt5\uic\Loader\loader.py	| 'Line:66	| Function:loadUi
+File: C:\Users\chrst\AppData\Roaming\Python\Python313\site-packages\PyQt5\uic\uiparser.py	| 'Line:1020	| Function:parse
+File: C:\Python313\Lib\xml\etree\ElementTree.py	| 'Line:1210	| Function:parse
+File: C:\Python313\Lib\xml\etree\ElementTree.py	| 'Line:562	| Function:parse

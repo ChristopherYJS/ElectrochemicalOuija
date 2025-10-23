@@ -1,0 +1,55 @@
+01:16:39>>Traceback Error:'ECO_pot' object has no attribute 'listWidget'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:33	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:15	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:24	| Function:LoadUI
+01:17:54>>Traceback Error:'ECO_pot' object has no attribute 'listWidget'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:33	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:15	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:24	| Function:LoadUI
+01:31:21>>Traceback Error:'ECO_pot' object has no attribute 'objectName'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:26	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:15	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_EC.py	| 'Line:24	| Function:setupUi
+01:31:30>>Traceback Error:'ECO_pot' object has no attribute 'objectName'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:26	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:15	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_EC.py	| 'Line:24	| Function:setupUi
+01:31:55>>Traceback Error:'ECO_pot' object has no attribute 'setWindowTitle'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:26	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:15	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_EC.py	| 'Line:73	| Function:retranslateUi
+01:32:41>>Traceback Error:'ECO_pot' object has no attribute 'pushBtnProceed'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:27	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:16	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_EC.py	| 'Line:74	| Function:retranslateUi
+01:32:59>>Traceback Error:'ECO_pot' object has no attribute 'pushBtnProceed'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:27	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:16	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_EC.py	| 'Line:74	| Function:retranslateUi
+01:38:50>>Traceback Error:'PySide6.QtWidgets.QListWidget' object has no attribute 'SingleSelection'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:69	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:18	| Function:__init__
+01:39:15>>Traceback Error:'PySide6.QtWidgets.QListWidget' object has no attribute 'SingleSelection'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:69	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:18	| Function:__init__
+02:03:07>>Traceback Error:name 'text' is not defined
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:69	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:24	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:32	| Function:SignalSlotBinding
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\ui_ECWindow.py	| 'Line:45	| Function:Slot_AddTech
+03:36:00>>Traceback Error:'ECO_pot' object has no attribute 'pushButtonProceed'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\pt\uiEntry_ECWindow.py	| 'Line:89	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\pt\uiEntry_ECWindow.py	| 'Line:19	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\pt\uiEntry_ECWindow.py	| 'Line:47	| Function:SignalSlotBinding
+03:36:23>>Traceback Error:'ECO_pot' object has no attribute 'pushButtonProceed'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\pt\uiEntry_ECWindow.py	| 'Line:89	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\pt\uiEntry_ECWindow.py	| 'Line:19	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\pt\uiEntry_ECWindow.py	| 'Line:47	| Function:SignalSlotBinding
+03:37:19>>Traceback Error:'ECO_pot' object has no attribute 'pushButtonProceed'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\pt\uiEntry_ECWindow.py	| 'Line:89	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\pt\uiEntry_ECWindow.py	| 'Line:19	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\pt\uiEntry_ECWindow.py	| 'Line:47	| Function:SignalSlotBinding
+03:37:43>>Traceback Error:'ECO_pot' object has no attribute 'pushButtonProceed'
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\pt\uiEntry_ECWindow.py	| 'Line:89	| Function:<module>
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\pt\uiEntry_ECWindow.py	| 'Line:19	| Function:__init__
+File: c:\Users\chrst\SynologyDrive-SECCM\SynologyDrive\ElectrochemicalOuija\pt\uiEntry_ECWindow.py	| 'Line:47	| Function:SignalSlotBinding
