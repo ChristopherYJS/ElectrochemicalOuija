@@ -1,113 +1,117 @@
 #& "C:\Users\chrst\AppData\Roaming\Python\Python313\Scripts\pyside6-uic.exe" "uiEC.ui" "-o" "uiEC.py" "--from-imports"
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from PySide6.QtWidgets import QApplication, QWidget,QListWidgetItem,QPushButton,QHBoxLayout,QLabel
-from PySide6.QtCore import QSize, Qt, QEvent
+from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel
+from PySide6.QtCore import QSize, Qt, QEvent,QMimeData,QModelIndex
 from PySide6.QtWidgets import QAbstractItemView 
-from PySide6.QtGui import QMouseEvent
-from ui_EC import Ui_Form 
+from PySide6.QtGui import QMouseEvent,QDrag
+from qt_EC import Ui_Form 
 from ui_SlotFuncs import *
 
 from misc_PrintException import print_ex
+from qt_CV import Ui_Form as CVUI
+from qt_CA import Ui_Form as CAUI
+from qt_CP import Ui_Form as CPUI
+from qt_EIS import Ui_Form as EISUI
+from qt_Move import Ui_Form as MoveUI
+from qt_Loop import Ui_Form as LoopUI
 
 class ECO_pot(QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
-        self.listTechs=[]
+        self.dicTechWin={
+            'CA':CAUI,
+            'CP':CPUI,
+            'CV':CVUI,
+            'EIS':EISUI,
+            'Move':MoveUI,
+            'Loop':LoopUI
+        }
+        self.dicParamWin={}
         self.setupUi(self)
-        self.EventHandling()
-        self.SignalSlotBinding()
         self.Restyling()
-        self.WidgetPropertySetting()
-        self.showMaximized()
-
-    def WidgetPropertySetting(self):
-        # Make list draggable/reorderable
-        self.listWidget.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.listWidget.setDragEnabled(True)
-        self.listWidget.setAcceptDrops(True)
-        self.listWidget.setDropIndicatorShown(True)
-        self.listWidget.setDefaultDropAction(Qt.MoveAction)
-        self.listWidget.setDragDropMode(QAbstractItemView.InternalMove)
+        self.EventBinding()
         self.SignalSlotBinding()
-        # (optional) know when the order changes
-        self.listWidget.model().rowsMoved.connect(self.on_rows_moved)
-
+        self.showMaximized()
+      
     def Restyling(self):
-        #Restyle the widgets 
-        pass
+        #Replace the treewidget in the ui file with our custom one
+        oldTreeWidget =self.treeWidget
+        self.treeWidget= TechTreeWidget(self.splitter)
+        self.splitter.insertWidget(0, self.treeWidget)
+        self.treeWidget.setGeometry(oldTreeWidget.geometry())
+        self.treeWidget.setObjectName(oldTreeWidget.objectName())
+        oldTreeWidget.deleteLater()
+        self.treeWidget.clear()
+        self.treeWidget.setHeaderHidden(True)
+        self.treeWidget.setDragEnabled(True)
+        self.treeWidget.setAcceptDrops(True)
+        self.treeWidget.setDropIndicatorShown(True)
+        self.treeWidget.setDefaultDropAction(Qt.MoveAction)
+        self.treeWidget.setDragDropMode(QTreeWidget.InternalMove)
 
-    def EventHandling(self):
-        # Add double-click event to all QLabel children of scrollAreaOption
-        for label in self.scrollAreaOption.findChildren(QLabel):
-            label.mouseDoubleClickEvent=(lambda event, sender=label: self.TechAdding(sender, event))
 
+
+    def TechAdding(self,sender,event):
+        item=QTreeWidgetItem([sender.text()])
+        self.treeWidget.addTopLevelItem(item)
+        ui_class = self.dicTechWin.get(sender.text())
+        middle_index = self.splitter_2.indexOf(self.widget)
+        techWin = QWidget()
+        ui = ui_class()
+        ui.setupUi(techWin)
+
+        self.splitter_2.insertWidget(middle_index, techWin)
+        self.widget.deleteLater()
+        self.widget = techWin        # update reference
+        
     def SignalSlotBinding(self):
         # Binding the signals and slots
         self.pushBtnProceed.clicked.connect(lambda sender=self.pushBtnProceed: Proceed(sender))
-            
-    def TechAdding(self, sender, event):
-        text = sender.text()
-        item = QListWidgetItem()
-        item.setSizeHint(QSize(200, 36))
-        self.listWidget.addItem(item)
-
-        row = QWidget()
-        lay = QHBoxLayout(row)
-        lay.setContentsMargins(0, 0, 0, 0)
-
-        btn = QPushButton(text, row)
-        btn.setMinimumHeight(32)
-        btn.clicked.connect(lambda checked=False, t=text: print(f"{t} clicked"))
-        btn.setFocusPolicy(Qt.StrongFocus)          
-        btn.installEventFilter(self)                
-        lay.addWidget(btn)
-
-        self.listWidget.setItemWidget(item, row)
-        event.accept()
     
-
-        # attach the widget to the item
-        self.listWidget.setItemWidget(item, row)
-
-    def on_rows_moved(self, *args):
-        # Example: print the new order after a drag
-        order = []
-        for i in range(self.listWidget.count()):
-            w = self.listWidget.itemWidget(self.listWidget.item(i))
-            btn = w.findChild(QPushButton)
-            order.append(btn.text() if btn else f"row {i}")
-        print("New order:", order)
-
-    def _remove_row_by_button(self, btn: QPushButton):
-        # find which QListWidgetItem owns this button
-        for i in range(self.listWidget.count()):
-            item = self.listWidget.item(i)
-            row_widget = self.listWidget.itemWidget(item)
-            if row_widget and row_widget.findChild(QPushButton) is btn:
-                # remove visual widget and the item
-                self.listWidget.removeItemWidget(item)
-                row_widget.deleteLater()
-                it = self.listWidget.takeItem(i)
-                del it
-                break
+    def EventBinding(self):
+        for label in self.scrollAreaOption.findChildren(QLabel):
+            label.mouseDoubleClickEvent=lambda e, sender=label: self.TechAdding(sender,e)
             
     def eventFilter(self, obj, event):
         # Delete the focused button's row when pressing Delete
-        if isinstance(obj, QPushButton) and event is not None:
+        if isinstance(obj, QTreeWidgetItem) and event is not None:
             if event.type() == QEvent.KeyPress:
                 key = event.key()
                 if key == Qt.Key_Delete:
-                    self._remove_row_by_button(obj)
-                    return True  # consume event
+                    item=self.treeWidget.currentItem()
+                    if item:
+                        parent =item.parent()
+                        if parent:
+                            parent.removeChild(item)
+                        else:
+                            idx=self.treeWidget.indexOfTopLevelItem(item)
+                            self.treeWidget.takeTopLevelItem(idx)
         return super().eventFilter(obj, event)
 
 
 
+class TechTreeWidget(QTreeWidget):
+    def dropEvent(self, event):
+        target = self.itemAt(event.position().toPoint())
+
+        # Detect nesting (dropping onto another item)
+        # Allow if target is None (empty area) → reorder/top-level move
+        # Allow if target.text(0) == 'Loop'
+        # Ignore if target exists and is not 'Loop'
+        if target and target.text(0) != 'Loop':
+            drop_indicator = self.dropIndicatorPosition()
+            if drop_indicator == QAbstractItemView.OnItem:  # only block nesting
+                event.ignore()
+                return
+
+        super().dropEvent(event)
 
 if __name__ =='__main__':
     try:
         Qapp=QApplication(sys.argv)
+        Qapp.styleHints().setColorScheme(Qt.ColorScheme.Light)
+        Qapp.setStyle("Fusion")
         app=ECO_pot()
         sys.exit(Qapp.exec())
     except Exception as ex:
