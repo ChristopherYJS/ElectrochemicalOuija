@@ -4,7 +4,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel
 from PySide6.QtCore import QSize, Qt, QEvent,QMimeData,QModelIndex
 from PySide6.QtWidgets import QAbstractItemView 
-from PySide6.QtGui import QMouseEvent,QDrag
+from PySide6.QtGui import QMouseEvent,QDrag,QFont
 from qt_EC import Ui_Form 
 from ui_SlotFuncs import *
 
@@ -49,12 +49,16 @@ class ECO_pot(QWidget, Ui_Form):
         self.treeWidget.setDropIndicatorShown(True)
         self.treeWidget.setDefaultDropAction(Qt.MoveAction)
         self.treeWidget.setDragDropMode(QTreeWidget.InternalMove)
-
-
+        
 
     def TechAdding(self,sender,event):
         item=QTreeWidgetItem([sender.text()])
+        item.setSizeHint(0,QSize(0,30))
+        font = QFont()
+        font.setPointSize(14)      # e.g. 11-pt font
+        item.setFont(0, font) 
         self.treeWidget.addTopLevelItem(item)
+        item
         ui_class = self.dicTechWin.get(sender.text())
         middle_index = self.splitter_2.indexOf(self.widget)
         techWin = QWidget()
@@ -73,21 +77,6 @@ class ECO_pot(QWidget, Ui_Form):
         for label in self.scrollAreaOption.findChildren(QLabel):
             label.mouseDoubleClickEvent=lambda e, sender=label: self.TechAdding(sender,e)
             
-    def eventFilter(self, obj, event):
-        # Delete the focused button's row when pressing Delete
-        if isinstance(obj, QTreeWidgetItem) and event is not None:
-            if event.type() == QEvent.KeyPress:
-                key = event.key()
-                if key == Qt.Key_Delete:
-                    item=self.treeWidget.currentItem()
-                    if item:
-                        parent =item.parent()
-                        if parent:
-                            parent.removeChild(item)
-                        else:
-                            idx=self.treeWidget.indexOfTopLevelItem(item)
-                            self.treeWidget.takeTopLevelItem(idx)
-        return super().eventFilter(obj, event)
 
 
 
@@ -106,7 +95,19 @@ class TechTreeWidget(QTreeWidget):
                 return
 
         super().dropEvent(event)
-
+        
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Delete:
+            item = self.currentItem()
+            if item:
+                parent = item.parent()
+                if parent:
+                    parent.removeChild(item)
+                else:
+                    idx = self.indexOfTopLevelItem(item)
+                    self.takeTopLevelItem(idx)
+        else:
+            super().keyPressEvent(event)
 if __name__ =='__main__':
     try:
         Qapp=QApplication(sys.argv)
