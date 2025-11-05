@@ -50,6 +50,11 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <column>
+        <property name="text">
+         <string notr="true">1</string>
+        </property>
+       </column>
       </widget>
       <widget class="QScrollArea" name="scrollAreaOption">
        <property name="sizePolicy">
@@ -66,7 +71,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>394</width>
+          <width>595</width>
           <height>126</height>
          </rect>
         </property>

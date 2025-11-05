@@ -1,0 +1,9 @@
+15:58:45>>Traceback Error:[Errno 2] No such file or directory: 'uiMain.ui'
+File: c:\GitProject\ElectrochemicalOuija\ui_MainWindow.py	| 'Line:34	| Function:<module>
+File: c:\GitProject\ElectrochemicalOuija\ui_MainWindow.py	| 'Line:22	| Function:__init__
+File: c:\GitProject\ElectrochemicalOuija\ui_MainWindow.py	| 'Line:26	| Function:LoadUI
+File: C:\Users\COMSOL-Surftec\AppData\Local\Programs\Python\Python313\Lib\site-packages\PyQt5\uic\__init__.py	| 'Line:241	| Function:loadUi
+File: C:\Users\COMSOL-Surftec\AppData\Local\Programs\Python\Python313\Lib\site-packages\PyQt5\uic\Loader\loader.py	| 'Line:66	| Function:loadUi
+File: C:\Users\COMSOL-Surftec\AppData\Local\Programs\Python\Python313\Lib\site-packages\PyQt5\uic\uiparser.py	| 'Line:1020	| Function:parse
+File: C:\Users\COMSOL-Surftec\AppData\Local\Programs\Python\Python313\Lib\xml\etree\ElementTree.py	| 'Line:1204	| Function:parse
+File: C:\Users\COMSOL-Surftec\AppData\Local\Programs\Python\Python313\Lib\xml\etree\ElementTree.py	| 'Line:558	| Function:parse

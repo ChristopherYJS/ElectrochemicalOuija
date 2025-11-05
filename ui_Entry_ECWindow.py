@@ -10,7 +10,7 @@ from ui_SlotFuncs import *
 
 from misc_PrintException import print_ex
 from qt_CV import Ui_Form as CVUI
-from qt_CA import Ui_Form as CAUI
+from ui_CA import CA 
 from qt_CP import Ui_Form as CPUI
 from qt_EIS import Ui_Form as EISUI
 from qt_Move import Ui_Form as MoveUI
@@ -20,7 +20,7 @@ class ECO_pot(QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.dicTechWin={
-            'CA':CAUI,
+            'CA':CA,
             'CP':CPUI,
             'CV':CVUI,
             'EIS':EISUI,
@@ -58,7 +58,6 @@ class ECO_pot(QWidget, Ui_Form):
         font.setPointSize(14)      # e.g. 11-pt font
         item.setFont(0, font) 
         self.treeWidget.addTopLevelItem(item)
-        item
         ui_class = self.dicTechWin.get(sender.text())
         middle_index = self.splitter_2.indexOf(self.widget)
         techWin = QWidget()

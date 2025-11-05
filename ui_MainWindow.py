@@ -23,7 +23,7 @@ class ECOuija(QMainWindow):
         self.showMaximized()
 
     def LoadUI(self):
-        self.ui=uic.loadUi('uiMain.ui',self)
+        self.ui=uic.loadUi('qt_EC.ui',self)
 
 
 
