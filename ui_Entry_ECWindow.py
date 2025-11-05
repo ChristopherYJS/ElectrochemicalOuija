@@ -59,24 +59,33 @@ class ECO_pot(QWidget, Ui_Form):
         item.setFont(0, font) 
         self.treeWidget.addTopLevelItem(item)
         ui_class = self.dicTechWin.get(sender.text())
-        middle_index = self.splitter_2.indexOf(self.widget)
-        techWin = QWidget()
+        # use the Designer dockWidget placeholder directly
+        if not hasattr(self, 'dockWidget'):
+            raise AttributeError("ECO_pot has no attribute 'dockWidget' — ensure the placeholder dockWidget exists in the UI and is named 'dockWidget'")
+        placeholder = self.dockWidget
+        # Remove all widgets from the placeholder's layout before loading new Form
+        layout = placeholder.layout()
+        if layout is not None:
+            while layout.count():
+                item_layout = layout.takeAt(0)
+                w = item_layout.widget()
+                if w:
+                    w.setParent(None)
+                    w.deleteLater()
+        # Setup the new Form directly into the placeholder
+        if ui_class is None:
+            print(f"No ui_class for {sender.text()}")
+            return
         ui = ui_class()
-        ui.setupUi(techWin)
-        self.itemTechPair[item] = techWin
-        self.splitter_2.insertWidget(middle_index, techWin)
-        self.widget.deleteLater()
-        self.widget = techWin        # update reference
-        try:
-            if hasattr(self, 'widget') and self.widget is not None:
-                self.widget.hide()
-        except Exception:
-           pass
+        ui.setupUi(placeholder)
+        self.itemTechPair[item] = ui
 
     def bindSignalSlot(self):
         # Binding the signals and slots
         self.pushBtnProceed.clicked.connect(lambda sender=self.pushBtnProceed: Proceed(sender))
-        self.treeWidget.itemClicked.connect(lambda item: self.TreeItemClicked(item))
+        # itemClicked emits (QTreeWidgetItem, int). Connect handler that accepts both args.
+        # Connect directly so the slot can accept (item, column).
+        self.treeWidget.itemClicked.connect(self.TreeItemClicked)
         
         
 
@@ -86,18 +95,34 @@ class ECO_pot(QWidget, Ui_Form):
             label.mouseDoubleClickEvent=lambda e, sender=label: self.addTech(sender,e)
         
     #---------------- Slot functions ----------------        
-    def TreeItemClicked(self,item):
-        # safe lookup (won't raise if mapping is missing)
-        widget = self.itemTechPair.get(item)
-        if not widget:
-            return
-        try:
-            if hasattr(self, 'widget') and self.widget is not None:
-                self.widget.hide()
-        except Exception:
-           pass
-        widget.show()
-        self.widget = widget
+    def TreeItemClicked(self, item, column=None):
+        """Handle tree item clicks.
+
+        The QTreeWidget.itemClicked signal provides (item, column). We accept
+        the optional column and safely lookup the mapped Ui helper. If found,
+        we clear the placeholder dockWidget and call its setupUi to load the form.
+        """
+        # use the Designer dockWidget placeholder directly
+        if not hasattr(self, 'dockWidget'):
+            raise AttributeError("ECO_pot has no attribute 'dockWidget' — ensure the placeholder dockWidget exists in the UI and is named 'dockWidget'")
+        placeholder = self.dockWidget
+
+        # Clear placeholder layout
+        layout = placeholder.layout()
+        if layout is not None:
+            while layout.count():
+                item_layout = layout.takeAt(0)
+                w = item_layout.widget()
+                if w:
+                    w.setParent(None)
+                    w.deleteLater()
+
+        # Try lookup by the QTreeWidgetItem object first, then fall back to the item's text
+        ui = self.itemTechPair.get(item)
+        if ui is None:
+            ui = self.itemTechPair.get(item.text(0))
+        if ui is not None:
+            ui.setupUi(placeholder)
 
 class TechTreeWidget(QTreeWidget):
     def dropEvent(self, event):

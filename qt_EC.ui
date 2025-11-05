@@ -31,14 +31,15 @@
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QWidget" name="widget_2" native="true"/>
-     <widget class="QWidget" name="widget" native="true"/>
      <widget class="QSplitter" name="splitter">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>1</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::Box</enum>
       </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -71,7 +72,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>595</width>
+          <width>723</width>
           <height>126</height>
          </rect>
         </property>
@@ -133,6 +134,15 @@
         </layout>
        </widget>
       </widget>
+     </widget>
+     <widget class="QDockWidget" name="dockWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>8</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <widget class="QWidget" name="dockWidgetContents"/>
      </widget>
     </widget>
    </item>

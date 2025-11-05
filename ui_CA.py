@@ -13,6 +13,7 @@ def _float_or_none(text: str) -> float | None:
 class CA(QWidget, Ui_Form):
     # 1) Signals 
     nameChanged = Signal(str)
+    tech="CA"
 
     def __init__(self, *, i_ranges: list[str] = None, e_ranges: list[str] = None, bandwidths: list[str] = None):
         super().__init__()

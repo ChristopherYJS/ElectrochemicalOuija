@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_EC.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,9 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QHeaderView, QLabel,
-    QPushButton, QScrollArea, QSizePolicy, QSplitter,
-    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QDockWidget, QFrame, QHeaderView,
+    QLabel, QPushButton, QScrollArea, QSizePolicy,
+    QSplitter, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
+    QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -36,16 +37,14 @@ class Ui_Form(object):
         sizePolicy.setHeightForWidth(self.splitter_2.sizePolicy().hasHeightForWidth())
         self.splitter_2.setSizePolicy(sizePolicy)
         self.splitter_2.setOrientation(Qt.Horizontal)
-        self.widget_2 = QWidget(self.splitter_2)
-        self.widget_2.setObjectName(u"widget_2")
-        self.splitter_2.addWidget(self.widget_2)
-        self.widget = QWidget(self.splitter_2)
-        self.widget.setObjectName(u"widget")
-        self.splitter_2.addWidget(self.widget)
         self.splitter = QSplitter(self.splitter_2)
         self.splitter.setObjectName(u"splitter")
-        sizePolicy.setHeightForWidth(self.splitter.sizePolicy().hasHeightForWidth())
-        self.splitter.setSizePolicy(sizePolicy)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy1.setHorizontalStretch(1)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.splitter.sizePolicy().hasHeightForWidth())
+        self.splitter.setSizePolicy(sizePolicy1)
+        self.splitter.setFrameShape(QFrame.Box)
         self.splitter.setOrientation(Qt.Vertical)
         self.treeWidget = QTreeWidget(self.splitter)
         __qtreewidgetitem = QTreeWidgetItem()
@@ -62,12 +61,12 @@ class Ui_Form(object):
         self.scrollAreaOption.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 595, 126))
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.scrollAreaWidgetContents_3.sizePolicy().hasHeightForWidth())
-        self.scrollAreaWidgetContents_3.setSizePolicy(sizePolicy1)
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 723, 126))
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.scrollAreaWidgetContents_3.sizePolicy().hasHeightForWidth())
+        self.scrollAreaWidgetContents_3.setSizePolicy(sizePolicy2)
         self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents_3)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.labelTechCA = QLabel(self.scrollAreaWidgetContents_3)
@@ -105,6 +104,17 @@ class Ui_Form(object):
         self.scrollAreaOption.setWidget(self.scrollAreaWidgetContents_3)
         self.splitter.addWidget(self.scrollAreaOption)
         self.splitter_2.addWidget(self.splitter)
+        self.dockWidget = QDockWidget(self.splitter_2)
+        self.dockWidget.setObjectName(u"dockWidget")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy3.setHorizontalStretch(8)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.dockWidget.sizePolicy().hasHeightForWidth())
+        self.dockWidget.setSizePolicy(sizePolicy3)
+        self.dockWidgetContents = QWidget()
+        self.dockWidgetContents.setObjectName(u"dockWidgetContents")
+        self.dockWidget.setWidget(self.dockWidgetContents)
+        self.splitter_2.addWidget(self.dockWidget)
 
         self.verticalLayout_2.addWidget(self.splitter_2)
 
