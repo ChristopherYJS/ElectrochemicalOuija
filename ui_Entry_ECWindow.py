@@ -10,7 +10,7 @@ from ui_SlotFuncs import *
 
 from misc_PrintException import print_ex
 from qt_CV import Ui_Form as CVUI
-from ui_CA import CA 
+from ui_CA import CA as CAUI 
 from qt_CP import Ui_Form as CPUI
 from qt_EIS import Ui_Form as EISUI
 from qt_Move import Ui_Form as MoveUI
@@ -20,21 +20,21 @@ class ECO_pot(QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.dicTechWin={
-            'CA':CA,
+            'CA':CAUI,
             'CP':CPUI,
             'CV':CVUI,
             'EIS':EISUI,
             'Move':MoveUI,
             'Loop':LoopUI
         }
-        self.dicParamWin={}
+        self.itemTechPair={}
         self.setupUi(self)
-        self.Restyling()
-        self.EventBinding()
-        self.SignalSlotBinding()
+        self.restyle()
+        self.bindEvent()
+        self.bindSignalSlot()
         self.showMaximized()
       
-    def Restyling(self):
+    def restyle(self):
         #Replace the treewidget in the ui file with our custom one
         oldTreeWidget =self.treeWidget
         self.treeWidget= TechTreeWidget(self.splitter)
@@ -51,7 +51,7 @@ class ECO_pot(QWidget, Ui_Form):
         self.treeWidget.setDragDropMode(QTreeWidget.InternalMove)
         
 
-    def TechAdding(self,sender,event):
+    def addTech(self,sender,event):
         item=QTreeWidgetItem([sender.text()])
         item.setSizeHint(0,QSize(0,30))
         font = QFont()
@@ -63,21 +63,41 @@ class ECO_pot(QWidget, Ui_Form):
         techWin = QWidget()
         ui = ui_class()
         ui.setupUi(techWin)
-
+        self.itemTechPair[item] = techWin
         self.splitter_2.insertWidget(middle_index, techWin)
         self.widget.deleteLater()
         self.widget = techWin        # update reference
-        
-    def SignalSlotBinding(self):
+        try:
+            if hasattr(self, 'widget') and self.widget is not None:
+                self.widget.hide()
+        except Exception:
+           pass
+
+    def bindSignalSlot(self):
         # Binding the signals and slots
         self.pushBtnProceed.clicked.connect(lambda sender=self.pushBtnProceed: Proceed(sender))
+        self.treeWidget.itemClicked.connect(lambda item: self.TreeItemClicked(item))
+        
+        
+
     
-    def EventBinding(self):
+    def bindEvent(self):
         for label in self.scrollAreaOption.findChildren(QLabel):
-            label.mouseDoubleClickEvent=lambda e, sender=label: self.TechAdding(sender,e)
-            
-
-
+            label.mouseDoubleClickEvent=lambda e, sender=label: self.addTech(sender,e)
+        
+    #---------------- Slot functions ----------------        
+    def TreeItemClicked(self,item):
+        # safe lookup (won't raise if mapping is missing)
+        widget = self.itemTechPair.get(item)
+        if not widget:
+            return
+        try:
+            if hasattr(self, 'widget') and self.widget is not None:
+                self.widget.hide()
+        except Exception:
+           pass
+        widget.show()
+        self.widget = widget
 
 class TechTreeWidget(QTreeWidget):
     def dropEvent(self, event):

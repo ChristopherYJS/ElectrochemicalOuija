@@ -7,3 +7,7 @@ File: C:\Users\COMSOL-Surftec\AppData\Local\Programs\Python\Python313\Lib\site-p
 File: C:\Users\COMSOL-Surftec\AppData\Local\Programs\Python\Python313\Lib\site-packages\PyQt5\uic\uiparser.py	| 'Line:1020	| Function:parse
 File: C:\Users\COMSOL-Surftec\AppData\Local\Programs\Python\Python313\Lib\xml\etree\ElementTree.py	| 'Line:1204	| Function:parse
 File: C:\Users\COMSOL-Surftec\AppData\Local\Programs\Python\Python313\Lib\xml\etree\ElementTree.py	| 'Line:558	| Function:parse
+23:44:37>>Traceback Error:'PySide6.QtCore.Signal' object has no attribute 'con'
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| 'Line:125	| Function:<module>
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| 'Line:34	| Function:__init__
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| 'Line:75	| Function:bindSignalSlot

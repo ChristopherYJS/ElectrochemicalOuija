@@ -25,6 +25,90 @@
    </property>
    <item>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="3" column="2">
+      <widget class="QComboBox" name="comboBoxDuration">
+       <item>
+        <property name="text">
+         <string>s</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>min</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>h</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QRadioButton" name="radioButtonOCP">
+       <property name="text">
+        <string>OCP</string>
+       </property>
+       <property name="autoExclusive">
+        <bool>false</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="0" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditName">
+       <property name="placeholderText">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="labelDuration">
+       <property name="text">
+        <string>Duration / s</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QLineEdit" name="lineEditARBegin">
+       <property name="placeholderText">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="0">
+      <widget class="QLabel" name="labelBW">
+       <property name="text">
+        <string>Bandwidth</string>
+       </property>
+      </widget>
+     </item>
+     <item row="13" column="1" colspan="2">
+      <widget class="QComboBox" name="comboBoxBW"/>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="labelAverage">
+       <property name="text">
+        <string>Average</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="2">
+      <widget class="QLineEdit" name="lineEditLowerLimit">
+       <property name="placeholderText">
+        <string>pass</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="3">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
      <item row="10" column="1">
       <widget class="QComboBox" name="comboBoxLowerLimit">
        <item>
@@ -49,20 +133,6 @@
        </item>
       </widget>
      </item>
-     <item row="4" column="0" colspan="3">
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="labelAverage">
-       <property name="text">
-        <string>Average</string>
-       </property>
-      </widget>
-     </item>
      <item row="10" column="0">
       <widget class="QLabel" name="labelLowerLimit">
        <property name="text">
@@ -70,10 +140,99 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="2">
-      <widget class="QLineEdit" name="lineEditLowerLimit">
+     <item row="5" column="0">
+      <widget class="QLabel" name="labelSampleRate">
+       <property name="text">
+        <string>Sample rate / per s </string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="labelCR">
+       <property name="text">
+        <string>Current Range</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="labelName">
+       <property name="text">
+        <string>Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="labelAverageRegion">
+       <property name="text">
+        <string>Average Region</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditSampleRate">
        <property name="placeholderText">
-        <string>pass</string>
+        <string>0.1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="labelPotentialRef">
+       <property name="text">
+        <string>Potential Ref</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="2">
+      <widget class="QLineEdit" name="lineEditAREnd">
+       <property name="placeholderText">
+        <string>1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1" colspan="2">
+      <widget class="QComboBox" name="comboBoxCR"/>
+     </item>
+     <item row="2" column="1">
+      <widget class="QRadioButton" name="radioButtonRE">
+       <property name="text">
+        <string>RE</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>false</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labelPotential">
+       <property name="text">
+        <string>Potential / V</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0" colspan="3">
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditAverage">
+       <property name="placeholderText">
+        <string>1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditPotential">
+       <property name="placeholderText">
+        <string>0.0</string>
        </property>
       </widget>
      </item>
@@ -115,152 +274,22 @@
        </item>
       </widget>
      </item>
-     <item row="11" column="0">
-      <widget class="QLabel" name="labelCR">
-       <property name="text">
-        <string>Current Range</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="labelAverageRegion">
-       <property name="text">
-        <string>Average Region</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="labelName">
-       <property name="text">
-        <string>Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="labelSampleRate">
-       <property name="text">
-        <string>Sample rate / per s </string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="labelDuration">
-       <property name="text">
-        <string>Duration / s</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QRadioButton" name="radioButtonOCP">
-       <property name="text">
-        <string>OCP</string>
-       </property>
-       <property name="autoExclusive">
-        <bool>false</bool>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
-       </attribute>
-      </widget>
-     </item>
-     <item row="3" column="1" colspan="2">
+     <item row="3" column="1">
       <widget class="QLineEdit" name="lineEditDuration">
        <property name="placeholderText">
         <string>60</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1" colspan="2">
-      <widget class="QLineEdit" name="lineEditName">
-       <property name="placeholderText">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0" colspan="3">
-      <widget class="Line" name="line_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QLineEdit" name="lineEditPotential">
-       <property name="placeholderText">
-        <string>0.0</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1" colspan="2">
-      <widget class="QLineEdit" name="lineEditAverage">
-       <property name="placeholderText">
-        <string>1</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1" colspan="2">
-      <widget class="QLineEdit" name="lineEditSampleRate">
-       <property name="placeholderText">
-        <string>0.1</string>
-       </property>
-      </widget>
-     </item>
-     <item row="11" column="1" colspan="2">
-      <widget class="QComboBox" name="comboBoxCR"/>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="labelPotentialRef">
-       <property name="text">
-        <string>Potential Ref</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QRadioButton" name="radioButtonRE">
-       <property name="text">
-        <string>RE</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>false</bool>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
-       </attribute>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="labelPotential">
-       <property name="text">
-        <string>Potential / V</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="2">
-      <widget class="QLineEdit" name="lineEditAREnd">
-       <property name="placeholderText">
-        <string>1</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="1">
-      <widget class="QLineEdit" name="lineEditARBegin">
-       <property name="placeholderText">
-        <string>0</string>
-       </property>
-      </widget>
-     </item>
      <item row="12" column="0">
-      <widget class="QLabel" name="labelBW">
+      <widget class="QLabel" name="labelPR">
        <property name="text">
-        <string>Bandwidth</string>
+        <string>Potential Range</string>
        </property>
       </widget>
      </item>
      <item row="12" column="1" colspan="2">
-      <widget class="QComboBox" name="comboBoxBW"/>
+      <widget class="QComboBox" name="comboBoxPR"/>
      </item>
     </layout>
    </item>
