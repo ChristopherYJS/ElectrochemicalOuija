@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_CP.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -29,22 +29,22 @@ class Ui_Form(object):
         self.label = QLabel(Form)
         self.label.setObjectName(u"label")
 
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label)
+        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label)
 
         self.lineEdit = QLineEdit(Form)
         self.lineEdit.setObjectName(u"lineEdit")
 
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.lineEdit)
+        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.lineEdit)
 
         self.lineEdit_2 = QLineEdit(Form)
         self.lineEdit_2.setObjectName(u"lineEdit_2")
 
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.lineEdit_2)
+        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.lineEdit_2)
 
         self.label_2 = QLabel(Form)
         self.label_2.setObjectName(u"label_2")
 
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_2)
+        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label_2)
 
 
         self.retranslateUi(Form)

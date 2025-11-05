@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_CV.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -28,42 +28,42 @@ class Ui_Form(object):
         self.lineEdit = QLineEdit(Form)
         self.lineEdit.setObjectName(u"lineEdit")
 
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.lineEdit)
+        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.lineEdit)
 
         self.label = QLabel(Form)
         self.label.setObjectName(u"label")
 
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label)
+        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label)
 
         self.label_2 = QLabel(Form)
         self.label_2.setObjectName(u"label_2")
 
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_2)
+        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label_2)
 
         self.lineEdit_2 = QLineEdit(Form)
         self.lineEdit_2.setObjectName(u"lineEdit_2")
 
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.lineEdit_2)
+        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.lineEdit_2)
 
         self.label_3 = QLabel(Form)
         self.label_3.setObjectName(u"label_3")
 
-        self.formLayout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_3)
+        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_3)
 
         self.lineEdit_3 = QLineEdit(Form)
         self.lineEdit_3.setObjectName(u"lineEdit_3")
 
-        self.formLayout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.lineEdit_3)
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.lineEdit_3)
 
         self.label_4 = QLabel(Form)
         self.label_4.setObjectName(u"label_4")
 
-        self.formLayout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_4)
+        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_4)
 
         self.lineEdit_4 = QLineEdit(Form)
         self.lineEdit_4.setObjectName(u"lineEdit_4")
 
-        self.formLayout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.lineEdit_4)
+        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.lineEdit_4)
 
 
         self.retranslateUi(Form)
