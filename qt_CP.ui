@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>327</height>
+    <width>662</width>
+    <height>636</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,25 +25,207 @@
    </property>
    <item>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="2" column="2">
+      <widget class="QComboBox" name="comboBoxDuration">
+       <item>
+        <property name="text">
+         <string>s</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>min</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>h</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="0" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditName">
+       <property name="placeholderText">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0">
+      <widget class="QLabel" name="labelBW">
+       <property name="text">
+        <string>Bandwidth</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditCurrent"/>
+     </item>
+     <item row="3" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditSampleRate">
+       <property name="placeholderText">
+        <string>0.1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="2">
+      <widget class="QLineEdit" name="lineEditAREnd">
+       <property name="placeholderText">
+        <string>1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="labelUpperLimit">
+       <property name="text">
+        <string>Upper limit</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="labelAverageRegion">
+       <property name="text">
+        <string>Average Region</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="lineEditARBegin">
+       <property name="placeholderText">
+        <string>0</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QComboBox" name="comboBoxLowerLimit">
+       <item>
+        <property name="text">
+         <string>V</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>mV</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="labelAverage">
+       <property name="text">
+        <string>Average</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="labelLowerLimit">
+       <property name="text">
+        <string>Lower limit</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
+      <widget class="QLabel" name="labelName">
+       <property name="text">
+        <string>Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
         <string>Current / A</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="5" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditAverage">
+       <property name="placeholderText">
+        <string>1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Duration / s</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="lineEdit"/>
+     <item row="3" column="0">
+      <widget class="QLabel" name="labelSampleRate">
+       <property name="text">
+        <string>Sample rate / per s </string>
+       </property>
+      </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="lineEdit_2"/>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="lineEditDuration"/>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="labelCR">
+       <property name="text">
+        <string>Current Range</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="2">
+      <widget class="QLineEdit" name="lineEditLowerLimit">
+       <property name="placeholderText">
+        <string>pass</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QComboBox" name="comboBoxUpperLimit">
+       <item>
+        <property name="text">
+         <string>V</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>mV</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="10" column="1" colspan="2">
+      <widget class="QComboBox" name="comboBoxPR"/>
+     </item>
+     <item row="12" column="1" colspan="2">
+      <widget class="QComboBox" name="comboBoxBW"/>
+     </item>
+     <item row="9" column="0" colspan="3">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1" colspan="2">
+      <widget class="QComboBox" name="comboBoxCR"/>
+     </item>
+     <item row="10" column="0">
+      <widget class="QLabel" name="labelPR">
+       <property name="text">
+        <string>Potential Range</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="2">
+      <widget class="QLineEdit" name="lineEditUpperLimit">
+       <property name="placeholderText">
+        <string>pass</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0" colspan="3">
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

@@ -10,7 +10,7 @@ from qt_ECO_Main import Ui_MainWindow
 from misc_PrintException import print_ex
 from qt_CV import Ui_Form as CVUI
 from ui_CA import CA as CAUI 
-from qt_CP import Ui_Form as CPUI
+from ui_CP import CP as CPUI
 from qt_EIS import Ui_Form as EISUI
 from qt_Move import Ui_Form as MoveUI
 from qt_Loop import Ui_Form as LoopUI
@@ -96,7 +96,10 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         page = self._buildTab(ui_class,item)     # QWidget ready
         tabTech.layout().addWidget(page)
         self.itemTechPair[item] = page
-        tabTech.show()
+        self.tabWidgetTop.setCurrentWidget(tabTech)
+        
+
+    #---------------- Signal-Slot binding ----------------
 
     def bindSignalSlot(self):
         # Binding the signals and slots
@@ -123,7 +126,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
         self._clearWidget(tabTech)  # removes children AND clears layout
         tabTech.layout().addWidget(page)
-        tabTech.show()
+        self.tabWidgetTop.setCurrentWidget(tabTech)
 
 
     #---------------- Helper functions ----------------
@@ -263,10 +266,8 @@ class TockWidget(QTabWidget):
         return None
 
     def _closeTab(self, index: int):
-        w = self.widget(index)
         self.removeTab(index)
-        if w:
-            w.deleteLater()
+        
 
 if __name__ =='__main__':
     try:
