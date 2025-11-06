@@ -47,44 +47,43 @@ class CA(QWidget, Ui_Form):
         self.lineEditAverage.setValidator(QIntValidator(1, 10**6, self))        # >=1
 
         # 5) Bind signals → model updates
-        self._bind()
+        self.bindSignalSlot()
 
     # ---------------- Binding & helpers ----------------
 
-    def _bind(self):
+    def bindSignalSlot(self):
         # Name
-        self.lineEditName.editingFinished.connect(
-            lambda: self._set_name(self.lineEditName.text())
-        )
+        self.lineEditName.editingFinished.connect(self._setName)
 
         # Scalar fields
-        self.lineEditPotential.editingFinished.connect(self._pull_fields)
-        self.lineEditDuration.editingFinished.connect(self._pull_fields)
-        self.lineEditSampleRate.editingFinished.connect(self._pull_fields)
-        self.lineEditARBegin.editingFinished.connect(self._pull_fields)
-        self.lineEditAREnd.editingFinished.connect(self._pull_fields)
-        self.lineEditAverage.editingFinished.connect(self._pull_fields)
-        self.lineEditUpperLimit.editingFinished.connect(self._pull_fields)
-        self.lineEditLowerLimit.editingFinished.connect(self._pull_fields)
+        self.lineEditPotential.editingFinished.connect(self._pullFields)
+        self.lineEditDuration.editingFinished.connect(self._pullFields)
+        self.lineEditSampleRate.editingFinished.connect(self._pullFields)
+        self.lineEditARBegin.editingFinished.connect(self._pullFields)
+        self.lineEditAREnd.editingFinished.connect(self._pullFields)
+        self.lineEditAverage.editingFinished.connect(self._pullFields)
+        self.lineEditUpperLimit.editingFinished.connect(self._pullFields)
+        self.lineEditLowerLimit.editingFinished.connect(self._pullFields)
 
         # ComboBoxs
-        self.comboBoxCR.currentTextChanged.connect(self._pull_fields)
-        self.comboBoxPR.currentTextChanged.connect(self._pull_fields)
-        self.comboBoxBW.currentTextChanged.connect(self._pull_fields)
+        self.comboBoxCR.currentTextChanged.connect(self._pullFields)
+        self.comboBoxPR.currentTextChanged.connect(self._pullFields)
+        self.comboBoxBW.currentTextChanged.connect(self._pullFields)
 
 
-    def _set_name(self, new_name: str):
-        if new_name and new_name != self.name:
-            self.name = new_name
-            self.nameChanged.emit(self.name)
-            self._emit_payload()
+    def _setName(self):
+        self._pullFields()
+        
+        self.nameChanged.emit(f'{self.tech}_{self.name}')
 
-    def _pull_fields(self):
+
+    def _pullFields(self):
         """Pull current UI values into the model (with light parsing)."""
         try:
+            self.name=self.lineEditName.text()
             self.potential = _float_or_none(self.lineEditPotential.text())
             self.duration = float(self.lineEditDuration.text() or 0)
-            self.rate = float(self.lineEditRate.text() or 0)
+            self.rate = float(self.lineEditSampleRate.text() or 0)
             self.ARBegin = float(self.lineEditARBegin.text() or 0)
             self.AREnd = float(self.lineEditAREnd.text() or 1)
             self.average = int(self.lineEditAverage.text() or 1)
@@ -96,5 +95,3 @@ class CA(QWidget, Ui_Form):
         except ValueError as e:
             QMessageBox.warning(self, "Parse error", str(e))
             return
-        self._emit_payload()
-
