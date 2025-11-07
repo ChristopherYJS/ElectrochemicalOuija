@@ -1,7 +1,7 @@
 #& "C:\Users\chrst\AppData\Roaming\Python\Python313\Scripts\pyside6-uic.exe" "uiEC.ui" "-o" "uiEC.py" "--from-imports"
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout
+from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit
 from PySide6.QtCore import QSize, Qt, QEvent,QMimeData,QModelIndex,QPoint
 from PySide6.QtWidgets import QAbstractItemView 
 from PySide6.QtGui import QMouseEvent,QDrag,QFont
@@ -37,7 +37,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         #Replace the treewidget in the ui file with our custom one
         oldTreeWidget =self.treeWidget
         self.treeWidget= TechTreeWidget(self.splitter)
-        self.splitter.insertWidget(0, self.treeWidget)
+        self.splitter.insertWidget(1, self.treeWidget)
         self.treeWidget.setGeometry(oldTreeWidget.geometry())
         self.treeWidget.setObjectName(oldTreeWidget.objectName())
         oldTreeWidget.deleteLater()
@@ -55,8 +55,13 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.tabWidgetTop.setGeometry(oldTabWidgetTop.geometry())
         self.tabWidgetTop.setObjectName(oldTabWidgetTop.objectName())
         oldTabWidgetTop.deleteLater()
-        self.tabWidgetTop.addTab(QWidget(),"tabTech")
-        self.tabWidgetTop.addTab(QWidget(),"tabLog")
+        self.tabWidgetTop.addTab(QWidget(),"ExpSequence")
+        self.tabWidgetTop.addTab(QWidget(),"Log")
+        self.Log=QPlainTextEdit()
+        self.Log.setReadOnly(True)
+        logLayout=QHBoxLayout()
+        logLayout.addWidget(self.Log)
+
         #Replace the bottom tabwidget
         oldTabWidgetBtm=self.tabWidgetBtm
         self.tabWidgetBtm= TockWidget(self,oldTabWidgetBtm.parent())
@@ -64,7 +69,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.tabWidgetBtm.setGeometry(oldTabWidgetBtm.geometry())
         self.tabWidgetBtm.setObjectName(oldTabWidgetBtm.objectName())
         oldTabWidgetBtm.deleteLater()
-        self.tabWidgetBtm.addTab(QWidget(),"tabPosition")
+        self.tabWidgetBtm.addTab(QWidget(),"Positioner")
 
         
 
@@ -83,11 +88,11 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             print_ex(AttributeError("ECO_pot has no attribute 'tabWidgetBtm', The tabWidget might has been removed by accident"))
         
         #Find if tabTech exists in any of the two tabwidgets
-        tabTech = (self.tabWidgetTop._findTabByTitle("tabTech")
-               or self.tabWidgetBtm._findTabByTitle("tabTech"))
+        tabTech = (self.tabWidgetTop._findTabByTitle("ExpSequence")
+               or self.tabWidgetBtm._findTabByTitle("ExpSequence"))
         if  tabTech is None:
             w = QWidget()
-            self.tabWidgetTop.addTab(w, "tabTech")
+            self.tabWidgetTop.addTab(w, "ExpSequence")
             tabTech = w
         # Remove all widgets from the placeholder's layout before loading new Form
         self._clearWidget(tabTech)
@@ -102,10 +107,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     #---------------- Signal-Slot binding ----------------
 
     def bindSignalSlot(self):
-        # Binding the signals and slots
-        self.pushBtnProceed.clicked.connect(lambda sender=self.pushBtnProceed: Proceed(sender))
-        # itemClicked emits (QTreeWidgetItem, int). Connect handler that accepts both args.
-        # Connect directly so the slot can accept (item, column).
+        # Show the tech setup for the clicked tree item
         self.treeWidget.itemClicked.connect(self.TreeItemClicked)
     
     def bindEvent(self):
@@ -117,11 +119,11 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     def TreeItemClicked(self, item, column=None):
         page = self.itemTechPair.get(item)
 
-        tabTech = (self.tabWidgetTop._findTabByTitle("tabTech")
-                or self.tabWidgetBtm._findTabByTitle("tabTech"))
+        tabTech = (self.tabWidgetTop._findTabByTitle("ExpSequence")
+                or self.tabWidgetBtm._findTabByTitle("ExpSequence"))
         if tabTech is None:
             w = QWidget()
-            self.tabWidgetTop.addTab(w, "tabTech")
+            self.tabWidgetTop.addTab(w, "ExpSequence")
             tabTech = w
 
         self._clearWidget(tabTech)  # removes children AND clears layout
@@ -246,6 +248,7 @@ class TearOffTabBar(QTabBar):
         self._host.tabWidgetTop.addTab(page, title)
         self._host.tabWidgetTop.setCurrentWidget(page)
         
+    
 
 
 class TockWidget(QTabWidget):

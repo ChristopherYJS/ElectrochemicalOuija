@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1">
    <property name="sizeConstraint">
     <enum>QLayout::SetMaximumSize</enum>
    </property>
@@ -60,7 +60,7 @@
      <item row="0" column="1" colspan="2">
       <widget class="QLineEdit" name="lineEditName">
        <property name="placeholderText">
-        <string/>
+        <string>&lt;string&gt;</string>
        </property>
       </widget>
      </item>
@@ -74,7 +74,7 @@
      <item row="6" column="1">
       <widget class="QLineEdit" name="lineEditARBegin">
        <property name="placeholderText">
-        <string>0</string>
+        <string>&lt;float, 0 to 1&gt;</string>
        </property>
       </widget>
      </item>
@@ -98,7 +98,7 @@
      <item row="10" column="2">
       <widget class="QLineEdit" name="lineEditLowerLimit">
        <property name="placeholderText">
-        <string>pass</string>
+        <string>&lt;float or pass&gt;</string>
        </property>
       </widget>
      </item>
@@ -171,7 +171,7 @@
      <item row="5" column="1" colspan="2">
       <widget class="QLineEdit" name="lineEditSampleRate">
        <property name="placeholderText">
-        <string>0.1</string>
+        <string>&lt;float&gt;</string>
        </property>
       </widget>
      </item>
@@ -185,7 +185,7 @@
      <item row="6" column="2">
       <widget class="QLineEdit" name="lineEditAREnd">
        <property name="placeholderText">
-        <string>1</string>
+        <string>&lt;float, 0 to 1&gt;</string>
        </property>
       </widget>
      </item>
@@ -225,21 +225,21 @@
      <item row="8" column="1" colspan="2">
       <widget class="QLineEdit" name="lineEditAverage">
        <property name="placeholderText">
-        <string>1</string>
+        <string>&lt;int&gt;</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1" colspan="2">
       <widget class="QLineEdit" name="lineEditPotential">
        <property name="placeholderText">
-        <string>0.0</string>
+        <string>&lt;float&gt;</string>
        </property>
       </widget>
      </item>
      <item row="9" column="2">
       <widget class="QLineEdit" name="lineEditUpperLimit">
        <property name="placeholderText">
-        <string>pass</string>
+        <string>&lt;float or pass&gt;</string>
        </property>
       </widget>
      </item>
@@ -277,7 +277,7 @@
      <item row="3" column="1">
       <widget class="QLineEdit" name="lineEditDuration">
        <property name="placeholderText">
-        <string>60</string>
+        <string>&lt;float&gt;</string>
        </property>
       </widget>
      </item>
@@ -294,20 +294,7 @@
     </layout>
    </item>
    <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Expanding</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
+    <widget class="QPlainTextEdit" name="plainTextEdit"/>
    </item>
   </layout>
  </widget>

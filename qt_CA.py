@@ -16,8 +16,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QComboBox, QFrame,
-    QGridLayout, QLabel, QLayout, QLineEdit,
-    QRadioButton, QSizePolicy, QSpacerItem, QVBoxLayout,
+    QGridLayout, QHBoxLayout, QLabel, QLayout,
+    QLineEdit, QPlainTextEdit, QRadioButton, QSizePolicy,
     QWidget)
 
 class Ui_Form(object):
@@ -30,9 +30,9 @@ class Ui_Form(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
         Form.setSizePolicy(sizePolicy)
-        self.verticalLayout = QVBoxLayout(Form)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setSizeConstraint(QLayout.SetMaximumSize)
+        self.horizontalLayout = QHBoxLayout(Form)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setSizeConstraint(QLayout.SetMaximumSize)
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
         self.comboBoxDuration = QComboBox(Form)
@@ -213,12 +213,15 @@ class Ui_Form(object):
         self.gridLayout.addWidget(self.comboBoxPR, 12, 1, 1, 2)
 
 
-        self.verticalLayout.addLayout(self.gridLayout)
+        self.horizontalLayout.addLayout(self.gridLayout)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.plainTextEdit = QPlainTextEdit(Form)
+        self.plainTextEdit.setObjectName(u"plainTextEdit")
 
-        self.verticalLayout.addItem(self.verticalSpacer)
+        self.horizontalLayout.addWidget(self.plainTextEdit)
 
+        self.horizontalLayout.setStretch(0, 2)
+        self.horizontalLayout.setStretch(1, 1)
 
         self.retranslateUi(Form)
 
@@ -232,12 +235,12 @@ class Ui_Form(object):
         self.comboBoxDuration.setItemText(2, QCoreApplication.translate("Form", u"h", None))
 
         self.radioButtonOCP.setText(QCoreApplication.translate("Form", u"OCP", None))
-        self.lineEditName.setPlaceholderText("")
+        self.lineEditName.setPlaceholderText(QCoreApplication.translate("Form", u"<string>", None))
         self.labelDuration.setText(QCoreApplication.translate("Form", u"Duration / s", None))
-        self.lineEditARBegin.setPlaceholderText(QCoreApplication.translate("Form", u"0", None))
+        self.lineEditARBegin.setPlaceholderText(QCoreApplication.translate("Form", u"<float, 0 to 1>", None))
         self.labelBW.setText(QCoreApplication.translate("Form", u"Bandwidth", None))
         self.labelAverage.setText(QCoreApplication.translate("Form", u"Average", None))
-        self.lineEditLowerLimit.setPlaceholderText(QCoreApplication.translate("Form", u"pass", None))
+        self.lineEditLowerLimit.setPlaceholderText(QCoreApplication.translate("Form", u"<float or pass>", None))
         self.comboBoxLowerLimit.setItemText(0, QCoreApplication.translate("Form", u"A", None))
         self.comboBoxLowerLimit.setItemText(1, QCoreApplication.translate("Form", u"mA", None))
         self.comboBoxLowerLimit.setItemText(2, QCoreApplication.translate("Form", u"uA", None))
@@ -248,21 +251,21 @@ class Ui_Form(object):
         self.labelCR.setText(QCoreApplication.translate("Form", u"Current Range", None))
         self.labelName.setText(QCoreApplication.translate("Form", u"Name", None))
         self.labelAverageRegion.setText(QCoreApplication.translate("Form", u"Average Region", None))
-        self.lineEditSampleRate.setPlaceholderText(QCoreApplication.translate("Form", u"0.1", None))
+        self.lineEditSampleRate.setPlaceholderText(QCoreApplication.translate("Form", u"<float>", None))
         self.labelPotentialRef.setText(QCoreApplication.translate("Form", u"Potential Ref", None))
-        self.lineEditAREnd.setPlaceholderText(QCoreApplication.translate("Form", u"1", None))
+        self.lineEditAREnd.setPlaceholderText(QCoreApplication.translate("Form", u"<float, 0 to 1>", None))
         self.radioButtonRE.setText(QCoreApplication.translate("Form", u"RE", None))
         self.labelPotential.setText(QCoreApplication.translate("Form", u"Potential / V", None))
-        self.lineEditAverage.setPlaceholderText(QCoreApplication.translate("Form", u"1", None))
-        self.lineEditPotential.setPlaceholderText(QCoreApplication.translate("Form", u"0.0", None))
-        self.lineEditUpperLimit.setPlaceholderText(QCoreApplication.translate("Form", u"pass", None))
+        self.lineEditAverage.setPlaceholderText(QCoreApplication.translate("Form", u"<int>", None))
+        self.lineEditPotential.setPlaceholderText(QCoreApplication.translate("Form", u"<float>", None))
+        self.lineEditUpperLimit.setPlaceholderText(QCoreApplication.translate("Form", u"<float or pass>", None))
         self.labelUpperLimit.setText(QCoreApplication.translate("Form", u"Upper limit", None))
         self.comboBoxUpperLimit.setItemText(0, QCoreApplication.translate("Form", u"A", None))
         self.comboBoxUpperLimit.setItemText(1, QCoreApplication.translate("Form", u"mA", None))
         self.comboBoxUpperLimit.setItemText(2, QCoreApplication.translate("Form", u"uA", None))
         self.comboBoxUpperLimit.setItemText(3, QCoreApplication.translate("Form", u"nA", None))
 
-        self.lineEditDuration.setPlaceholderText(QCoreApplication.translate("Form", u"60", None))
+        self.lineEditDuration.setPlaceholderText(QCoreApplication.translate("Form", u"<float>", None))
         self.labelPR.setText(QCoreApplication.translate("Form", u"Potential Range", None))
     # retranslateUi
 

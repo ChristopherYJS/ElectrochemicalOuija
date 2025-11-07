@@ -1,0 +1,4 @@
+20:37:12>>Traceback Error:'ECO_pot' object has no attribute 'pushBtnProceed'
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| 'Line:283	| Function:<module>
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| 'Line:33	| Function:__init__
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| 'Line:111	| Function:bindSignalSlot
