@@ -14,37 +14,32 @@ class CA(QWidget, Ui_Form):
     # 1) Signals 
     nameChanged = Signal(str)
     tech="CA"
+    
 
-    def __init__(self, *, i_ranges: list[str] = None, e_ranges: list[str] = None, bandwidths: list[str] = None):
+    def __init__(self, *, i_ranges: list[str] = None):
         super().__init__()
         self.setupUi(self)
 
         # 2) Model defaults
         self.name: str = "CA"
         self.potential: float | int | None = None
-        self.ref: str = "RE"
         self.duration: int | float = 0
-        self.rate: int | float = 0
-        self.ARBegin: int | float = 0
-        self.AREnd: int | float = 1
-        self.average: int = 1
-        self.limitUp: int | float | None = None
-        self.limitDown: int | float | None = None
+
+        self.sampleTime: int | float = 0
+        self.sampleCurrent: int | float = 0
+        self.repeat: int = 1
         self.CR: str | None = None       # current range
-        self.BW: str | None = None       # bandwidth
-        self.PR: str | None = None       # E range 
+
 
         # 3) Load combobox options from main UI
         if i_ranges:   self.comboBoxCR.addItems(i_ranges)
-        if e_ranges:   self.comboBoxPR.addItems(e_ranges)
-        if bandwidths: self.comboBoxBW.addItems(bandwidths)
 
         # 4) Validators on edits (optional but makes UX nicer)
+        self.lineEditPotential.setValidator(QDoubleValidator(self))
         self.lineEditDuration.setValidator(QDoubleValidator(self))
-        self.lineEditSampleRate.setValidator(QDoubleValidator(self))
-        self.lineEditARBegin.setValidator(QDoubleValidator(0.0, 1.0, 2, self))  # 0..1
-        self.lineEditAREnd.setValidator(QDoubleValidator(0.0, 1.0, 2, self))    # 0..1
-        self.lineEditAverage.setValidator(QIntValidator(1, 10**6, self))        # >=1
+        self.lineEditSampleTime.setValidator(QDoubleValidator(self))
+        self.lineEditSampleCurrent.setValidator(QDoubleValidator(self))
+        self.lineEditRepeat.setValidator(QIntValidator(1, 50, self))        # >=1
 
         # 5) Bind signals → model updates
         self.bindSignalSlot()
@@ -58,22 +53,17 @@ class CA(QWidget, Ui_Form):
         # Scalar fields
         self.lineEditPotential.editingFinished.connect(self._pullFields)
         self.lineEditDuration.editingFinished.connect(self._pullFields)
-        self.lineEditSampleRate.editingFinished.connect(self._pullFields)
-        self.lineEditARBegin.editingFinished.connect(self._pullFields)
-        self.lineEditAREnd.editingFinished.connect(self._pullFields)
-        self.lineEditAverage.editingFinished.connect(self._pullFields)
-        self.lineEditUpperLimit.editingFinished.connect(self._pullFields)
-        self.lineEditLowerLimit.editingFinished.connect(self._pullFields)
+        self.lineEditSampleTime.editingFinished.connect(self._pullFields)
+        self.lineEditSampleCurrent.editingFinished.connect(self._pullFields)
+        self.lineEditRepeat.editingFinished.connect(self._pullFields)
 
         # ComboBoxs
         self.comboBoxCR.currentTextChanged.connect(self._pullFields)
-        self.comboBoxPR.currentTextChanged.connect(self._pullFields)
-        self.comboBoxBW.currentTextChanged.connect(self._pullFields)
+
 
 
     def _setName(self):
         self._pullFields()
-        
         self.nameChanged.emit(f'{self.tech}_{self.name}')
 
 
@@ -83,15 +73,27 @@ class CA(QWidget, Ui_Form):
             self.name=self.lineEditName.text()
             self.potential = _float_or_none(self.lineEditPotential.text())
             self.duration = float(self.lineEditDuration.text() or 0)
-            self.rate = float(self.lineEditSampleRate.text() or 0)
-            self.ARBegin = float(self.lineEditARBegin.text() or 0)
-            self.AREnd = float(self.lineEditAREnd.text() or 1)
-            self.average = int(self.lineEditAverage.text() or 1)
-            self.limitUp = _float_or_none(self.lineEditUpperLimit.text())
-            self.limitDown = _float_or_none(self.lineEditLowerLimit.text())
+            self.sampleTime = float(self.lineEditSampleTime.text() or 0)
+            self.sampleCurrent = float(self.lineEditSampleCurrent.text() or 0)
+            self.repeat = int(self.lineEditRepeat.text() or 1)
             self.CR = self.comboBoxCR.currentText() or None
-            self.PR = self.comboBoxPR.currentText() or None
-            self.BW = self.comboBoxBW.currentText() or None
+
         except ValueError as e:
             QMessageBox.warning(self, "Parse error", str(e))
             return
+
+    def outputParam(self) -> dict:
+        self._pullFields()  # Ensure model is up-to-date with UI
+        """Return current parameters as a dict."""
+        ca_settings= { 'technique': 'ca', # Technique identifier
+                'voltage': self.potential, # Voltage applied in V vs ref
+                'duration': self.duration, # Duration of CA measurement in s
+                'vs_init': False, # Voltage step vs initial one
+                'repeat_count': self.repeat, # Repetition of measurement
+                'record_dt': self.sampleTime, # Record potential at each time increment in s
+                'record_dI': self.sampleCurrent, # Record potential at each potential increment in A
+                'i_range': self.CR, # Current range for CA measurement
+                'charge': 64, # Record total charge
+                'timebase': 0.000026
+                   }
+        return ca_settings

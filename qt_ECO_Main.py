@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_ECO_Main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -196,16 +196,16 @@ class Ui_MainWindow(object):
         self.frame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout = QHBoxLayout(self.frame)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.pushButton = QPushButton(self.frame)
-        self.pushButton.setObjectName(u"pushButton")
-        self.pushButton.setEnabled(True)
-        sizePolicy1.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
-        self.pushButton.setSizePolicy(sizePolicy1)
-        self.pushButton.setMinimumSize(QSize(40, 40))
-        self.pushButton.setMaximumSize(QSize(40, 40))
-        self.pushButton.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
+        self.pushButtonStart = QPushButton(self.frame)
+        self.pushButtonStart.setObjectName(u"pushButtonStart")
+        self.pushButtonStart.setEnabled(True)
+        sizePolicy1.setHeightForWidth(self.pushButtonStart.sizePolicy().hasHeightForWidth())
+        self.pushButtonStart.setSizePolicy(sizePolicy1)
+        self.pushButtonStart.setMinimumSize(QSize(40, 40))
+        self.pushButtonStart.setMaximumSize(QSize(40, 40))
+        self.pushButtonStart.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
 
-        self.horizontalLayout.addWidget(self.pushButton)
+        self.horizontalLayout.addWidget(self.pushButtonStart)
 
         self.pushButton_2 = QPushButton(self.frame)
         self.pushButton_2.setObjectName(u"pushButton_2")
@@ -307,6 +307,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.tabWidgetTop.setCurrentIndex(1)
+        self.tabWidgetBtm.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -329,7 +330,7 @@ class Ui_MainWindow(object):
         self.labelTechEIS.setText(QCoreApplication.translate("MainWindow", u"EIS", None))
         self.labelMove.setText(QCoreApplication.translate("MainWindow", u"Move", None))
         self.labelLoop.setText(QCoreApplication.translate("MainWindow", u"Loop", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.pushButtonStart.setText(QCoreApplication.translate("MainWindow", u"Start", None))
         self.pushButton_2.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))

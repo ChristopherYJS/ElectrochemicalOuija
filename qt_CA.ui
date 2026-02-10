@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>654</width>
     <height>404</height>
    </rect>
   </property>
@@ -25,36 +25,18 @@
    </property>
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="3" column="2">
-      <widget class="QComboBox" name="comboBoxDuration">
-       <item>
-        <property name="text">
-         <string>s</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>min</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>h</string>
-        </property>
-       </item>
+     <item row="3" column="0" colspan="3">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
       </widget>
      </item>
-     <item row="2" column="2">
-      <widget class="QRadioButton" name="radioButtonOCP">
-       <property name="text">
-        <string>OCP</string>
+     <item row="5" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditSampleCurrent">
+       <property name="placeholderText">
+        <string>&lt;float&gt;</string>
        </property>
-       <property name="autoExclusive">
-        <bool>false</bool>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
-       </attribute>
       </widget>
      </item>
      <item row="0" column="1" colspan="2">
@@ -64,168 +46,10 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="labelDuration">
-       <property name="text">
-        <string>Duration / s</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="1">
-      <widget class="QLineEdit" name="lineEditARBegin">
-       <property name="placeholderText">
-        <string>&lt;float, 0 to 1&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item row="13" column="0">
-      <widget class="QLabel" name="labelBW">
-       <property name="text">
-        <string>Bandwidth</string>
-       </property>
-      </widget>
-     </item>
-     <item row="13" column="1" colspan="2">
-      <widget class="QComboBox" name="comboBoxBW"/>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="labelAverage">
-       <property name="text">
-        <string>Average</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="2">
-      <widget class="QLineEdit" name="lineEditLowerLimit">
-       <property name="placeholderText">
-        <string>&lt;float or pass&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0" colspan="3">
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="1">
-      <widget class="QComboBox" name="comboBoxLowerLimit">
-       <item>
-        <property name="text">
-         <string>A</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>mA</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>uA</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>nA</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="labelLowerLimit">
-       <property name="text">
-        <string>Lower limit</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="labelSampleRate">
-       <property name="text">
-        <string>Sample rate / per s </string>
-       </property>
-      </widget>
-     </item>
-     <item row="11" column="0">
-      <widget class="QLabel" name="labelCR">
-       <property name="text">
-        <string>Current Range</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="labelName">
-       <property name="text">
-        <string>Name</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="labelAverageRegion">
-       <property name="text">
-        <string>Average Region</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1" colspan="2">
-      <widget class="QLineEdit" name="lineEditSampleRate">
-       <property name="placeholderText">
-        <string>&lt;float&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="labelPotentialRef">
-       <property name="text">
-        <string>Potential Ref</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="2">
-      <widget class="QLineEdit" name="lineEditAREnd">
-       <property name="placeholderText">
-        <string>&lt;float, 0 to 1&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item row="11" column="1" colspan="2">
-      <widget class="QComboBox" name="comboBoxCR"/>
-     </item>
-     <item row="2" column="1">
-      <widget class="QRadioButton" name="radioButtonRE">
-       <property name="text">
-        <string>RE</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>false</bool>
-       </property>
-       <attribute name="buttonGroup">
-        <string notr="true">buttonGroup</string>
-       </attribute>
-      </widget>
-     </item>
      <item row="1" column="0">
       <widget class="QLabel" name="labelPotential">
        <property name="text">
         <string>Potential / V</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0" colspan="3">
-      <widget class="Line" name="line_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1" colspan="2">
-      <widget class="QLineEdit" name="lineEditAverage">
-       <property name="placeholderText">
-        <string>&lt;int&gt;</string>
        </property>
       </widget>
      </item>
@@ -236,60 +60,71 @@
        </property>
       </widget>
      </item>
-     <item row="9" column="2">
-      <widget class="QLineEdit" name="lineEditUpperLimit">
-       <property name="placeholderText">
-        <string>&lt;float or pass&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="labelUpperLimit">
+     <item row="0" column="0">
+      <widget class="QLabel" name="labelName">
        <property name="text">
-        <string>Upper limit</string>
+        <string>Name</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
-      <widget class="QComboBox" name="comboBoxUpperLimit">
-       <item>
-        <property name="text">
-         <string>A</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>mA</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>uA</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>nA</string>
-        </property>
-       </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="labelSampleTime">
+       <property name="text">
+        <string>Sample per time /  s </string>
+       </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="2" column="0">
+      <widget class="QLabel" name="labelDuration">
+       <property name="text">
+        <string>Duration / s</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="labelSampleCurrent">
+       <property name="text">
+        <string>Sample per current / A</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1" colspan="2">
+      <widget class="QLineEdit" name="lineEditSampleTime">
+       <property name="placeholderText">
+        <string>&lt;float&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="labelCR">
+       <property name="text">
+        <string>Current range</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" colspan="2">
       <widget class="QLineEdit" name="lineEditDuration">
        <property name="placeholderText">
         <string>&lt;float&gt;</string>
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
-      <widget class="QLabel" name="labelPR">
+     <item row="7" column="1" colspan="2">
+      <widget class="QComboBox" name="comboBoxCR"/>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="labelRepeat">
        <property name="text">
-        <string>Potential Range</string>
+        <string>Repeat</string>
        </property>
       </widget>
      </item>
-     <item row="12" column="1" colspan="2">
-      <widget class="QComboBox" name="comboBoxPR"/>
+     <item row="6" column="1">
+      <widget class="QLineEdit" name="lineEditRepeat">
+       <property name="placeholderText">
+        <string>&lt;int&gt;</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

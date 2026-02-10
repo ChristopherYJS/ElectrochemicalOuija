@@ -15,56 +15,146 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFormLayout, QLabel, QLineEdit,
+from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
+    QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit,
     QSizePolicy, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(400, 300)
-        self.formLayout = QFormLayout(Form)
-        self.formLayout.setObjectName(u"formLayout")
-        self.lineEdit = QLineEdit(Form)
-        self.lineEdit.setObjectName(u"lineEdit")
+        Form.resize(734, 332)
+        self.horizontalLayout = QHBoxLayout(Form)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.labelPotentialSecond = QLabel(Form)
+        self.labelPotentialSecond.setObjectName(u"labelPotentialSecond")
 
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.lineEdit)
+        self.gridLayout.addWidget(self.labelPotentialSecond, 3, 0, 1, 1)
 
-        self.label = QLabel(Form)
-        self.label.setObjectName(u"label")
+        self.lineEditName = QLineEdit(Form)
+        self.lineEditName.setObjectName(u"lineEditName")
 
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label)
+        self.gridLayout.addWidget(self.lineEditName, 0, 1, 1, 1)
 
-        self.label_2 = QLabel(Form)
-        self.label_2.setObjectName(u"label_2")
+        self.labelName = QLabel(Form)
+        self.labelName.setObjectName(u"labelName")
 
-        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label_2)
+        self.gridLayout.addWidget(self.labelName, 0, 0, 1, 1)
 
-        self.lineEdit_2 = QLineEdit(Form)
-        self.lineEdit_2.setObjectName(u"lineEdit_2")
+        self.labelPotentialFirst = QLabel(Form)
+        self.labelPotentialFirst.setObjectName(u"labelPotentialFirst")
 
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.lineEdit_2)
+        self.gridLayout.addWidget(self.labelPotentialFirst, 2, 0, 1, 1)
 
-        self.label_3 = QLabel(Form)
-        self.label_3.setObjectName(u"label_3")
+        self.line = QFrame(Form)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_3)
+        self.gridLayout.addWidget(self.line, 8, 0, 1, 2)
 
-        self.lineEdit_3 = QLineEdit(Form)
-        self.lineEdit_3.setObjectName(u"lineEdit_3")
+        self.labelSamplePotential = QLabel(Form)
+        self.labelSamplePotential.setObjectName(u"labelSamplePotential")
 
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.lineEdit_3)
+        self.gridLayout.addWidget(self.labelSamplePotential, 6, 0, 1, 1)
 
-        self.label_4 = QLabel(Form)
-        self.label_4.setObjectName(u"label_4")
+        self.lineEditRepeat = QLineEdit(Form)
+        self.lineEditRepeat.setObjectName(u"lineEditRepeat")
 
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_4)
+        self.gridLayout.addWidget(self.lineEditRepeat, 7, 1, 1, 1)
 
-        self.lineEdit_4 = QLineEdit(Form)
-        self.lineEdit_4.setObjectName(u"lineEdit_4")
+        self.lineEditSamplePotential = QLineEdit(Form)
+        self.lineEditSamplePotential.setObjectName(u"lineEditSamplePotential")
 
-        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.lineEdit_4)
+        self.gridLayout.addWidget(self.lineEditSamplePotential, 6, 1, 1, 1)
 
+        self.lineEditStepBegin = QLineEdit(Form)
+        self.lineEditStepBegin.setObjectName(u"lineEditStepBegin")
+
+        self.gridLayout.addWidget(self.lineEditStepBegin, 10, 1, 1, 1)
+
+        self.checkBoxAverage = QCheckBox(Form)
+        self.checkBoxAverage.setObjectName(u"checkBoxAverage")
+
+        self.gridLayout.addWidget(self.checkBoxAverage, 9, 1, 1, 1)
+
+        self.labelAverage = QLabel(Form)
+        self.labelAverage.setObjectName(u"labelAverage")
+
+        self.gridLayout.addWidget(self.labelAverage, 9, 0, 1, 1)
+
+        self.labelRepeat = QLabel(Form)
+        self.labelRepeat.setObjectName(u"labelRepeat")
+
+        self.gridLayout.addWidget(self.labelRepeat, 7, 0, 1, 1)
+
+        self.labelScanRate = QLabel(Form)
+        self.labelScanRate.setObjectName(u"labelScanRate")
+
+        self.gridLayout.addWidget(self.labelScanRate, 5, 0, 1, 1)
+
+        self.labelStepBegin = QLabel(Form)
+        self.labelStepBegin.setObjectName(u"labelStepBegin")
+
+        self.gridLayout.addWidget(self.labelStepBegin, 10, 0, 1, 1)
+
+        self.lineEditPotentialInit = QLineEdit(Form)
+        self.lineEditPotentialInit.setObjectName(u"lineEditPotentialInit")
+
+        self.gridLayout.addWidget(self.lineEditPotentialInit, 1, 1, 1, 1)
+
+        self.lineEditPotentialFirst = QLineEdit(Form)
+        self.lineEditPotentialFirst.setObjectName(u"lineEditPotentialFirst")
+
+        self.gridLayout.addWidget(self.lineEditPotentialFirst, 2, 1, 1, 1)
+
+        self.lineEditPotentialFin = QLineEdit(Form)
+        self.lineEditPotentialFin.setObjectName(u"lineEditPotentialFin")
+
+        self.gridLayout.addWidget(self.lineEditPotentialFin, 4, 1, 1, 1)
+
+        self.lineEditRate = QLineEdit(Form)
+        self.lineEditRate.setObjectName(u"lineEditRate")
+
+        self.gridLayout.addWidget(self.lineEditRate, 5, 1, 1, 1)
+
+        self.lineEditPotentialSecond = QLineEdit(Form)
+        self.lineEditPotentialSecond.setObjectName(u"lineEditPotentialSecond")
+
+        self.gridLayout.addWidget(self.lineEditPotentialSecond, 3, 1, 1, 1)
+
+        self.labelStepEnd = QLabel(Form)
+        self.labelStepEnd.setObjectName(u"labelStepEnd")
+
+        self.gridLayout.addWidget(self.labelStepEnd, 11, 0, 1, 1)
+
+        self.lineEditStepEnd = QLineEdit(Form)
+        self.lineEditStepEnd.setObjectName(u"lineEditStepEnd")
+
+        self.gridLayout.addWidget(self.lineEditStepEnd, 11, 1, 1, 1)
+
+        self.labelPotentialFin = QLabel(Form)
+        self.labelPotentialFin.setObjectName(u"labelPotentialFin")
+
+        self.gridLayout.addWidget(self.labelPotentialFin, 4, 0, 1, 1)
+
+        self.labelPotentialInit = QLabel(Form)
+        self.labelPotentialInit.setObjectName(u"labelPotentialInit")
+
+        self.gridLayout.addWidget(self.labelPotentialInit, 1, 0, 1, 1)
+
+
+        self.horizontalLayout.addLayout(self.gridLayout)
+
+        self.plainTextEdit = QPlainTextEdit(Form)
+        self.plainTextEdit.setObjectName(u"plainTextEdit")
+
+        self.horizontalLayout.addWidget(self.plainTextEdit)
+
+        self.horizontalLayout.setStretch(0, 2)
+        self.horizontalLayout.setStretch(1, 1)
 
         self.retranslateUi(Form)
 
@@ -73,9 +163,27 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
-        self.label.setText(QCoreApplication.translate("Form", u"Start Potential / V", None))
-        self.label_2.setText(QCoreApplication.translate("Form", u"Upper limit / V", None))
-        self.label_3.setText(QCoreApplication.translate("Form", u"Lower limit / V", None))
-        self.label_4.setText(QCoreApplication.translate("Form", u"Stop potential / V", None))
+        self.labelPotentialSecond.setText(QCoreApplication.translate("Form", u"Second potential / V", None))
+        self.lineEditName.setPlaceholderText(QCoreApplication.translate("Form", u"<string>", None))
+        self.labelName.setText(QCoreApplication.translate("Form", u"Name", None))
+        self.labelPotentialFirst.setText(QCoreApplication.translate("Form", u"First potential / V", None))
+        self.labelSamplePotential.setText(QCoreApplication.translate("Form", u"Sample per potential / V", None))
+        self.lineEditRepeat.setPlaceholderText(QCoreApplication.translate("Form", u"<int>", None))
+        self.lineEditSamplePotential.setPlaceholderText(QCoreApplication.translate("Form", u"<float>", None))
+        self.lineEditStepBegin.setPlaceholderText(QCoreApplication.translate("Form", u"<float: 0-1>", None))
+        self.checkBoxAverage.setText(QCoreApplication.translate("Form", u"Average Current", None))
+        self.labelAverage.setText(QCoreApplication.translate("Form", u"Average", None))
+        self.labelRepeat.setText(QCoreApplication.translate("Form", u"Repeat", None))
+        self.labelScanRate.setText(QCoreApplication.translate("Form", u"Scan rate / V/s", None))
+        self.labelStepBegin.setText(QCoreApplication.translate("Form", u"Begin step", None))
+        self.lineEditPotentialInit.setPlaceholderText(QCoreApplication.translate("Form", u"<float>", None))
+        self.lineEditPotentialFirst.setPlaceholderText(QCoreApplication.translate("Form", u"<float>", None))
+        self.lineEditPotentialFin.setPlaceholderText(QCoreApplication.translate("Form", u"<float>", None))
+        self.lineEditRate.setPlaceholderText(QCoreApplication.translate("Form", u"<float>", None))
+        self.lineEditPotentialSecond.setPlaceholderText(QCoreApplication.translate("Form", u"<float>", None))
+        self.labelStepEnd.setText(QCoreApplication.translate("Form", u"End step", None))
+        self.lineEditStepEnd.setPlaceholderText(QCoreApplication.translate("Form", u"<float: 0-1>", None))
+        self.labelPotentialFin.setText(QCoreApplication.translate("Form", u"Final potential / V", None))
+        self.labelPotentialInit.setText(QCoreApplication.translate("Form", u"Initial potentia / V ", None))
     # retranslateUi
 

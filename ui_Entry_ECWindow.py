@@ -1,7 +1,7 @@
 #& "C:\Users\chrst\AppData\Roaming\Python\Python313\Scripts\pyside6-uic.exe" "uiEC.ui" "-o" "uiEC.py" "--from-imports"
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit
+from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit, QLineEdit
 from PySide6.QtCore import QSize, Qt, QEvent,QMimeData,QModelIndex,QPoint
 from PySide6.QtWidgets import QAbstractItemView 
 from PySide6.QtGui import QMouseEvent,QDrag,QFont
@@ -71,13 +71,11 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         oldTabWidgetBtm.deleteLater()
         self.tabWidgetBtm.addTab(QWidget(),"Positioner")
 
-        
-
     def addTech(self,sender,event):
         item=QTreeWidgetItem([sender.text()])
         item.setSizeHint(0,QSize(0,30))
         font = QFont()
-        font.setPointSize(14)      # e.g. 11-pt font
+        font.setPointSize(14)      
         item.setFont(0, font) 
         self.treeWidget.addTopLevelItem(item)
         
@@ -103,12 +101,12 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.itemTechPair[item] = page
         self.tabWidgetTop.setCurrentWidget(tabTech)
         
-
     #---------------- Signal-Slot binding ----------------
 
     def bindSignalSlot(self):
         # Show the tech setup for the clicked tree item
         self.treeWidget.itemClicked.connect(self.TreeItemClicked)
+        self.pushButtonStart.clicked.connect(self.startTech)
     
     def bindEvent(self):
         for label in self.scrollAreaOption.findChildren(QLabel):
@@ -130,7 +128,12 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         tabTech.layout().addWidget(page)
         self.tabWidgetTop.setCurrentWidget(tabTech)
 
-
+    def startTech(self):
+        for item in self.treeWidget.findItems("", Qt.MatchContains | Qt.MatchRecursive):
+            page=self.itemTechPair.get(item)
+            print(page)
+            # for widget in page.findChildren(QLineEdit):
+            #     print(f"{widget}: {widget.text()}")
     #---------------- Helper functions ----------------
 
     def _clearWidget(self, widget: QWidget):
