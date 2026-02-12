@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtGui import QMouseEvent,QDrag,QFont
 from qt_ECO_Main import Ui_MainWindow
 
-from misc_PrintException import print_ex
+from misc_handleException import exception2msg, msg2file, errorDeco
 from ui_CV import CV as CVUI
 from ui_CA import CA as CAUI 
 from ui_CP import CP as CPUI
@@ -77,6 +77,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         oldTabWidgetBtm.deleteLater()
         self.tabWidgetBtm.addTab(QWidget(),"Positioner")
 
+    @errorDeco(logger='self.Log')
     def addTech(self,sender,event):
         item=QTreeWidgetItem([sender.text()])
         item.setSizeHint(0,QSize(0,30))
@@ -87,13 +88,13 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         
         # use the Designer dockWidget placeholder directly
         if not hasattr(self, 'tabWidgetTop'):
-            print_ex(AttributeError("ECO_pot has no attribute 'tabWidgetTop', The tabWidget might has been removed by accident"))
+            raise AttributeError("ECO_pot has no attribute 'tabWidgetTop', The tabWidget might has been removed by accident")
         if not hasattr(self, 'tabWidgetBtm'):
-            print_ex(AttributeError("ECO_pot has no attribute 'tabWidgetBtm', The tabWidget might has been removed by accident"))
+            raise AttributeError("ECO_pot has no attribute 'tabWidgetBtm', The tabWidget might has been removed by accident")
         
         #Find if tabTech exists in any of the two tabwidgets
         tabTech = (self.tabWidgetTop._findTabByTitle("ExpSequence")
-               or self.tabWidgetBtm._findTabByTitle("ExpSequence"))
+            or self.tabWidgetBtm._findTabByTitle("ExpSequence"))
         if  tabTech is None:
             w = QWidget()
             self.tabWidgetTop.addTab(w, "ExpSequence")
@@ -106,14 +107,13 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         tabTech.layout().addWidget(page)
         self.itemTechPair[item] = page
         self.tabWidgetTop.setCurrentWidget(tabTech)
-        
+
     #---------------- Signal-Slot binding ----------------
 
     def bindSignalSlot(self):
         # Show the tech setup for the clicked tree item
         self.treeWidget.itemClicked.connect(self.TreeItemClicked)
         self.pushButtonStart.clicked.connect(self.startTech)
-        self.pushButtonErrorTest.clicked.connect(self._errortest)
         self.pushButtonConnect.clicked.connect(self.startPotentiostat)
     
     def bindEvent(self):
@@ -121,7 +121,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             label.mouseDoubleClickEvent=lambda e, sender=label: self.addTech(sender,e)
         
     #---------------- Slot functions ----------------  
-
+    @errorDeco(logger='self.Log')
     def TreeItemClicked(self, item, column=None):
         page = self.itemTechPair.get(item)
 
@@ -136,6 +136,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         tabTech.layout().addWidget(page)
         self.tabWidgetTop.setCurrentWidget(tabTech)
 
+    @errorDeco(logger='self.Log')
     def startTech(self):
         for item in self.treeWidget.findItems("", Qt.MatchContains | Qt.MatchRecursive):
             page=self.itemTechPair.get(item)
@@ -144,6 +145,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             #     print(f"{widget}: {widget.text()}")
 
     # Start potentiostat thread
+    @errorDeco(logger='self.Log')
     def startPotentiostat(self):
         address = "192.168.2.2"
         channel = 1
@@ -155,7 +157,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
             self.bio_thread.started.connect(self.bio_worker.connectDevice)
             self.bio_worker.logMsg.connect(self.Log.appendPlainText)
-            self.bio_worker.logEx.connect(print_ex)
+            self.bio_worker.logEx.connect(lambda ex, Log=self.Log: print_ex(ex, Log))
             self.bio_worker.raiseEx.connect(self.bio_thread.quit)
             self.bio_worker.raiseEx.connect(self.bio_worker.deleteLater)
             self.bio_thread.finished.connect(self.bio_thread.deleteLater)
@@ -163,10 +165,6 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.bio_thread.start()
         except Exception as ex:
             print_ex(ex,self.Log)
-
-
-    def _errortest(self):
-        print_ex(ValueError('Error test button is triggered'),self.Log)
 
     def logMsg(self, msg:str):
         self.Log.appendPlainText(msg)
@@ -317,4 +315,6 @@ if __name__ =='__main__':
         app=ECO_pot()
         sys.exit(Qapp.exec())
     except Exception as ex:
-        print_ex(ex)
+        error_msg = exception2msg(ex)
+        print(error_msg)
+        msg2file(error_msg)

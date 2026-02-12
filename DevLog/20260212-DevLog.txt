@@ -1,0 +1,4 @@
+12:30:26>>Traceback Error:
+File: c:\GitProject\ElectrochemicalOuija\pt_biologic.py	| 'Line:60	| Function:connectDevice
+File: c:\GitProject\ElectrochemicalOuija\kbio\kbio_api.py	| 'Line:69	| Function:Connect
+12:36:39>>Traceback Error:

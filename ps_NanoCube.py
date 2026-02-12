@@ -6,7 +6,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 from pipython import GCSDevice
-from misc_PrintException import print_ex
+from misc_handleException import print_ex
 
 import numpy as np
 import time
