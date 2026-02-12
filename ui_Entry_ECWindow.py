@@ -2,18 +2,20 @@
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit, QLineEdit
-from PySide6.QtCore import QSize, Qt, QEvent,QMimeData,QModelIndex,QPoint
+from PySide6.QtCore import QSize, Qt, QEvent,QMimeData,QModelIndex,QPoint,QObject, QThread, Signal, Slot
 from PySide6.QtWidgets import QAbstractItemView 
 from PySide6.QtGui import QMouseEvent,QDrag,QFont
 from qt_ECO_Main import Ui_MainWindow
 
 from misc_PrintException import print_ex
-from qt_CV import Ui_Form as CVUI
+from ui_CV import CV as CVUI
 from ui_CA import CA as CAUI 
 from ui_CP import CP as CPUI
 from qt_EIS import Ui_Form as EISUI
 from qt_Move import Ui_Form as MoveUI
 from qt_Loop import Ui_Form as LoopUI
+
+from pt_biologic import Biologic
 
 class ECO_pot(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -59,8 +61,12 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.tabWidgetTop.addTab(QWidget(),"Log")
         self.Log=QPlainTextEdit()
         self.Log.setReadOnly(True)
-        logLayout=QHBoxLayout()
-        logLayout.addWidget(self.Log)
+        logTab = self.tabWidgetTop._findTabByTitle("Log")
+        if logTab is None:
+            logTab = QWidget()
+            self.tabWidgetTop.addTab(logTab, "Log")
+        self._clearWidget(logTab)
+        logTab.layout().addWidget(self.Log)
 
         #Replace the bottom tabwidget
         oldTabWidgetBtm=self.tabWidgetBtm
@@ -107,6 +113,8 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         # Show the tech setup for the clicked tree item
         self.treeWidget.itemClicked.connect(self.TreeItemClicked)
         self.pushButtonStart.clicked.connect(self.startTech)
+        self.pushButtonErrorTest.clicked.connect(self._errortest)
+        self.pushButtonConnect.clicked.connect(self.startPotentiostat)
     
     def bindEvent(self):
         for label in self.scrollAreaOption.findChildren(QLabel):
@@ -134,6 +142,35 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             print(page)
             # for widget in page.findChildren(QLineEdit):
             #     print(f"{widget}: {widget.text()}")
+
+    # Start potentiostat thread
+    def startPotentiostat(self):
+        address = "192.168.2.2"
+        channel = 1
+        binary_path = os.environ.get("ECLIB_DIR", f"C:{os.sep}EC-Lab Development Package{os.sep}lib")
+        try:
+            self.bio_thread = QThread(self)
+            self.bio_worker = Biologic(address, binary_path, channel)
+            self.bio_worker.moveToThread(self.bio_thread)
+
+            self.bio_thread.started.connect(self.bio_worker.connectDevice)
+            self.bio_worker.logMsg.connect(self.Log.appendPlainText)
+            self.bio_worker.logEx.connect(print_ex)
+            self.bio_worker.raiseEx.connect(self.bio_thread.quit)
+            self.bio_worker.raiseEx.connect(self.bio_worker.deleteLater)
+            self.bio_thread.finished.connect(self.bio_thread.deleteLater)
+
+            self.bio_thread.start()
+        except Exception as ex:
+            print_ex(ex,self.Log)
+
+
+    def _errortest(self):
+        print_ex(ValueError('Error test button is triggered'),self.Log)
+
+    def logMsg(self, msg:str):
+        self.Log.appendPlainText(msg)
+
     #---------------- Helper functions ----------------
 
     def _clearWidget(self, widget: QWidget):
@@ -160,7 +197,6 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 class TechTreeWidget(QTreeWidget):
     def dropEvent(self, event):
         target = self.itemAt(event.position().toPoint())
-
         # Detect nesting (dropping onto another item)
         # Allow if target is None (empty area) → reorder/top-level move
         # Allow if target.text(0) == 'Loop'
@@ -170,7 +206,6 @@ class TechTreeWidget(QTreeWidget):
             if drop_indicator == QAbstractItemView.OnItem:  # only block nesting
                 event.ignore()
                 return
-
         super().dropEvent(event)
         
     def keyPressEvent(self, event):
@@ -187,6 +222,7 @@ class TechTreeWidget(QTreeWidget):
             super().keyPressEvent(event)
 
 class TearOffTabBar(QTabBar):
+
     def __init__(self, host_mainwindow: QMainWindow, parent=None):
         super().__init__(parent)
         self._host = host_mainwindow
@@ -194,14 +230,14 @@ class TearOffTabBar(QTabBar):
 
     def mousePressEvent(self, e):
         if e.button() == Qt.LeftButton:
-            self._drag_start_pos = e.pos()
+            self._drag_start_pos = e.position().toPoint()
         super().mousePressEvent(e)
 
     def mouseMoveEvent(self, e):
         if not (e.buttons() & Qt.LeftButton):
             return super().mouseMoveEvent(e)
 
-        if (e.pos() - self._drag_start_pos).manhattanLength() < 8:
+        if (e.position().toPoint() - self._drag_start_pos).manhattanLength() < 8:
             return super().mouseMoveEvent(e)
 
         idx = self.tabAt(self._drag_start_pos)
@@ -209,7 +245,7 @@ class TearOffTabBar(QTabBar):
             return super().mouseMoveEvent(e)
 
         # If pointer left the tab bar rect, treat as "tear off"
-        if not self.rect().contains(e.pos()):
+        if not self.rect().contains(e.position().toPoint()):
             self._tear_off(idx)
             return
 
@@ -243,6 +279,7 @@ class TearOffTabBar(QTabBar):
         )
         # Add a shortcut:
         act.setShortcut("Ctrl+Return")
+
     def _return_to_tabs(self, dock: QDockWidget, title: str):
         page = dock.widget()
         dock.setWidget(None)
@@ -250,9 +287,6 @@ class TearOffTabBar(QTabBar):
         # choose target tab widget; here: top
         self._host.tabWidgetTop.addTab(page, title)
         self._host.tabWidgetTop.setCurrentWidget(page)
-        
-    
-
 
 class TockWidget(QTabWidget):
     '''
