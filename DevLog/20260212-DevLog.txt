@@ -2,3 +2,32 @@
 File: c:\GitProject\ElectrochemicalOuija\pt_biologic.py	| 'Line:60	| Function:connectDevice
 File: c:\GitProject\ElectrochemicalOuija\kbio\kbio_api.py	| 'Line:69	| Function:Connect
 12:36:39>>Traceback Error:
+2026-02-12 17:23:15>>>Traceback Error: NameError: name 'print_ex' is not defined
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 167	| Function: startPotentiostat
+Error End.
+2026-02-12 17:24:55>>>Traceback Error: ConnectionError: 
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\pt_biologic.py	| Line: 60	| Function: connectDevice
+File: c:\GitFolder\ElectrochemicalOuija\kbio\kbio_api.py	| Line: 69	| Function: Connect
+Error End.
+2026-02-12 18:02:53>>>Traceback Error: ConnectionError: 
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\pt_biologic.py	| Line: 60	| Function: connectDevice
+File: c:\GitFolder\ElectrochemicalOuija\kbio\kbio_api.py	| Line: 69	| Function: Connect
+Error End.
+2026-02-12 18:39:15>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTabWidget' object has no attribute '_findTabByTitle'
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 357	| Function: <module>
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 33	| Function: __init__
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 65	| Function: restyle
+Error End.
+2026-02-12 18:39:18>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTabWidget' object has no attribute '_findTabByTitle'
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 357	| Function: <module>
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 33	| Function: __init__
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 65	| Function: restyle
+Error End.
+2026-02-12 18:51:09>>>Traceback Error: ConnectionError: 
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\pt_biologic.py	| Line: 61	| Function: connectDevice
+File: c:\GitFolder\ElectrochemicalOuija\kbio\kbio_api.py	| Line: 69	| Function: Connect
+Error End.

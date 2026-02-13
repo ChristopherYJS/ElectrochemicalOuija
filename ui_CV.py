@@ -2,6 +2,7 @@ from __future__ import annotations
 from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
+from misc_BaseTech import PSTech
 from qt_CV import Ui_Form
 
 
@@ -12,9 +13,7 @@ def _float_or_none(text: str) -> float | None:
     return float(t)
 
 
-class CV(QWidget, Ui_Form):
-    # 1) Signals
-    nameChanged = Signal(str)
+class CV(QWidget, Ui_Form, PSTech):
     tech = "CV"
 
     def __init__(self):

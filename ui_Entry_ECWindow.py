@@ -2,7 +2,7 @@
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit, QLineEdit
-from PySide6.QtCore import QSize, Qt, QEvent,QMimeData,QModelIndex,QPoint,QObject, QThread, Signal, Slot
+from PySide6.QtCore import QSize, Qt, QEvent, QMimeData, QModelIndex, QPoint, QRect, QObject, QThread, Signal, Slot
 from PySide6.QtWidgets import QAbstractItemView 
 from PySide6.QtGui import QMouseEvent,QDrag,QFont
 from qt_ECO_Main import Ui_MainWindow
@@ -11,7 +11,8 @@ from misc_handleException import exception2msg, msg2file, errorDeco
 from ui_CV import CV as CVUI
 from ui_CA import CA as CAUI 
 from ui_CP import CP as CPUI
-from qt_EIS import Ui_Form as EISUI
+from ui_OCV import OCV as OCVUI
+from ui_EIS import EIS as EISUI
 from qt_Move import Ui_Form as MoveUI
 from qt_Loop import Ui_Form as LoopUI
 
@@ -19,11 +20,15 @@ from pt_biologic import Biologic
 
 class ECO_pot(QMainWindow, Ui_MainWindow):
     def __init__(self):
+        CR=None
+        PR=None
+        BW=None
         super().__init__()
         self.dicTechWin={
             'CA':CAUI,
             'CP':CPUI,
             'CV':CVUI,
+            'OCV':OCVUI,
             'EIS':EISUI,
             'Move':MoveUI,
             'Loop':LoopUI
@@ -57,17 +62,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.tabWidgetTop.setGeometry(oldTabWidgetTop.geometry())
         self.tabWidgetTop.setObjectName(oldTabWidgetTop.objectName())
         oldTabWidgetTop.deleteLater()
-        self.tabWidgetTop.addTab(QWidget(),"ExpSequence")
-        self.tabWidgetTop.addTab(QWidget(),"Log")
-        self.Log=QPlainTextEdit()
-        self.Log.setReadOnly(True)
-        logTab = self.tabWidgetTop._findTabByTitle("Log")
-        if logTab is None:
-            logTab = QWidget()
-            self.tabWidgetTop.addTab(logTab, "Log")
-        self._clearWidget(logTab)
-        logTab.layout().addWidget(self.Log)
-
+        
         #Replace the bottom tabwidget
         oldTabWidgetBtm=self.tabWidgetBtm
         self.tabWidgetBtm= TockWidget(self,oldTabWidgetBtm.parent())
@@ -75,7 +70,21 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.tabWidgetBtm.setGeometry(oldTabWidgetBtm.geometry())
         self.tabWidgetBtm.setObjectName(oldTabWidgetBtm.objectName())
         oldTabWidgetBtm.deleteLater()
-        self.tabWidgetBtm.addTab(QWidget(),"Positioner")
+        
+        # Add tabs after both widgets are replaced
+        self.tabWidgetTop.addTab(QWidget(),"ExpSequence")
+        self.tabWidgetTop.addTab(QWidget(),"Positioner")
+        
+        # Add Log tab to bottom widget and setup Log widget
+        self.Log = QPlainTextEdit()
+        self.Log.setReadOnly(True)
+        logTab = self.tabWidgetBtm._findTabByTitle("Log")
+        if logTab is None:
+            logTab = QWidget()
+            self.tabWidgetBtm.addTab(logTab, "Log")
+        self._clearWidget(logTab)
+        logTab.layout().addWidget(self.Log)
+        
 
     @errorDeco(logger='self.Log')
     def addTech(self,sender,event):
@@ -138,33 +147,45 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
     @errorDeco(logger='self.Log')
     def startTech(self):
-        for item in self.treeWidget.findItems("", Qt.MatchContains | Qt.MatchRecursive):
-            page=self.itemTechPair.get(item)
-            print(page)
+        # if not hasattr(self, 'bio_worker') or not self.bio_worker:
+        # if False:
+        #     self.logMsg("> Potentiostat not connected. Please connect to the device first.")
+        # else:
+        # for item in self.treeWidget.findItems("", Qt.MatchContains | Qt.MatchRecursive):
+        #     print(item)
+                # page=self.itemTechPair.get(item)
+            #     print(type(page))
             # for widget in page.findChildren(QLineEdit):
             #     print(f"{widget}: {widget.text()}")
+        print('start clicked')
 
     # Start potentiostat thread
     @errorDeco(logger='self.Log')
     def startPotentiostat(self):
+        def setCR(CRlist):
+            for item in self.treeWidget.findItems("", Qt.MatchContains | Qt.MatchRecursive):
+                page=self.itemTechPair.get(item)
+                if hasattr(page, "comboBoxCR"):
+                    page.comboBoxCR.clear()
+                    page.comboBoxCR.addItems(CRlist)
+
         address = "192.168.2.2"
         channel = 1
         binary_path = os.environ.get("ECLIB_DIR", f"C:{os.sep}EC-Lab Development Package{os.sep}lib")
-        try:
-            self.bio_thread = QThread(self)
-            self.bio_worker = Biologic(address, binary_path, channel)
-            self.bio_worker.moveToThread(self.bio_thread)
 
-            self.bio_thread.started.connect(self.bio_worker.connectDevice)
-            self.bio_worker.logMsg.connect(self.Log.appendPlainText)
-            self.bio_worker.logEx.connect(lambda ex, Log=self.Log: print_ex(ex, Log))
-            self.bio_worker.raiseEx.connect(self.bio_thread.quit)
-            self.bio_worker.raiseEx.connect(self.bio_worker.deleteLater)
-            self.bio_thread.finished.connect(self.bio_thread.deleteLater)
+        self.bio_thread = QThread(self)
+        self.bio_worker = Biologic(address, binary_path, channel)
+        self.bio_worker.moveToThread(self.bio_thread)
 
-            self.bio_thread.start()
-        except Exception as ex:
-            print_ex(ex,self.Log)
+        self.bio_thread.started.connect(self.bio_worker.connectDevice)
+        self.bio_worker.signalCR.connect(setCR)
+        self.bio_worker.signalPR.connect(lambda PRlist: setattr(self, 'PR', PRlist))
+        self.bio_worker.signalBW.connect(lambda BWlist: setattr(self, 'BW', BWlist))
+        self.bio_worker.signalLog.connect(self.Log.appendPlainText)
+        self.bio_thread.finished.connect(self.bio_thread.deleteLater)
+
+        self.bio_thread.start()
+
 
     def logMsg(self, msg:str):
         self.Log.appendPlainText(msg)
@@ -192,6 +213,12 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             return container
         return obj
     
+    def closeEvent(self, event):
+        if hasattr(self, 'bio_thread') and self.bio_thread.isRunning():
+            self.bio_thread.quit()
+            self.bio_thread.wait()
+        event.accept()
+    
 class TechTreeWidget(QTreeWidget):
     def dropEvent(self, event):
         target = self.itemAt(event.position().toPoint())
@@ -218,6 +245,21 @@ class TechTreeWidget(QTreeWidget):
                     self.takeTopLevelItem(idx)
         else:
             super().keyPressEvent(event)
+
+class TearOffDockWidget(QDockWidget):
+    def __init__(self, title: str, host_mainwindow: QMainWindow, tab_bar, source_tab: QTabWidget):
+        super().__init__(title, host_mainwindow)
+        self._host = host_mainwindow
+        self._tab_bar = tab_bar
+        self._source_tab = source_tab
+
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        super().mouseReleaseEvent(event)
+        if not self.isFloating():
+            return
+        target = self._tab_bar._find_tabwidget_for_pos(event.globalPosition().toPoint(), self._source_tab)
+        if target is not None:
+            self._tab_bar._return_to_tabs(self, self.windowTitle(), target)
 
 class TearOffTabBar(QTabBar):
 
@@ -255,7 +297,7 @@ class TearOffTabBar(QTabBar):
         title = tw.tabText(idx)
         tw.removeTab(idx)
 
-        dock = QDockWidget(title, self._host)
+        dock = TearOffDockWidget(title, self._host, self, tw)
         dock.setObjectName(f"Dock_{title}")
         dock.setWidget(page)
         dock.setFeatures(QDockWidget.DockWidgetClosable |
@@ -272,19 +314,40 @@ class TearOffTabBar(QTabBar):
         dock.setFloating(True)
         dock.show()
         dock.topLevelChanged.connect(
-        lambda floating, d=dock, t=title:
-            None if floating else None  # no-op; leave default docking alone
+            lambda floating, d=dock, t=title:
+                None if floating else None  # no-op; leave default docking alone
         )
         # Add a shortcut:
         act.setShortcut("Ctrl+Return")
 
-    def _return_to_tabs(self, dock: QDockWidget, title: str):
+    def _find_tabwidget_for_pos(self, global_pos: QPoint, fallback: QTabWidget | None) -> QTabWidget | None:
+        candidates = []
+        for name in ("tabWidgetTop", "tabWidgetBtm"):
+            tw = getattr(self._host, name, None)
+            if isinstance(tw, QTabWidget):
+                candidates.append(tw)
+        if fallback is not None and fallback not in candidates:
+            candidates.append(fallback)
+
+        for tw in candidates:
+            top_left = tw.mapToGlobal(QPoint(0, 0))
+            rect = QRect(top_left, tw.size())
+            if rect.contains(global_pos):
+                return tw
+        return None
+
+    def _return_to_tabs(self, dock: QDockWidget, title: str, target: QTabWidget | None = None):
         page = dock.widget()
+        if page is None:
+            return
         dock.setWidget(None)
         dock.close()       # hides & frees chrome; delete if you prefer
-        # choose target tab widget; here: top
-        self._host.tabWidgetTop.addTab(page, title)
-        self._host.tabWidgetTop.setCurrentWidget(page)
+        if target is None:
+            target = getattr(self._host, "tabWidgetTop", None)
+        if target is None:
+            return
+        target.addTab(page, title)
+        target.setCurrentWidget(page)
 
 class TockWidget(QTabWidget):
     '''

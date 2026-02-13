@@ -2,6 +2,7 @@ from __future__ import annotations
 from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
+from misc_BaseTech import PSTech
 from qt_CP import Ui_Form
 
 def _float_or_none(text: str) -> float | None:
@@ -10,10 +11,8 @@ def _float_or_none(text: str) -> float | None:
         return None
     return float(t)
 
-class CP(QWidget, Ui_Form):
-    # 1) Signals 
-    nameChanged = Signal(str)
-    tech="CP"
+class CP(QWidget, Ui_Form, PSTech):
+    tech = "CP"
 
     def __init__(self, *, i_ranges: list[str] = None):
         super().__init__()
@@ -26,7 +25,7 @@ class CP(QWidget, Ui_Form):
         self.sampleTime: int | float = 0
         self.sampleCurrent: int | float = 0
         self.repeat: int = 1
-        self.CR: str | None = None       # current range
+        self.CR: str | None = None  # current range
 
         # 3) Load combobox options from main UI
         if i_ranges:   self.comboBoxCR.addItems(i_ranges)
@@ -57,17 +56,14 @@ class CP(QWidget, Ui_Form):
         # ComboBoxs
         self.comboBoxCR.currentTextChanged.connect(self._pullFields)
 
-
     def _setName(self):
         self._pullFields()
-        
         self.nameChanged.emit(f'{self.tech}_{self.name}')
-
 
     def _pullFields(self):
         """Pull current UI values into the model (with light parsing)."""
         try:
-            self.name=self.lineEditName.text()
+            self.name = self.lineEditName.text()
             self.current = _float_or_none(self.lineEditCurrent.text())
             self.duration = float(self.lineEditDuration.text() or 0)
             self.sampleTime = float(self.lineEditSampleTime.text() or 0)

@@ -27,11 +27,15 @@ from CP_biologic import cp_parm
 from CV_biologic import cv_parm
 
 from PySide6.QtCore import Signal,QObject,QTimer
+from PySide6.QtWidgets import QFileDialog
 
 from misc_handleException import errorDeco
 
 class Biologic(QObject):
     signalLog=Signal(str)
+    signalCR=Signal(list)
+    signalPR=Signal(list)
+    signalBW=Signal(list)
     def __init__(self, address,binary_path,channel):
         super().__init__()
         self.recordTimer=QTimer()
@@ -73,7 +77,8 @@ class Biologic(QObject):
                 firmware_path = "kernel.bin"
                 fpga_path = ""
             case _:
-                self.signalLog.emit("> Board type detection failed")
+                self.signalLog.emit("> Board type detection failed, potentiostat thread terminated.")
+                self.finished.emit()
         # Load firmware
         self.signalLog.emit(f"> Loading {firmware_path} ...")
         # create a map from channel set
@@ -88,15 +93,30 @@ class Biologic(QObject):
         self.signalLog.emit(channel_info)
 
         if not channel_info.is_kernel_loaded:
-            self.signalLog.emit("> kernel must be loaded in order to run the experiment")
+            self.signalLog.emit("> kernel must be loaded in order to run the experiment, potentiostat thread terminated.")
+            self.finished.emit()
+        
+        # Get available current ranges for this device
+        self.current_ranges = self._get_enum_range(KBIO.I_RANGE, channel_info.MinIRange, channel_info.MaxIRange)
+        
+        # Get available bandwidth options (min is always BW_1)
+        self.bandwidths = self._get_enum_range(KBIO.BANDWIDTH, 1, channel_info.MaxBandwidth)
+        
+        # Get all potential ranges (no device limits)
+        self.potential_ranges = self._get_all_enum_options(KBIO.E_RANGE)
+        
+        # Emit signals to main window for display
+        self.signalCR.emit(self.current_ranges)
+        self.signalPR.emit(self.potential_ranges)
+        self.signalBW.emit(self.bandwidths)
 
     @errorDeco(signal='self.signalLog')
     def runSequence(self,sequence):
         #check if potentiostat is connected and kernel is loaded
-         if not hasattr(self, "api") or not self.api:
+        if not hasattr(self, "api") or not self.api:
             self.signalLog.emit("> Device not connected. Please connect to the device first.")
             return
-         else:
+        else:
             verbosity = 1
             tech_count = 0
             for measurement in sequence:
@@ -124,38 +144,69 @@ class Biologic(QObject):
                     self.api.LoadTechnique(self.id_, self.channel, tech_file, ecc_parms, first=False, last=True, display=(verbosity > 1))
                 else:
                     self.api.LoadTechnique(self.id_, self.channel, tech_file, ecc_parms, first=False, last=False, display=(verbosity > 1))
+            
+            # Prompt user for save location and filename
+            self.filename = self._get_save_filename()
+            if not self.filename:
+                self.signalLog.emit("> Data file save cancelled. Experiment not started.")
+                return
+            
             # BL_StartChannel
             self.api.StartChannel(self.id_, self.channel)
-            # Defaut filename with timestamp ******to be changed with user input in the future
-            self.filename=f"{time.strftime('%Y%m%d')}-result.csv"
             self.current_tech=None
 
     @errorDeco(signal='self.signalLog')
     def recordData(self):
-        with open(self.filename, 'w') as data_file:
-            data = self.api.GetData(self.id_, self.channel)
-            status, tech_name = get_info_data(self.api, data)
-            print(".", end="", flush=True)
+        data = self.api.GetData(self.id_, self.channel)
+        status, tech_name = get_info_data(self.api, data)
+        
+        for output in get_experiment_data(self.api, data, tech_name, self.board_type):
+            self.writeData(output, tech_name)
 
-            for output in get_experiment_data(self.api, data, tech_name, self.board_type):
+        if status == "STOP":
+                self.recordTimer.stop()
+                self.signalLog.emit(f"\nExperiment finished. Data recorded in {self.filename} series.")
+    
+    def _get_save_filename(self) -> str:
 
-                if self.current_tech != tech_name:
-                    print(tech_name, end="", flush=True)
-                    self.current_tech = tech_name
-                    data_keys = list(output.keys())
-                    data_keys.append('Technique')
-                    data_file.write(','.join(data_keys) + '\n')
-
-                x.append(output['Ewe'])
-                y.append(output['Iwe'])
-                data_line= ','.join(str(item) for item in output.values())
-                data_line+= f',{tech_name}'
-                data_line+= '\n'
-                data_file.write(data_line)
-                count+=1
-
-            if status == "STOP":
-                    self.recordTimer.stop()
-                    self.logMsg.emit(f"\nExperiment finished. Data recorded in {self.filename}")
+        default_name = f"{time.strftime('%Y%m%d')}-result.csv"
+        filename, _ = QFileDialog.getSaveFileName(
+            None,
+            "Save Experiment Data",
+            default_name,
+            "CSV Files (*.csv);;All Files (*.*)"
+        )
+        return filename
+    
+    def _get_enum_range(self, enum_class, min_value: int, max_value: int) -> list:
+        """
+        Extract available enum options within a specified range.
+        Args:
+            enum_class: The enum class (e.g., KBIO.I_RANGE, KBIO.BANDWIDTH)
+            min_value: Minimum value allowed
+            max_value: Maximum value allowed
+        Returns:
+            List of enum values within the specified range
+        """
+        available = []
+        for item in enum_class:
+            if min_value <= item.value <= max_value:
+                available.append(item)
+        return available
+    
+    def _get_all_enum_options(self, enum_class) -> list:
+        """
+        Get all options from an enum class (excluding special values like KEEP).
+        Args:
+            enum_class: The enum class (e.g., KBIO.E_RANGE)
+        Returns:
+            List of all enum values (excluding negative values)
+        """
+        available = []
+        for item in enum_class:
+            if item.value >= 0:
+                available.append(item)
+        return available
+    
     def writeData(self):
         pass
