@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_ECO_Main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -20,8 +20,7 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGraphicsView,
     QHBoxLayout, QHeaderView, QLabel, QMainWindow,
     QMenu, QMenuBar, QPushButton, QScrollArea,
     QSizePolicy, QSpacerItem, QSplitter, QStatusBar,
-    QTabWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget)
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -40,8 +39,8 @@ class Ui_MainWindow(object):
         self.actionMiscoscope_Tab.setObjectName(u"actionMiscoscope_Tab")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.verticalLayout_3 = QVBoxLayout(self.centralwidget)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_5 = QVBoxLayout(self.centralwidget)
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.frameShortCut = QFrame(self.centralwidget)
         self.frameShortCut.setObjectName(u"frameShortCut")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
@@ -68,14 +67,17 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_3.addWidget(self.pushButtonConnect)
 
-        self.pushButton_8 = QPushButton(self.frameShortCut)
-        self.pushButton_8.setObjectName(u"pushButton_8")
-        sizePolicy1.setHeightForWidth(self.pushButton_8.sizePolicy().hasHeightForWidth())
-        self.pushButton_8.setSizePolicy(sizePolicy1)
-        self.pushButton_8.setMinimumSize(QSize(40, 40))
-        self.pushButton_8.setMaximumSize(QSize(50, 50))
+        self.pushButtonPsInfo = QPushButton(self.frameShortCut)
+        self.pushButtonPsInfo.setObjectName(u"pushButtonPsInfo")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Expanding)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.pushButtonPsInfo.sizePolicy().hasHeightForWidth())
+        self.pushButtonPsInfo.setSizePolicy(sizePolicy2)
+        self.pushButtonPsInfo.setMinimumSize(QSize(40, 40))
+        self.pushButtonPsInfo.setMaximumSize(QSize(50, 50))
 
-        self.horizontalLayout_3.addWidget(self.pushButton_8)
+        self.horizontalLayout_3.addWidget(self.pushButtonPsInfo)
 
         self.pushButton_7 = QPushButton(self.frameShortCut)
         self.pushButton_7.setObjectName(u"pushButton_7")
@@ -88,11 +90,11 @@ class Ui_MainWindow(object):
 
         self.pushButton_5 = QPushButton(self.frameShortCut)
         self.pushButton_5.setObjectName(u"pushButton_5")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.pushButton_5.sizePolicy().hasHeightForWidth())
-        self.pushButton_5.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.pushButton_5.sizePolicy().hasHeightForWidth())
+        self.pushButton_5.setSizePolicy(sizePolicy3)
         self.pushButton_5.setMinimumSize(QSize(40, 40))
         self.pushButton_5.setMaximumSize(QSize(50, 50))
 
@@ -103,80 +105,77 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.addItem(self.horizontalSpacer)
 
 
-        self.verticalLayout_3.addWidget(self.frameShortCut)
+        self.verticalLayout_5.addWidget(self.frameShortCut)
 
-        self.horizontalLayoutMain = QHBoxLayout()
-        self.horizontalLayoutMain.setObjectName(u"horizontalLayoutMain")
-        self.verticalLayout_2 = QVBoxLayout()
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.splitter = QSplitter(self.centralwidget)
-        self.splitter.setObjectName(u"splitter")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Expanding)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.splitter.sizePolicy().hasHeightForWidth())
-        self.splitter.setSizePolicy(sizePolicy3)
-        self.splitter.setOrientation(Qt.Vertical)
-        self.scrollAreaOption = QScrollArea(self.splitter)
-        self.scrollAreaOption.setObjectName(u"scrollAreaOption")
+        self.horizontalLayout_Main = QHBoxLayout()
+        self.horizontalLayout_Main.setObjectName(u"horizontalLayout_Main")
+        self.verticalLayout_Tech = QVBoxLayout()
+        self.verticalLayout_Tech.setObjectName(u"verticalLayout_Tech")
+        self.splitter_Tech = QSplitter(self.centralwidget)
+        self.splitter_Tech.setObjectName(u"splitter_Tech")
+        sizePolicy2.setHeightForWidth(self.splitter_Tech.sizePolicy().hasHeightForWidth())
+        self.splitter_Tech.setSizePolicy(sizePolicy2)
+        self.splitter_Tech.setOrientation(Qt.Vertical)
+        self.scrollAreaOption_Tech = QScrollArea(self.splitter_Tech)
+        self.scrollAreaOption_Tech.setObjectName(u"scrollAreaOption_Tech")
         sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.scrollAreaOption.sizePolicy().hasHeightForWidth())
-        self.scrollAreaOption.setSizePolicy(sizePolicy4)
-        self.scrollAreaOption.setWidgetResizable(True)
-        self.scrollAreaWidgetContents_3 = QWidget()
-        self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 196, 126))
-        sizePolicy4.setHeightForWidth(self.scrollAreaWidgetContents_3.sizePolicy().hasHeightForWidth())
-        self.scrollAreaWidgetContents_3.setSizePolicy(sizePolicy4)
-        self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents_3)
+        sizePolicy4.setHeightForWidth(self.scrollAreaOption_Tech.sizePolicy().hasHeightForWidth())
+        self.scrollAreaOption_Tech.setSizePolicy(sizePolicy4)
+        self.scrollAreaOption_Tech.setWidgetResizable(True)
+        self.scrollAreaWidgetContents_Tech = QWidget()
+        self.scrollAreaWidgetContents_Tech.setObjectName(u"scrollAreaWidgetContents_Tech")
+        self.scrollAreaWidgetContents_Tech.setGeometry(QRect(0, 0, 196, 126))
+        sizePolicy4.setHeightForWidth(self.scrollAreaWidgetContents_Tech.sizePolicy().hasHeightForWidth())
+        self.scrollAreaWidgetContents_Tech.setSizePolicy(sizePolicy4)
+        self.verticalLayout = QVBoxLayout(self.scrollAreaWidgetContents_Tech)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.labelTechCA = QLabel(self.scrollAreaWidgetContents_3)
+        self.labelTechCA = QLabel(self.scrollAreaWidgetContents_Tech)
         self.labelTechCA.setObjectName(u"labelTechCA")
         sizePolicy4.setHeightForWidth(self.labelTechCA.sizePolicy().hasHeightForWidth())
         self.labelTechCA.setSizePolicy(sizePolicy4)
 
         self.verticalLayout.addWidget(self.labelTechCA)
 
-        self.labelTechCP = QLabel(self.scrollAreaWidgetContents_3)
+        self.labelTechCP = QLabel(self.scrollAreaWidgetContents_Tech)
         self.labelTechCP.setObjectName(u"labelTechCP")
         sizePolicy4.setHeightForWidth(self.labelTechCP.sizePolicy().hasHeightForWidth())
         self.labelTechCP.setSizePolicy(sizePolicy4)
 
         self.verticalLayout.addWidget(self.labelTechCP)
 
-        self.labelTechCV = QLabel(self.scrollAreaWidgetContents_3)
+        self.labelTechCV = QLabel(self.scrollAreaWidgetContents_Tech)
         self.labelTechCV.setObjectName(u"labelTechCV")
         sizePolicy4.setHeightForWidth(self.labelTechCV.sizePolicy().hasHeightForWidth())
         self.labelTechCV.setSizePolicy(sizePolicy4)
 
         self.verticalLayout.addWidget(self.labelTechCV)
 
-        self.labelTechEIS = QLabel(self.scrollAreaWidgetContents_3)
+        self.labelTechEIS = QLabel(self.scrollAreaWidgetContents_Tech)
         self.labelTechEIS.setObjectName(u"labelTechEIS")
         sizePolicy4.setHeightForWidth(self.labelTechEIS.sizePolicy().hasHeightForWidth())
         self.labelTechEIS.setSizePolicy(sizePolicy4)
 
         self.verticalLayout.addWidget(self.labelTechEIS)
 
-        self.labelMove = QLabel(self.scrollAreaWidgetContents_3)
+        self.labelMove = QLabel(self.scrollAreaWidgetContents_Tech)
         self.labelMove.setObjectName(u"labelMove")
         sizePolicy4.setHeightForWidth(self.labelMove.sizePolicy().hasHeightForWidth())
         self.labelMove.setSizePolicy(sizePolicy4)
 
         self.verticalLayout.addWidget(self.labelMove)
 
-        self.labelLoop = QLabel(self.scrollAreaWidgetContents_3)
+        self.labelLoop = QLabel(self.scrollAreaWidgetContents_Tech)
         self.labelLoop.setObjectName(u"labelLoop")
         sizePolicy4.setHeightForWidth(self.labelLoop.sizePolicy().hasHeightForWidth())
         self.labelLoop.setSizePolicy(sizePolicy4)
 
         self.verticalLayout.addWidget(self.labelLoop)
 
-        self.scrollAreaOption.setWidget(self.scrollAreaWidgetContents_3)
-        self.splitter.addWidget(self.scrollAreaOption)
-        self.treeWidget = QTreeWidget(self.splitter)
+        self.scrollAreaOption_Tech.setWidget(self.scrollAreaWidgetContents_Tech)
+        self.splitter_Tech.addWidget(self.scrollAreaOption_Tech)
+        self.treeWidget = QTreeWidget(self.splitter_Tech)
         __qtreewidgetitem = QTreeWidgetItem()
         __qtreewidgetitem.setText(0, u"1");
         self.treeWidget.setHeaderItem(__qtreewidgetitem)
@@ -186,22 +185,22 @@ class Ui_MainWindow(object):
         sizePolicy5.setVerticalStretch(0)
         sizePolicy5.setHeightForWidth(self.treeWidget.sizePolicy().hasHeightForWidth())
         self.treeWidget.setSizePolicy(sizePolicy5)
-        self.splitter.addWidget(self.treeWidget)
+        self.splitter_Tech.addWidget(self.treeWidget)
 
-        self.verticalLayout_2.addWidget(self.splitter)
+        self.verticalLayout_Tech.addWidget(self.splitter_Tech)
 
-        self.frame = QFrame(self.centralwidget)
-        self.frame.setObjectName(u"frame")
+        self.frame_tech = QFrame(self.centralwidget)
+        self.frame_tech.setObjectName(u"frame_tech")
         sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         sizePolicy6.setHorizontalStretch(0)
         sizePolicy6.setVerticalStretch(0)
-        sizePolicy6.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
-        self.frame.setSizePolicy(sizePolicy6)
-        self.frame.setFrameShape(QFrame.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout = QHBoxLayout(self.frame)
+        sizePolicy6.setHeightForWidth(self.frame_tech.sizePolicy().hasHeightForWidth())
+        self.frame_tech.setSizePolicy(sizePolicy6)
+        self.frame_tech.setFrameShape(QFrame.StyledPanel)
+        self.frame_tech.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout = QHBoxLayout(self.frame_tech)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.pushButtonStart = QPushButton(self.frame)
+        self.pushButtonStart = QPushButton(self.frame_tech)
         self.pushButtonStart.setObjectName(u"pushButtonStart")
         self.pushButtonStart.setEnabled(True)
         sizePolicy1.setHeightForWidth(self.pushButtonStart.sizePolicy().hasHeightForWidth())
@@ -212,7 +211,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.pushButtonStart)
 
-        self.pushButtonErrorTest = QPushButton(self.frame)
+        self.pushButtonErrorTest = QPushButton(self.frame_tech)
         self.pushButtonErrorTest.setObjectName(u"pushButtonErrorTest")
         sizePolicy1.setHeightForWidth(self.pushButtonErrorTest.sizePolicy().hasHeightForWidth())
         self.pushButtonErrorTest.setSizePolicy(sizePolicy1)
@@ -221,7 +220,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.pushButtonErrorTest)
 
-        self.pushButton_3 = QPushButton(self.frame)
+        self.pushButton_3 = QPushButton(self.frame_tech)
         self.pushButton_3.setObjectName(u"pushButton_3")
         sizePolicy1.setHeightForWidth(self.pushButton_3.sizePolicy().hasHeightForWidth())
         self.pushButton_3.setSizePolicy(sizePolicy1)
@@ -230,206 +229,241 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.pushButton_3)
 
-        self.pushButton_4 = QPushButton(self.frame)
+        self.pushButton_4 = QPushButton(self.frame_tech)
         self.pushButton_4.setObjectName(u"pushButton_4")
-        sizePolicy2.setHeightForWidth(self.pushButton_4.sizePolicy().hasHeightForWidth())
-        self.pushButton_4.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.pushButton_4.sizePolicy().hasHeightForWidth())
+        self.pushButton_4.setSizePolicy(sizePolicy3)
         self.pushButton_4.setMinimumSize(QSize(40, 40))
         self.pushButton_4.setMaximumSize(QSize(40, 40))
 
         self.horizontalLayout.addWidget(self.pushButton_4)
 
 
-        self.verticalLayout_2.addWidget(self.frame)
+        self.verticalLayout_Tech.addWidget(self.frame_tech)
 
 
-        self.horizontalLayoutMain.addLayout(self.verticalLayout_2)
+        self.horizontalLayout_Main.addLayout(self.verticalLayout_Tech)
 
-        self.splitter2 = QSplitter(self.centralwidget)
-        self.splitter2.setObjectName(u"splitter2")
-        self.splitter2.setOrientation(Qt.Vertical)
-        self.tabWidgetTop = QTabWidget(self.splitter2)
-        self.tabWidgetTop.setObjectName(u"tabWidgetTop")
-        sizePolicy5.setHeightForWidth(self.tabWidgetTop.sizePolicy().hasHeightForWidth())
-        self.tabWidgetTop.setSizePolicy(sizePolicy5)
-        self.tab_3 = QWidget()
-        self.tab_3.setObjectName(u"tab_3")
-        self.tabWidgetTop.addTab(self.tab_3, "")
-        self.tab_4 = QWidget()
-        self.tab_4.setObjectName(u"tab_4")
-        self.tabWidgetTop.addTab(self.tab_4, "")
-        self.splitter2.addWidget(self.tabWidgetTop)
-        self.tabWidgetBtm = QTabWidget(self.splitter2)
-        self.tabWidgetBtm.setObjectName(u"tabWidgetBtm")
-        sizePolicy5.setHeightForWidth(self.tabWidgetBtm.sizePolicy().hasHeightForWidth())
-        self.tabWidgetBtm.setSizePolicy(sizePolicy5)
-        self.tab = QWidget()
-        self.tab.setObjectName(u"tab")
-        self.tabWidgetBtm.addTab(self.tab, "")
-        self.tab_2 = QWidget()
-        self.tab_2.setObjectName(u"tab_2")
-        self.tabWidgetBtm.addTab(self.tab_2, "")
-        self.splitter2.addWidget(self.tabWidgetBtm)
+        self.splitter_Mid = QSplitter(self.centralwidget)
+        self.splitter_Mid.setObjectName(u"splitter_Mid")
+        self.splitter_Mid.setOrientation(Qt.Vertical)
+        self.verticalLayoutWidget_3 = QWidget(self.splitter_Mid)
+        self.verticalLayoutWidget_3.setObjectName(u"verticalLayoutWidget_3")
+        self.verticalLayout_Pot = QVBoxLayout(self.verticalLayoutWidget_3)
+        self.verticalLayout_Pot.setObjectName(u"verticalLayout_Pot")
+        self.verticalLayout_Pot.setContentsMargins(0, 0, 0, 0)
+        self.label_2 = QLabel(self.verticalLayoutWidget_3)
+        self.label_2.setObjectName(u"label_2")
+        sizePolicy4.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy4)
 
-        self.horizontalLayoutMain.addWidget(self.splitter2)
+        self.verticalLayout_Pot.addWidget(self.label_2)
 
-        self.verticalLayout_4 = QVBoxLayout()
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.frame_pot = QFrame(self.verticalLayoutWidget_3)
+        self.frame_pot.setObjectName(u"frame_pot")
+        sizePolicy5.setHeightForWidth(self.frame_pot.sizePolicy().hasHeightForWidth())
+        self.frame_pot.setSizePolicy(sizePolicy5)
+        self.frame_pot.setFrameShape(QFrame.Panel)
+
+        self.verticalLayout_Pot.addWidget(self.frame_pot)
+
+        self.splitter_Mid.addWidget(self.verticalLayoutWidget_3)
+        self.verticalLayoutWidget_2 = QWidget(self.splitter_Mid)
+        self.verticalLayoutWidget_2.setObjectName(u"verticalLayoutWidget_2")
+        self.verticalLayout_Pos = QVBoxLayout(self.verticalLayoutWidget_2)
+        self.verticalLayout_Pos.setObjectName(u"verticalLayout_Pos")
+        self.verticalLayout_Pos.setContentsMargins(0, 0, 0, 0)
+        self.label = QLabel(self.verticalLayoutWidget_2)
+        self.label.setObjectName(u"label")
+        sizePolicy4.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy4)
+
+        self.verticalLayout_Pos.addWidget(self.label)
+
+        self.frame_pos = QFrame(self.verticalLayoutWidget_2)
+        self.frame_pos.setObjectName(u"frame_pos")
+        sizePolicy5.setHeightForWidth(self.frame_pos.sizePolicy().hasHeightForWidth())
+        self.frame_pos.setSizePolicy(sizePolicy5)
+        self.frame_pos.setFrameShape(QFrame.Panel)
+
+        self.verticalLayout_Pos.addWidget(self.frame_pos)
+
+        self.splitter_Mid.addWidget(self.verticalLayoutWidget_2)
+        self.verticalLayoutWidget_4 = QWidget(self.splitter_Mid)
+        self.verticalLayoutWidget_4.setObjectName(u"verticalLayoutWidget_4")
+        self.verticalLayout_Log = QVBoxLayout(self.verticalLayoutWidget_4)
+        self.verticalLayout_Log.setObjectName(u"verticalLayout_Log")
+        self.verticalLayout_Log.setContentsMargins(0, 0, 0, 0)
+        self.label_3 = QLabel(self.verticalLayoutWidget_4)
+        self.label_3.setObjectName(u"label_3")
+        sizePolicy4.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
+        self.label_3.setSizePolicy(sizePolicy4)
+
+        self.verticalLayout_Log.addWidget(self.label_3)
+
+        self.frame_Log = QFrame(self.verticalLayoutWidget_4)
+        self.frame_Log.setObjectName(u"frame_Log")
+        sizePolicy5.setHeightForWidth(self.frame_Log.sizePolicy().hasHeightForWidth())
+        self.frame_Log.setSizePolicy(sizePolicy5)
+        self.frame_Log.setFrameShape(QFrame.Panel)
+
+        self.verticalLayout_Log.addWidget(self.frame_Log)
+
+        self.splitter_Mid.addWidget(self.verticalLayoutWidget_4)
+
+        self.horizontalLayout_Main.addWidget(self.splitter_Mid)
+
+        self.verticalLayout_Plot = QVBoxLayout()
+        self.verticalLayout_Plot.setObjectName(u"verticalLayout_Plot")
         self.graphicsView = QGraphicsView(self.centralwidget)
         self.graphicsView.setObjectName(u"graphicsView")
+        sizePolicy5.setHeightForWidth(self.graphicsView.sizePolicy().hasHeightForWidth())
+        self.graphicsView.setSizePolicy(sizePolicy5)
 
-        self.verticalLayout_4.addWidget(self.graphicsView)
+        self.verticalLayout_Plot.addWidget(self.graphicsView)
 
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.label = QLabel(self.centralwidget)
-        self.label.setObjectName(u"label")
-        sizePolicy6.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy6)
+        self.horizontalLayout_PlotSelect = QHBoxLayout()
+        self.horizontalLayout_PlotSelect.setObjectName(u"horizontalLayout_PlotSelect")
+        self.labelPlotTech = QLabel(self.centralwidget)
+        self.labelPlotTech.setObjectName(u"labelPlotTech")
+        sizePolicy6.setHeightForWidth(self.labelPlotTech.sizePolicy().hasHeightForWidth())
+        self.labelPlotTech.setSizePolicy(sizePolicy6)
 
-        self.horizontalLayout_2.addWidget(self.label)
+        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotTech)
 
-        self.comboBox = QComboBox(self.centralwidget)
-        self.comboBox.setObjectName(u"comboBox")
+        self.comboBoxPlotTech = QComboBox(self.centralwidget)
+        self.comboBoxPlotTech.setObjectName(u"comboBoxPlotTech")
 
-        self.horizontalLayout_2.addWidget(self.comboBox)
+        self.horizontalLayout_PlotSelect.addWidget(self.comboBoxPlotTech)
 
         self.line = QFrame(self.centralwidget)
         self.line.setObjectName(u"line")
         self.line.setFrameShape(QFrame.Shape.VLine)
         self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.horizontalLayout_2.addWidget(self.line)
+        self.horizontalLayout_PlotSelect.addWidget(self.line)
 
-        self.label_2 = QLabel(self.centralwidget)
-        self.label_2.setObjectName(u"label_2")
-        sizePolicy6.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
-        self.label_2.setSizePolicy(sizePolicy6)
+        self.labelPlotRepeat = QLabel(self.centralwidget)
+        self.labelPlotRepeat.setObjectName(u"labelPlotRepeat")
+        sizePolicy6.setHeightForWidth(self.labelPlotRepeat.sizePolicy().hasHeightForWidth())
+        self.labelPlotRepeat.setSizePolicy(sizePolicy6)
 
-        self.horizontalLayout_2.addWidget(self.label_2)
+        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotRepeat)
 
-        self.comboBox_2 = QComboBox(self.centralwidget)
-        self.comboBox_2.setObjectName(u"comboBox_2")
+        self.comboBoxPlotRepeat = QComboBox(self.centralwidget)
+        self.comboBoxPlotRepeat.setObjectName(u"comboBoxPlotRepeat")
 
-        self.horizontalLayout_2.addWidget(self.comboBox_2)
+        self.horizontalLayout_PlotSelect.addWidget(self.comboBoxPlotRepeat)
 
         self.line_2 = QFrame(self.centralwidget)
         self.line_2.setObjectName(u"line_2")
         self.line_2.setFrameShape(QFrame.Shape.VLine)
         self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.horizontalLayout_2.addWidget(self.line_2)
+        self.horizontalLayout_PlotSelect.addWidget(self.line_2)
 
-        self.label_3 = QLabel(self.centralwidget)
-        self.label_3.setObjectName(u"label_3")
-        sizePolicy6.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
-        self.label_3.setSizePolicy(sizePolicy6)
+        self.labelPlotX = QLabel(self.centralwidget)
+        self.labelPlotX.setObjectName(u"labelPlotX")
+        sizePolicy6.setHeightForWidth(self.labelPlotX.sizePolicy().hasHeightForWidth())
+        self.labelPlotX.setSizePolicy(sizePolicy6)
 
-        self.horizontalLayout_2.addWidget(self.label_3)
+        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotX)
 
-        self.comboBox_3 = QComboBox(self.centralwidget)
-        self.comboBox_3.setObjectName(u"comboBox_3")
+        self.comboBoxPlotX = QComboBox(self.centralwidget)
+        self.comboBoxPlotX.setObjectName(u"comboBoxPlotX")
 
-        self.horizontalLayout_2.addWidget(self.comboBox_3)
+        self.horizontalLayout_PlotSelect.addWidget(self.comboBoxPlotX)
 
         self.line_3 = QFrame(self.centralwidget)
         self.line_3.setObjectName(u"line_3")
         self.line_3.setFrameShape(QFrame.Shape.VLine)
         self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.horizontalLayout_2.addWidget(self.line_3)
+        self.horizontalLayout_PlotSelect.addWidget(self.line_3)
 
-        self.label_4 = QLabel(self.centralwidget)
-        self.label_4.setObjectName(u"label_4")
-        sizePolicy6.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
-        self.label_4.setSizePolicy(sizePolicy6)
+        self.labelPlotY = QLabel(self.centralwidget)
+        self.labelPlotY.setObjectName(u"labelPlotY")
+        sizePolicy6.setHeightForWidth(self.labelPlotY.sizePolicy().hasHeightForWidth())
+        self.labelPlotY.setSizePolicy(sizePolicy6)
 
-        self.horizontalLayout_2.addWidget(self.label_4)
+        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotY)
 
-        self.comboBox_4 = QComboBox(self.centralwidget)
-        self.comboBox_4.setObjectName(u"comboBox_4")
+        self.comboBoxPlotY = QComboBox(self.centralwidget)
+        self.comboBoxPlotY.setObjectName(u"comboBoxPlotY")
 
-        self.horizontalLayout_2.addWidget(self.comboBox_4)
+        self.horizontalLayout_PlotSelect.addWidget(self.comboBoxPlotY)
 
         self.line_5 = QFrame(self.centralwidget)
         self.line_5.setObjectName(u"line_5")
         self.line_5.setFrameShape(QFrame.Shape.VLine)
         self.line_5.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.horizontalLayout_2.addWidget(self.line_5)
+        self.horizontalLayout_PlotSelect.addWidget(self.line_5)
 
-        self.label_5 = QLabel(self.centralwidget)
-        self.label_5.setObjectName(u"label_5")
-        sizePolicy6.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
-        self.label_5.setSizePolicy(sizePolicy6)
+        self.labelPlotColor = QLabel(self.centralwidget)
+        self.labelPlotColor.setObjectName(u"labelPlotColor")
+        sizePolicy6.setHeightForWidth(self.labelPlotColor.sizePolicy().hasHeightForWidth())
+        self.labelPlotColor.setSizePolicy(sizePolicy6)
 
-        self.horizontalLayout_2.addWidget(self.label_5)
+        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotColor)
 
-        self.comboBox_5 = QComboBox(self.centralwidget)
-        self.comboBox_5.setObjectName(u"comboBox_5")
+        self.comboPlotColor = QComboBox(self.centralwidget)
+        self.comboPlotColor.setObjectName(u"comboPlotColor")
 
-        self.horizontalLayout_2.addWidget(self.comboBox_5)
+        self.horizontalLayout_PlotSelect.addWidget(self.comboPlotColor)
 
         self.line_4 = QFrame(self.centralwidget)
         self.line_4.setObjectName(u"line_4")
         self.line_4.setFrameShape(QFrame.Shape.VLine)
         self.line_4.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.horizontalLayout_2.addWidget(self.line_4)
+        self.horizontalLayout_PlotSelect.addWidget(self.line_4)
 
-        self.label_6 = QLabel(self.centralwidget)
-        self.label_6.setObjectName(u"label_6")
-        sizePolicy6.setHeightForWidth(self.label_6.sizePolicy().hasHeightForWidth())
-        self.label_6.setSizePolicy(sizePolicy6)
+        self.labelPlotLine = QLabel(self.centralwidget)
+        self.labelPlotLine.setObjectName(u"labelPlotLine")
+        sizePolicy6.setHeightForWidth(self.labelPlotLine.sizePolicy().hasHeightForWidth())
+        self.labelPlotLine.setSizePolicy(sizePolicy6)
 
-        self.horizontalLayout_2.addWidget(self.label_6)
+        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotLine)
 
-        self.comboBox_6 = QComboBox(self.centralwidget)
-        self.comboBox_6.setObjectName(u"comboBox_6")
+        self.comboBoxPlotLine = QComboBox(self.centralwidget)
+        self.comboBoxPlotLine.setObjectName(u"comboBoxPlotLine")
 
-        self.horizontalLayout_2.addWidget(self.comboBox_6)
+        self.horizontalLayout_PlotSelect.addWidget(self.comboBoxPlotLine)
 
         self.line_6 = QFrame(self.centralwidget)
         self.line_6.setObjectName(u"line_6")
         self.line_6.setFrameShape(QFrame.Shape.VLine)
         self.line_6.setFrameShadow(QFrame.Shadow.Sunken)
 
-        self.horizontalLayout_2.addWidget(self.line_6)
+        self.horizontalLayout_PlotSelect.addWidget(self.line_6)
 
-        self.label_7 = QLabel(self.centralwidget)
-        self.label_7.setObjectName(u"label_7")
-        sizePolicy6.setHeightForWidth(self.label_7.sizePolicy().hasHeightForWidth())
-        self.label_7.setSizePolicy(sizePolicy6)
+        self.labelPlotScatter = QLabel(self.centralwidget)
+        self.labelPlotScatter.setObjectName(u"labelPlotScatter")
+        sizePolicy6.setHeightForWidth(self.labelPlotScatter.sizePolicy().hasHeightForWidth())
+        self.labelPlotScatter.setSizePolicy(sizePolicy6)
 
-        self.horizontalLayout_2.addWidget(self.label_7)
+        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotScatter)
 
-        self.comboBox_7 = QComboBox(self.centralwidget)
-        self.comboBox_7.setObjectName(u"comboBox_7")
+        self.comboBoxPlotScatter = QComboBox(self.centralwidget)
+        self.comboBoxPlotScatter.setObjectName(u"comboBoxPlotScatter")
 
-        self.horizontalLayout_2.addWidget(self.comboBox_7)
+        self.horizontalLayout_PlotSelect.addWidget(self.comboBoxPlotScatter)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_2)
+        self.verticalLayout_Plot.addLayout(self.horizontalLayout_PlotSelect)
 
-        self.verticalLayout_4.setStretch(0, 1)
+        self.verticalLayout_Plot.setStretch(0, 1)
 
-        self.horizontalLayoutMain.addLayout(self.verticalLayout_4)
+        self.horizontalLayout_Main.addLayout(self.verticalLayout_Plot)
 
-        self.horizontalLayoutMain.setStretch(0, 1)
-        self.horizontalLayoutMain.setStretch(1, 2)
-        self.horizontalLayoutMain.setStretch(2, 3)
+        self.horizontalLayout_Main.setStretch(0, 1)
+        self.horizontalLayout_Main.setStretch(1, 3)
+        self.horizontalLayout_Main.setStretch(2, 1)
 
-        self.verticalLayout_3.addLayout(self.horizontalLayoutMain)
+        self.verticalLayout_5.addLayout(self.horizontalLayout_Main)
 
-        self.frameStatus = QFrame(self.centralwidget)
-        self.frameStatus.setObjectName(u"frameStatus")
-        self.frameStatus.setFrameShape(QFrame.StyledPanel)
-        self.frameStatus.setFrameShadow(QFrame.Raised)
-
-        self.verticalLayout_3.addWidget(self.frameStatus)
-
-        self.verticalLayout_3.setStretch(1, 11)
-        self.verticalLayout_3.setStretch(2, 1)
+        self.verticalLayout_5.setStretch(1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -456,10 +490,6 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidgetTop.setCurrentIndex(0)
-        self.tabWidgetBtm.setCurrentIndex(0)
-
-
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
 
@@ -471,7 +501,7 @@ class Ui_MainWindow(object):
         self.actionLog_Tab.setText(QCoreApplication.translate("MainWindow", u"Log Tab", None))
         self.actionMiscoscope_Tab.setText(QCoreApplication.translate("MainWindow", u"Miscoscope Tab", None))
         self.pushButtonConnect.setText(QCoreApplication.translate("MainWindow", u"Connect", None))
-        self.pushButton_8.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.pushButtonPsInfo.setText(QCoreApplication.translate("MainWindow", u"Potentiostat", None))
         self.pushButton_7.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.pushButton_5.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.labelTechCA.setText(QCoreApplication.translate("MainWindow", u"CA", None))
@@ -484,17 +514,16 @@ class Ui_MainWindow(object):
         self.pushButtonErrorTest.setText(QCoreApplication.translate("MainWindow", u"Error", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.tabWidgetTop.setTabText(self.tabWidgetTop.indexOf(self.tab_3), QCoreApplication.translate("MainWindow", u"Tab 1", None))
-        self.tabWidgetTop.setTabText(self.tabWidgetTop.indexOf(self.tab_4), QCoreApplication.translate("MainWindow", u"Tab 2", None))
-        self.tabWidgetBtm.setTabText(self.tabWidgetBtm.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Tab 1", None))
-        self.tabWidgetBtm.setTabText(self.tabWidgetBtm.indexOf(self.tab_2), QCoreApplication.translate("MainWindow", u"Tab 2", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"Tech", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Repeat", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"X", None))
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Y", None))
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Color", None))
-        self.label_6.setText(QCoreApplication.translate("MainWindow", u"Line", None))
-        self.label_7.setText(QCoreApplication.translate("MainWindow", u"Scatter", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Potentiostat", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"Positioner", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Log", None))
+        self.labelPlotTech.setText(QCoreApplication.translate("MainWindow", u"Tech", None))
+        self.labelPlotRepeat.setText(QCoreApplication.translate("MainWindow", u"Repeat", None))
+        self.labelPlotX.setText(QCoreApplication.translate("MainWindow", u"X", None))
+        self.labelPlotY.setText(QCoreApplication.translate("MainWindow", u"Y", None))
+        self.labelPlotColor.setText(QCoreApplication.translate("MainWindow", u"Color", None))
+        self.labelPlotLine.setText(QCoreApplication.translate("MainWindow", u"Line", None))
+        self.labelPlotScatter.setText(QCoreApplication.translate("MainWindow", u"Scatter", None))
         self.menuConnect.setTitle(QCoreApplication.translate("MainWindow", u"Connect", None))
         self.menuPreference.setTitle(QCoreApplication.translate("MainWindow", u"Preference", None))
         self.menuWindows.setTitle(QCoreApplication.translate("MainWindow", u"Windows", None))

@@ -134,7 +134,7 @@ class Biologic(QObject):
                         tech_file, ecc_parms = cp_parm(self.board_type, self.api, measurement)
                         tech_count += 1
                     case _:
-                        self.logMsg.emit(f"Technique: {measurement} at Step:{tech_count} is not an valid technique")
+                        self.signalLog.emit(f"Technique: {measurement} at Step:{tech_count} is not an valid technique")
                 # BL_LoadTechnique
                 if len(sequence) == 1:
                     self.api.LoadTechnique(self.id_, self.channel, tech_file, ecc_parms, first=True, last=True, display=(verbosity > 1))
@@ -164,8 +164,8 @@ class Biologic(QObject):
             self.writeData(output, tech_name)
 
         if status == "STOP":
-                self.recordTimer.stop()
-                self.signalLog.emit(f"\nExperiment finished. Data recorded in {self.filename} series.")
+            self.recordTimer.stop()
+            self.signalLog.emit(f"\nExperiment finished. Data recorded in {self.filename} series.")
     
     def _get_save_filename(self) -> str:
 
@@ -208,5 +208,27 @@ class Biologic(QObject):
                 available.append(item)
         return available
     
-    def writeData(self):
-        pass
+    def writeData(self, output, tech_name: str):
+        if not hasattr(self, "filename") or not self.filename:
+            return
+
+        if not hasattr(self, "current_tech"):
+            self.current_tech = None
+
+        if isinstance(output, dict):
+            if self.current_tech != tech_name:
+                self.current_tech = tech_name
+                data_keys = list(output.keys())
+                data_keys.append('Technique')
+                with open(self.filename, 'a', encoding='utf-8') as data_file:
+                    data_file.write(','.join(data_keys) + '\n')
+            values = output.values()
+        elif isinstance(output, (list, tuple)):
+            values = output
+        else:
+            values = [output]
+
+        data_line = ','.join(str(item) for item in values)
+        data_line += f',{tech_name}\n'
+        with open(self.filename, 'a', encoding='utf-8') as data_file:
+            data_file.write(data_line)

@@ -68,7 +68,9 @@ class CV(QWidget, Ui_Form, PSTech):
 
     def _setName(self):
         self._pullFields()
-        self.nameChanged.emit(f"{self.tech}_{self.name}")
+        suffix = (self.name or "").strip()
+        label = self.tech if suffix == "" else f"{self.tech}_{suffix}"
+        self.nameChanged.emit(label)
 
     def _pullFields(self):
         """Pull current UI values into the model (with light parsing)."""
@@ -88,8 +90,38 @@ class CV(QWidget, Ui_Form, PSTech):
             QMessageBox.warning(self, "Parse error", str(e))
             return
 
+    def _validate_before_output(self) -> bool:
+        checks = [
+            ("Initial Potential", self.lineEditPotentialInit.text().strip(), float),
+            ("First Vertex", self.lineEditPotentialFirst.text().strip(), float),
+            ("Second Vertex", self.lineEditPotentialSecond.text().strip(), float),
+            ("Final Potential", self.lineEditPotentialFin.text().strip(), float),
+            ("Scan Rate", self.lineEditRate.text().strip(), float),
+            ("Sample Potential", self.lineEditSamplePotential.text().strip(), float),
+            ("Repeat", self.lineEditRepeat.text().strip(), int),
+            ("Begin Step", self.lineEditStepBegin.text().strip(), float),
+            ("End Step", self.lineEditStepEnd.text().strip(), float),
+        ]
+
+        for field_name, raw_value, expected_type in checks:
+            if raw_value == "":
+                QMessageBox.warning(self, "Missing field", f"{field_name} cannot be empty.")
+                return False
+            try:
+                if expected_type is float:
+                    float(raw_value)
+                elif expected_type is int:
+                    int(raw_value)
+            except ValueError:
+                QMessageBox.warning(self, "Invalid type", f"{field_name} must be {expected_type.__name__}.")
+                return False
+
+        return True
+
     def outputParam(self) -> dict:
         self._pullFields()  # Ensure model is up-to-date with UI
+        if not self._validate_before_output():
+            return {}
         cv_settings = {
             "technique": "cv",
             "Ei": self.Ei,

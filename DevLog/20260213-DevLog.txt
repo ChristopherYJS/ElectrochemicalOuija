@@ -1,0 +1,21 @@
+2026-02-13 10:42:34>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidgetItem' object has no attribute 'outputParam'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 173	| Function: startTech
+Error End.
+2026-02-13 10:53:55>>>Traceback Error: ConnectionError: 
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\pt_biologic.py	| Line: 64	| Function: connectDevice
+File: c:\GitProject\ElectrochemicalOuija\kbio\kbio_api.py	| Line: 69	| Function: Connect
+Error End.
+2026-02-13 12:31:45>>>Traceback Error: RuntimeError: Internal C++ object (CA) already deleted.
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 167	| Function: TreeItemClicked
+Error End.
+2026-02-13 12:32:02>>>Traceback Error: RuntimeError: Internal C++ object (CA) already deleted.
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 167	| Function: TreeItemClicked
+Error End.
+2026-02-13 12:33:50>>>Traceback Error: RuntimeError: Internal C++ object (CP) already deleted.
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 167	| Function: TreeItemClicked
+Error End.
