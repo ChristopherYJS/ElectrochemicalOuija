@@ -1,0 +1,5 @@
+2026-02-14 00:12:28>>>Traceback Error: ConnectionError: 
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\pt_biologic.py	| Line: 64	| Function: connectDevice
+File: c:\GitFolder\ElectrochemicalOuija\kbio\kbio_api.py	| Line: 69	| Function: Connect
+Error End.

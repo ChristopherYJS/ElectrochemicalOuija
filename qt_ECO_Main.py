@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_ECO_Main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.10.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -256,6 +256,9 @@ class Ui_MainWindow(object):
         self.label_2.setObjectName(u"label_2")
         sizePolicy4.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
         self.label_2.setSizePolicy(sizePolicy4)
+        font = QFont()
+        font.setPointSize(16)
+        self.label_2.setFont(font)
 
         self.verticalLayout_Pot.addWidget(self.label_2)
 
@@ -277,6 +280,7 @@ class Ui_MainWindow(object):
         self.label.setObjectName(u"label")
         sizePolicy4.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy4)
+        self.label.setFont(font)
 
         self.verticalLayout_Pos.addWidget(self.label)
 
@@ -298,6 +302,7 @@ class Ui_MainWindow(object):
         self.label_3.setObjectName(u"label_3")
         sizePolicy4.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
         self.label_3.setSizePolicy(sizePolicy4)
+        self.label_3.setFont(font)
 
         self.verticalLayout_Log.addWidget(self.label_3)
 

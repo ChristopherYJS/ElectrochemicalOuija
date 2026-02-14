@@ -12,7 +12,7 @@ def _float_or_none(text: str) -> float | None:
     return float(t)
 
 class CP(QWidget, Ui_Form, PSTech):
-    tech = "CP"
+    tech="CP"
 
     def __init__(self, *, i_ranges: list[str] = None):
         super().__init__()
@@ -25,7 +25,7 @@ class CP(QWidget, Ui_Form, PSTech):
         self.sampleTime: int | float = 0
         self.sampleCurrent: int | float = 0
         self.repeat: int = 1
-        self.CR: str | None = None  # current range
+        self.CR: str | None = None       # current range
 
         # 3) Load combobox options from main UI
         if i_ranges:   self.comboBoxCR.addItems(i_ranges)
@@ -56,8 +56,10 @@ class CP(QWidget, Ui_Form, PSTech):
         # ComboBoxs
         self.comboBoxCR.currentTextChanged.connect(self._pullFields)
 
+
     def _setName(self):
         self._pullFields()
+        
         suffix = (self.name or "").strip()
         label = self.tech if suffix == "" else f"{self.tech}_{suffix}"
         self.nameChanged.emit(label)

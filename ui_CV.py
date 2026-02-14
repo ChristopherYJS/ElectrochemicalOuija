@@ -14,6 +14,7 @@ def _float_or_none(text: str) -> float | None:
 
 
 class CV(QWidget, Ui_Form, PSTech):
+
     tech = "CV"
 
     def __init__(self):
