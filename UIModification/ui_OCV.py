@@ -2,7 +2,7 @@ from __future__ import annotations
 from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
-from qt_OCV import Ui_Form
+from UIFiles.qt_OCV import Ui_Form
 from misc_BaseTech import PSTech
 
 def _float_or_none(text: str) -> float | None:

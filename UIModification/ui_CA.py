@@ -2,7 +2,7 @@ from __future__ import annotations
 from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
-from qt_CA import Ui_Form
+from UIFiles.qt_CA import Ui_Form
 from misc_BaseTech import PSTech
 
 def _float_or_none(text: str) -> float | None:
@@ -13,7 +13,7 @@ def _float_or_none(text: str) -> float | None:
 
 class CA(QWidget, Ui_Form, PSTech):
     tech="CA"
-    def __init__(self, *, i_ranges: list[str] = None):
+    def __init__(self, *,i_ranges: list[str] = None):
         super().__init__()
         self.setupUi(self)
 
@@ -32,7 +32,8 @@ class CA(QWidget, Ui_Form, PSTech):
         if i_ranges:   self.comboBoxCR.addItems(i_ranges)
 
         # 4) Validators on edits (optional but makes UX nicer)
-        self.lineEditPotential.setValidator(QDoubleValidator(self))
+        if i_ranges:
+            self._populate_current_ranges(i_ranges)
         self.lineEditDuration.setValidator(QDoubleValidator(self))
         self.lineEditSampleTime.setValidator(QDoubleValidator(self))
         self.lineEditSampleCurrent.setValidator(QDoubleValidator(self))
@@ -57,6 +58,11 @@ class CA(QWidget, Ui_Form, PSTech):
         # ComboBoxs
         self.comboBoxCR.currentTextChanged.connect(self._pullFields)
 
+    def _populate_current_ranges(self, i_ranges):
+        self.comboBoxCR.clear()
+        for item in i_ranges:
+            label = getattr(item, "name", str(item))
+            self.comboBoxCR.addItem(label, item)
 
 
     def _setName(self):
@@ -73,7 +79,8 @@ class CA(QWidget, Ui_Form, PSTech):
             self.sampleTime = float(self.lineEditSampleTime.text() or 0)
             self.sampleCurrent = float(self.lineEditSampleCurrent.text() or 0)
             self.repeat = int(self.lineEditRepeat.text() or 1)
-            self.CR = self.comboBoxCR.currentText() or None
+            current_data = self.comboBoxCR.currentData()
+            self.CR = current_data if current_data is not None else (self.comboBoxCR.currentText() or None)
 
         except ValueError as e:
             QMessageBox.warning(self, "Parse error", str(e))

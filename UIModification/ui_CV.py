@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
 from misc_BaseTech import PSTech
-from qt_CV import Ui_Form
+from UIFiles.qt_CV import Ui_Form
 
 
 def _float_or_none(text: str) -> float | None:

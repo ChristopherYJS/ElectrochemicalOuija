@@ -5,19 +5,19 @@ from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,
 from PySide6.QtCore import QSize, Qt, QEvent, QMimeData, QModelIndex, QPoint, QRect, QObject, QThread, Signal, Slot
 from PySide6.QtWidgets import QAbstractItemView 
 from PySide6.QtGui import QMouseEvent,QDrag,QFont,QShortcut,QCursor,QAction,QKeySequence
-from qt_ECO_Main import Ui_MainWindow
+from UIFiles.qt_ECO_Main import Ui_MainWindow
 
 from misc_handleException import exception2msg, msg2file, errorDeco
 
 from misc_ModifiedUI import TechTreeWidget, FloatingTabWindow  
 
-from ui_CV import CV as CVUI
-from ui_CA import CA as CAUI 
-from ui_CP import CP as CPUI
-from ui_OCV import OCV as OCVUI
-from ui_EIS import EIS as EISUI
-from qt_Move import Ui_Form as MoveUI
-from qt_Loop import Ui_Form as LoopUI
+from UIModification.ui_CV import CV as CVUI
+from UIModification.ui_CA import CA as CAUI 
+from UIModification.ui_CP import CP as CPUI
+from UIModification.ui_OCV import OCV as OCVUI
+from UIModification.ui_EIS import EIS as EISUI
+from UIFiles.qt_Move import Ui_Form as MoveUI
+from UIFiles.qt_Loop import Ui_Form as LoopUI
 from ui_PsInfoDialog import get_potentiostat_info_from_dialog
 
 from pt_biologic import Biologic
@@ -43,10 +43,13 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.ps_channel = 1
         self.ps_binary_path = os.environ.get("ECLIB_DIR", f"C:{os.sep}EC-Lab Development Package{os.sep}lib")
         self.CRdic={}
+        self.currentChannel=1
         self.restyle()
         self.bindEvent()
         self.bindSignalSlot()
         self.showMaximized()
+        self._repl_globals = {"__builtins__": __builtins__}
+        self._repl_locals = {"self": self}
       
     def restyle(self):
         # Replace the treewidget in the ui file with our custom one
@@ -67,8 +70,11 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         # Setup Log widget in the log section
         self.Log = QPlainTextEdit()
         self.Log.setReadOnly(True)
+        self.lineEditLogInput = QLineEdit()
+        self.lineEditLogInput.setPlaceholderText("Enter Python expression and press Enter")
         self._clearWidget(self.frame_Log)
         self.frame_Log.layout().addWidget(self.Log)
+        self.frame_Log.layout().addWidget(self.lineEditLogInput)
         
         # Setup potentiostat section - add placeholder for tech details
         self._clearWidget(self.frame_pot)
@@ -76,7 +82,9 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
     @errorDeco(logger='self.Log')
     def addTech(self,sender,event):
-        item=QTreeWidgetItem([sender.text()],i_ranges=)
+        i_ranges = self.CRdic.get(self.currentChannel, [])
+        item = QTreeWidgetItem()
+        item.setText(0, sender.text())
         item.setSizeHint(0,QSize(0,30))
         font = QFont()
         font.setPointSize(14)      
@@ -87,7 +95,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self._clearWidget(self.frame_pot)
 
         ui_class = self.dicTechWin.get(sender.text())
-        page = self._buildTab(ui_class,item)     # QWidget ready
+        page = self._buildTab(ui_class, item, i_ranges=i_ranges)     # QWidget ready
         self.frame_pot.layout().addWidget(page)
         self.itemTechPair[item] = page
 
@@ -96,9 +104,12 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     def bindSignalSlot(self):
         # Show the tech setup for the clicked tree item
         self.treeWidget.itemClicked.connect(self.TreeItemClicked)
+        self.treeWidget.itemRemoved.connect(self._onTechItemRemoved)
         self.pushButtonStart.clicked.connect(self.startTech)
         self.pushButtonConnect.clicked.connect(self.startPotentiostat)
         self.pushButtonPsInfo.clicked.connect(self.configurePotentiostat)
+        if hasattr(self, "lineEditLogInput"):
+            self.lineEditLogInput.returnPressed.connect(self.evalLogInput)
 
     @errorDeco(logger='self.Log')
     def configurePotentiostat(self):
@@ -143,7 +154,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     @errorDeco(logger='self.Log')
     def startTech(self):
         self.sequence=[]
-        for item in self.treeWidget.findItems("", Qt.MatchFlag.MatchContains | Qt.MatchFlag.MatchRecursive):
+        for item in self._iter_tree_items():
             page=self.itemTechPair.get(item)
             if page is not None:
                 self.sequence.append(page.outputParam())
@@ -161,7 +172,9 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
                 page=self.itemTechPair.get(item)
                 if page is not None and hasattr(page, "comboBoxCR"):
                     page.comboBoxCR.clear()
-                    page.comboBoxCR.addItems(CRlist)
+                    for cr in CRlist:
+                        label = getattr(cr, "name", str(cr))
+                        page.comboBoxCR.addItem(label, cr)
                     self.CRdic={channel:CRlist}
 
         self.bio_thread = QThread(self)
@@ -181,6 +194,41 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     def logMsg(self, msg:str):
         self.Log.appendPlainText(msg)
 
+    def _onTechItemRemoved(self, item: QTreeWidgetItem):
+        page = self.itemTechPair.pop(item, None)
+        if page is not None:
+            page.setParent(None)
+            page.deleteLater()
+
+    @errorDeco(logger='self.Log')
+    def evalLogInput(self):
+        text = self.lineEditLogInput.text().strip()
+        if not text:
+            return
+        self.lineEditLogInput.clear()
+        self.logMsg(f">>> {text}")
+        print(f">>> {text}")
+        try:
+            result = eval(text, self._repl_globals, self._repl_locals)
+        except SyntaxError:
+            try:
+                exec(text, self._repl_globals, self._repl_locals)
+                result = None
+            except Exception as ex:
+                error_msg = exception2msg(ex)
+                self.logMsg(error_msg)
+                print(error_msg)
+                return
+        except Exception as ex:
+            error_msg = exception2msg(ex)
+            self.logMsg(error_msg)
+            print(error_msg)
+            return
+        if result is not None:
+            msg = repr(result)
+            self.logMsg(msg)
+            print(msg)
+
     #---------------- Helper functions ----------------
 
     def _clearWidget(self, widget: QWidget):
@@ -194,8 +242,11 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             if childWidget:
                 childWidget.setParent(None)
 
-    def _buildTab(self, ui_class,item:QTreeWidgetItem) -> QWidget:
-        obj = ui_class()
+    def _buildTab(self, ui_class, item: QTreeWidgetItem, *, i_ranges: list[str] | None = None) -> QWidget:
+        try:
+            obj = ui_class(i_ranges=i_ranges)
+        except TypeError:
+            obj = ui_class()
         if hasattr(ui_class, "nameChanged"):
             obj.nameChanged.connect(lambda new_name, item=item: item.setText(0, new_name))
         if hasattr(obj, "setupUi") and not isinstance(obj, QWidget):
@@ -203,6 +254,22 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             obj.setupUi(container)
             return container
         return obj
+
+    def _iter_tree_items(self, parent: QTreeWidgetItem | None = None):
+        if parent is None:
+            for idx in range(self.treeWidget.topLevelItemCount()):
+                item = self.treeWidget.topLevelItem(idx)
+                if item is None:
+                    continue
+                yield item
+                yield from self._iter_tree_items(item)
+            return
+        for idx in range(parent.childCount()):
+            item = parent.child(idx)
+            if item is None:
+                continue
+            yield item
+            yield from self._iter_tree_items(item)
     
     def closeEvent(self, event):
         if hasattr(self, 'bio_thread') and self.bio_thread.isRunning():

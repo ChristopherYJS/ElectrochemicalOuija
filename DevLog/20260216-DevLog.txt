@@ -1,0 +1,12 @@
+2026-02-16 14:17:05>>>Traceback Error: AttributeError: PySide6.QtWidgets.QTreeWidgetItem.__init__(): unsupported keyword 'i_ranges'
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 80	| Function: addTech
+Error End.
+2026-02-16 14:18:17>>>Traceback Error: AttributeError: PySide6.QtWidgets.QTreeWidgetItem.__init__(): unsupported keyword 'i_ranges'
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 80	| Function: addTech
+Error End.
+2026-02-16 14:19:10>>>Traceback Error: AttributeError: PySide6.QtWidgets.QTreeWidgetItem.__init__(): unsupported keyword 'i_ranges'
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 80	| Function: addTech
+Error End.

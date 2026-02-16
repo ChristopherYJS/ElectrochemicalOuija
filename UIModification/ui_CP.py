@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
 from misc_BaseTech import PSTech
-from qt_CP import Ui_Form
+from UIFiles.qt_CP import Ui_Form
 
 def _float_or_none(text: str) -> float | None:
     t = text.strip()
@@ -28,7 +28,8 @@ class CP(QWidget, Ui_Form, PSTech):
         self.CR: str | None = None       # current range
 
         # 3) Load combobox options from main UI
-        if i_ranges:   self.comboBoxCR.addItems(i_ranges)
+        if i_ranges:
+            self._populate_current_ranges(i_ranges)
 
         # 4) Validators on edits (optional but makes UX nicer)
         self.lineEditCurrent.setValidator(QDoubleValidator(self))
@@ -55,6 +56,12 @@ class CP(QWidget, Ui_Form, PSTech):
 
         # ComboBoxs
         self.comboBoxCR.currentTextChanged.connect(self._pullFields)
+    def _populate_current_ranges(self, i_ranges):
+        self.comboBoxCR.clear()
+        for item in i_ranges:
+            label = getattr(item, "name", str(item))
+            self.comboBoxCR.addItem(label, item)
+
 
 
     def _setName(self):
@@ -73,7 +80,8 @@ class CP(QWidget, Ui_Form, PSTech):
             self.sampleTime = float(self.lineEditSampleTime.text() or 0)
             self.sampleCurrent = float(self.lineEditSampleCurrent.text() or 0)
             self.repeat = int(self.lineEditSampleRepeat.text() or 1)
-            self.CR = self.comboBoxCR.currentText() or None
+            current_data = self.comboBoxCR.currentData()
+            self.CR = current_data if current_data is not None else (self.comboBoxCR.currentText() or None)
         except ValueError as e:
             QMessageBox.warning(self, "Parse error", str(e))
             return

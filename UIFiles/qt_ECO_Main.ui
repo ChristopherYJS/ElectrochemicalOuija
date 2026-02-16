@@ -535,6 +535,9 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QLineEdit" name="lineEdit"/>
+          </item>
          </layout>
         </widget>
        </widget>

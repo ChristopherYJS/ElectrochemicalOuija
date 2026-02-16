@@ -1,9 +1,11 @@
 from PySide6.QtWidgets import (QApplication, QMainWindow, QTabWidget, QTabBar, QTreeWidget, QTreeWidgetItem,
                              QAbstractItemView, QVBoxLayout, QWidget)
-from PySide6.QtCore import Qt, QPoint, QRect
+from PySide6.QtCore import Qt, QPoint, QRect, Signal
 from PySide6.QtGui import QAction, QKeySequence, QMouseEvent, QCursor
 
 class TechTreeWidget(QTreeWidget):
+    itemRemoved = Signal(QTreeWidgetItem)
+
     def dropEvent(self, event):
         target = self.itemAt(event.position().toPoint())
         if target and target.text(0) != 'Loop':
@@ -17,6 +19,7 @@ class TechTreeWidget(QTreeWidget):
         if event.key() == Qt.Key.Key_Delete:
             item = self.currentItem()
             if item:
+                self.itemRemoved.emit(item)
                 parent = item.parent()
                 if parent:
                     parent.removeChild(item)
