@@ -106,9 +106,9 @@ class Biologic(QObject):
         self.potential_ranges = self._get_all_enum_options(KBIO.E_RANGE)
         
         # Emit signals to main window for display
-        self.signalCR.emit(self.current_ranges)
-        self.signalPR.emit(self.potential_ranges)
-        self.signalBW.emit(self.bandwidths)
+        self.signalCR.emit([self.channel,self.current_ranges])
+        self.signalPR.emit([self.channel,self.potential_ranges])
+        self.signalBW.emit([self.channel,self.bandwidths])
 
     @errorDeco(signal='self.signalLog')
     def runSequence(self,sequence):

@@ -42,6 +42,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.ps_address = "192.168.2.2"
         self.ps_channel = 1
         self.ps_binary_path = os.environ.get("ECLIB_DIR", f"C:{os.sep}EC-Lab Development Package{os.sep}lib")
+        self.CRdic={}
         self.restyle()
         self.bindEvent()
         self.bindSignalSlot()
@@ -75,7 +76,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
     @errorDeco(logger='self.Log')
     def addTech(self,sender,event):
-        item=QTreeWidgetItem([sender.text()])
+        item=QTreeWidgetItem([sender.text()],i_ranges=)
         item.setSizeHint(0,QSize(0,30))
         font = QFont()
         font.setPointSize(14)      
@@ -154,12 +155,14 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     # Start potentiostat thread
     @errorDeco(logger='self.Log')
     def startPotentiostat(self):
-        def setCR(CRlist):
+        def setCR(SignalData):
+            channel, CRlist = SignalData
             for item in self.treeWidget.findItems("", Qt.MatchFlag.MatchContains | Qt.MatchFlag.MatchRecursive):
                 page=self.itemTechPair.get(item)
                 if page is not None and hasattr(page, "comboBoxCR"):
                     page.comboBoxCR.clear()
                     page.comboBoxCR.addItems(CRlist)
+                    self.CRdic={channel:CRlist}
 
         self.bio_thread = QThread(self)
         self.bio_worker = Biologic(self.ps_address, self.ps_binary_path, self.ps_channel)
