@@ -90,7 +90,7 @@ class Biologic(QObject):
         # BL_GetChannelInfos
         channel_info = self.api.GetChannelInfo(self.id_, self.channel)
         self.signalLog.emit(f"> Channel {self.channel} info :")
-        self.signalLog.emit(channel_info)
+        self.signalLog.emit(f"{channel_info}")
 
         if not channel_info.is_kernel_loaded:
             self.signalLog.emit("> kernel must be loaded in order to run the experiment, potentiostat thread terminated.")
