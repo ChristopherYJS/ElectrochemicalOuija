@@ -203,6 +203,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     
     def closeEvent(self, event):
         if hasattr(self, 'bio_thread') and self.bio_thread.isRunning():
+            self.bio_worker.api.Disconnect(self.bio_worker.id_)
             self.bio_thread.quit()
             self.bio_thread.wait()
         event.accept()
