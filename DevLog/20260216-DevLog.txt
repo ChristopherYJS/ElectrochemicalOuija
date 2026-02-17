@@ -10,3 +10,8 @@ Error End.
 File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
 File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 80	| Function: addTech
 Error End.
+2026-02-16 17:34:14>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute 'is_ps_connected'
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 308	| Function: <module>
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 53	| Function: __init__
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 289	| Function: _updateStatusBar
+Error End.

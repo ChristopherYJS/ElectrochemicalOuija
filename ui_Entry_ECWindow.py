@@ -1,10 +1,12 @@
 #& "C:\Users\chrst\AppData\Roaming\Python\Python313\Scripts\pyside6-uic.exe" "uiEC.ui" "-o" "uiEC.py" "--from-imports"
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit, QLineEdit
+from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit
 from PySide6.QtCore import QSize, Qt, QEvent, QMimeData, QModelIndex, QPoint, QRect, QObject, QThread, Signal, Slot
 from PySide6.QtWidgets import QAbstractItemView 
 from PySide6.QtGui import QMouseEvent,QDrag,QFont,QShortcut,QCursor,QAction,QKeySequence
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 from UIFiles.qt_ECO_Main import Ui_MainWindow
 
 from misc_handleException import exception2msg, msg2file, errorDeco
@@ -19,6 +21,7 @@ from UIModification.ui_EIS import EIS as EISUI
 from UIFiles.qt_Move import Ui_Form as MoveUI
 from UIFiles.qt_Loop import Ui_Form as LoopUI
 from ui_PsInfoDialog import get_potentiostat_info_from_dialog
+from misc_plot_axis_options import get_axis_options, apply_axis_transform, normalize_technique_name
 
 from pt_biologic import Biologic
 
@@ -43,10 +46,18 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.ps_channel = 1
         self.ps_binary_path = os.environ.get("ECLIB_DIR", f"C:{os.sep}EC-Lab Development Package{os.sep}lib")
         self.CRdic={}
+        self.PRDic={}
+        self.BWDic={}
         self.currentChannel=1
+        self.isPSConnected = False
+        self.plotDataByTech = {}
+        self.currentMeasuredTech = None
+        self.plotXAxisOptions = {}
+        self.plotYAxisOptions = {}
         self.restyle()
         self.bindEvent()
         self.bindSignalSlot()
+        self._updateStatusBar()
         self.showMaximized()
         self._repl_globals = {"__builtins__": __builtins__}
         self._repl_locals = {"self": self}
@@ -70,14 +81,16 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         # Setup Log widget in the log section
         self.Log = QPlainTextEdit()
         self.Log.setReadOnly(True)
-        self.lineEditLogInput = QLineEdit()
-        self.lineEditLogInput.setPlaceholderText("Enter Python expression and press Enter")
         self._clearWidget(self.frame_Log)
         self.frame_Log.layout().addWidget(self.Log)
-        self.frame_Log.layout().addWidget(self.lineEditLogInput)
+        self.lineEditLogInput = self.lineEdit
+        self.lineEditLogInput.setPlaceholderText("Enter Python expression and press Enter")
         
         # Setup potentiostat section - add placeholder for tech details
         self._clearWidget(self.frame_pot)
+
+        # Setup plot area and plot controls
+        self._initPlotWidgets()
         
 
     @errorDeco(logger='self.Log')
@@ -110,6 +123,12 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.pushButtonPsInfo.clicked.connect(self.configurePotentiostat)
         if hasattr(self, "lineEditLogInput"):
             self.lineEditLogInput.returnPressed.connect(self.evalLogInput)
+        if hasattr(self, "comboBoxPlotTech"):
+            self.comboBoxPlotTech.currentTextChanged.connect(self._onPlotTechSelectionChanged)
+        if hasattr(self, "comboBoxPlotX"):
+            self.comboBoxPlotX.currentTextChanged.connect(lambda _: self._renderSelectedPlot())
+        if hasattr(self, "comboBoxPlotY"):
+            self.comboBoxPlotY.currentTextChanged.connect(lambda _: self._renderSelectedPlot())
 
     @errorDeco(logger='self.Log')
     def configurePotentiostat(self):
@@ -124,6 +143,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.logMsg(
                 f"> Potentiostat info updated: address={self.ps_address}, channel={self.ps_channel}, binary_path={self.ps_binary_path}"
             )
+            self._updateStatusBar()
     
     def bindEvent(self):
         for label in self.scrollAreaOption_Tech.findChildren(QLabel):
@@ -159,6 +179,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             if page is not None:
                 self.sequence.append(page.outputParam())
         if hasattr(self, 'bio_worker'):
+            self._setPlotTechItemsFromSequence(self.sequence)
             self.bio_worker.runSequence(self.sequence)
         else:
             self.logMsg("> Potentiostat not connected.")
@@ -166,8 +187,15 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     # Start potentiostat thread
     @errorDeco(logger='self.Log')
     def startPotentiostat(self):
+        if hasattr(self, 'bio_thread') and self.bio_thread.isRunning():
+            self.logMsg("> Potentiostat thread is already running.")
+            return
+
+        self._setPotentiostatConnected(False)
+
         def setCR(SignalData):
             channel, CRlist = SignalData
+            self.ps_channel = channel
             for item in self.treeWidget.findItems("", Qt.MatchFlag.MatchContains | Qt.MatchFlag.MatchRecursive):
                 page=self.itemTechPair.get(item)
                 if page is not None and hasattr(page, "comboBoxCR"):
@@ -176,6 +204,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
                         label = getattr(cr, "name", str(cr))
                         page.comboBoxCR.addItem(label, cr)
                     self.CRdic={channel:CRlist}
+            self._setPotentiostatConnected(True)
 
         self.bio_thread = QThread(self)
         self.bio_worker = Biologic(self.ps_address, self.ps_binary_path, self.ps_channel)
@@ -185,7 +214,10 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.bio_worker.signalCR.connect(setCR)
         self.bio_worker.signalPR.connect(lambda PRlist: setattr(self, 'PR', PRlist))
         self.bio_worker.signalBW.connect(lambda BWlist: setattr(self, 'BW', BWlist))
+        self.bio_worker.signalData.connect(self._onBiologicData)
+        self.bio_worker.signalFinished.connect(self.bio_thread.quit)
         self.bio_worker.signalLog.connect(self.Log.appendPlainText)
+        self.bio_thread.finished.connect(lambda: self._setPotentiostatConnected(False))
         self.bio_thread.finished.connect(self.bio_thread.deleteLater)
 
         self.bio_thread.start()
@@ -270,12 +302,208 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
                 continue
             yield item
             yield from self._iter_tree_items(item)
+
+    def _setPotentiostatConnected(self, connected: bool):
+        self.isPSConnected = connected
+        self._updateStatusBar()
+
+    def _initPlotWidgets(self):
+        self.comboBoxPlotTech.clear()
+
+        self.comboBoxPlotX.clear()
+        self.comboBoxPlotY.clear()
+        self.plotXAxisOptions = {}
+        self.plotYAxisOptions = {}
+
+        self.plotFigure = Figure()
+        self.plotAxes = self.plotFigure.add_subplot(111)
+        self.plotCanvas = FigureCanvas(self.plotFigure)
+
+        oldPlotWidget = self.graphicsView
+        plotIndex = self.verticalLayout_Plot.indexOf(oldPlotWidget)
+        if plotIndex >= 0:
+            self.verticalLayout_Plot.removeWidget(oldPlotWidget)
+            self.verticalLayout_Plot.insertWidget(plotIndex, self.plotCanvas)
+        oldPlotWidget.setParent(None)
+        oldPlotWidget.deleteLater()
+
+    def _onBiologicData(self, tech_name: str, output):
+        self.currentMeasuredTech = tech_name
+        self.plotDataByTech.setdefault(tech_name, []).append(output)
+
+        selectedTech = self.comboBoxPlotTech.currentText()
+        if selectedTech == "Current Tech":
+            self._renderSelectedPlot()
+        elif selectedTech == tech_name:
+            self._renderSelectedPlot()
+
+    def _setPlotTechItemsFromSequence(self, sequence: list):
+        previousSelection = self.comboBoxPlotTech.currentText()
+        self.comboBoxPlotTech.blockSignals(True)
+        self.comboBoxPlotTech.clear()
+        self.comboBoxPlotTech.addItem("Current Tech")
+
+        seen = set()
+        for measurement in sequence:
+            tech_name = str(measurement.get("technique", "")).upper()
+            if not tech_name or tech_name in seen:
+                continue
+            seen.add(tech_name)
+            self.comboBoxPlotTech.addItem(tech_name)
+
+        if previousSelection and self.comboBoxPlotTech.findText(previousSelection) >= 0:
+            self.comboBoxPlotTech.setCurrentText(previousSelection)
+        else:
+            self.comboBoxPlotTech.setCurrentText("Current Tech")
+        self.comboBoxPlotTech.blockSignals(False)
+        self._configureAxisCombosForSelectedTech()
+
+    def _onPlotTechSelectionChanged(self, _selected: str):
+        self._configureAxisCombosForSelectedTech()
+        self._renderSelectedPlot()
+
+    def _configureAxisCombosForSelectedTech(self):
+        selectedTech = self.comboBoxPlotTech.currentText()
+        if not selectedTech:
+            self.comboBoxPlotX.clear()
+            self.comboBoxPlotY.clear()
+            self.plotXAxisOptions = {}
+            self.plotYAxisOptions = {}
+            return
+
+        techForAxes = self.currentMeasuredTech if selectedTech == "Current Tech" else selectedTech
+        if not techForAxes:
+            return
+
+        axis_options = get_axis_options(normalize_technique_name(techForAxes))
+        x_options = axis_options.get("x", [])
+        y_options = axis_options.get("y", [])
+
+        if not x_options or not y_options:
+            return
+
+        previousX = self.comboBoxPlotX.currentText()
+        previousY = self.comboBoxPlotY.currentText()
+
+        self.plotXAxisOptions = {option.label: option for option in x_options}
+        self.plotYAxisOptions = {option.label: option for option in y_options}
+
+        self.comboBoxPlotX.blockSignals(True)
+        self.comboBoxPlotY.blockSignals(True)
+        self.comboBoxPlotX.clear()
+        self.comboBoxPlotY.clear()
+        self.comboBoxPlotX.addItems(list(self.plotXAxisOptions.keys()))
+        self.comboBoxPlotY.addItems(list(self.plotYAxisOptions.keys()))
+        if previousX in self.plotXAxisOptions:
+            self.comboBoxPlotX.setCurrentText(previousX)
+        if previousY in self.plotYAxisOptions:
+            self.comboBoxPlotY.setCurrentText(previousY)
+        self.comboBoxPlotX.blockSignals(False)
+        self.comboBoxPlotY.blockSignals(False)
+
+    def _renderSelectedPlot(self):
+        selectedTech = self.comboBoxPlotTech.currentText()
+        techToPlot = self.currentMeasuredTech if selectedTech == "Current Tech" else selectedTech
+
+        if not techToPlot:
+            self._clearPlot("No tested data")
+            return
+
+        rows = self.plotDataByTech.get(techToPlot, [])
+        if not rows:
+            self._clearPlot(f"No tested data for {techToPlot}")
+            return
+
+        sample = next((row for row in rows if isinstance(row, dict) and row), None)
+        if sample is None:
+            self._clearPlot(f"No plottable data for {techToPlot}")
+            return
+
+        availableKeys = list(sample.keys())
+        self._syncAxisCombo(self.comboBoxPlotX, availableKeys, prefer="t")
+        self._syncAxisCombo(self.comboBoxPlotY, availableKeys, prefer="Ewe")
+
+        xKey = self.comboBoxPlotX.currentText()
+        yKey = self.comboBoxPlotY.currentText()
+        if not xKey or not yKey:
+            self._clearPlot(f"No axis selected for {techToPlot}")
+            return
+
+        xAxisOption = self.plotXAxisOptions.get(xKey)
+        yAxisOption = self.plotYAxisOptions.get(yKey)
+
+        xData = []
+        yData = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            try:
+                if xAxisOption and yAxisOption:
+                    xRaw = row.get(xAxisOption.source)
+                    yRaw = row.get(yAxisOption.source)
+                    if xRaw is None or yRaw is None:
+                        continue
+                    xVal = apply_axis_transform(xAxisOption.transform, float(xRaw))
+                    yVal = apply_axis_transform(yAxisOption.transform, float(yRaw))
+                else:
+                    xVal = row.get(xKey)
+                    yVal = row.get(yKey)
+                    if xVal is None or yVal is None:
+                        continue
+                    xVal = float(xVal)
+                    yVal = float(yVal)
+
+                if xVal is None or yVal is None:
+                    continue
+                xData.append(xVal)
+                yData.append(yVal)
+            except (TypeError, ValueError):
+                continue
+
+        if not xData:
+            self._clearPlot(f"No numeric points for {techToPlot}")
+            return
+
+        self.plotAxes.clear()
+        self.plotAxes.plot(xData, yData)
+        self.plotAxes.set_title(f"{techToPlot}")
+        self.plotAxes.set_xlabel(xKey)
+        self.plotAxes.set_ylabel(yKey)
+        self.plotAxes.grid(True)
+        self.plotCanvas.draw_idle()
+
+    def _syncAxisCombo(self, combo, keys: list[str], *, prefer: str):
+        current = combo.currentText()
+        if [combo.itemText(i) for i in range(combo.count())] == keys:
+            if current in keys:
+                combo.setCurrentText(current)
+            return
+
+        combo.blockSignals(True)
+        combo.clear()
+        combo.addItems(keys)
+        if prefer in keys:
+            combo.setCurrentText(prefer)
+        elif current in keys:
+            combo.setCurrentText(current)
+        combo.blockSignals(False)
+
+    def _clearPlot(self, title: str):
+        self.plotAxes.clear()
+        self.plotAxes.set_title(title)
+        self.plotAxes.grid(True)
+        self.plotCanvas.draw_idle()
+
+    def _updateStatusBar(self):
+        message = f"Potentiostat Channel: {self.ps_channel}" if self.isPSConnected else "Potentiostat Disconnected"
+        self.statusBar().showMessage(message)
     
     def closeEvent(self, event):
         if hasattr(self, 'bio_thread') and self.bio_thread.isRunning():
-            self.bio_worker.api.Disconnect(self.bio_worker.id_)
+            self.bio_worker.stopExperiment(disconnect=True)
             self.bio_thread.quit()
             self.bio_thread.wait()
+        self._setPotentiostatConnected(False)
         event.accept()
     
 

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_ECO_Main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.10.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -469,8 +469,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_Main.addLayout(self.verticalLayout_Plot)
 
         self.horizontalLayout_Main.setStretch(0, 1)
-        self.horizontalLayout_Main.setStretch(1, 3)
-        self.horizontalLayout_Main.setStretch(2, 1)
+        self.horizontalLayout_Main.setStretch(1, 2)
+        self.horizontalLayout_Main.setStretch(2, 3)
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_Main)
 

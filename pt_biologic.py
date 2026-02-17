@@ -8,18 +8,13 @@
 #####################################################################
 
 import os
-import sys
 import time
-
-import matplotlib.pyplot as plt
-import numpy as np
 
 import kbio.kbio_types as KBIO
 from kbio.c_utils import c_is_64b
 from kbio.kbio_api import KBIO_api
 from kbio.kbio_tech import get_experiment_data
 from kbio.kbio_tech import get_info_data
-from kbio.utils import exception_brief
 
 from CA_biologic import ca_parm
 from OCV_biologic import ocv_parm
@@ -36,6 +31,8 @@ class Biologic(QObject):
     signalCR=Signal(list)
     signalPR=Signal(list)
     signalBW=Signal(list)
+    signalData=Signal(str, object)
+    signalFinished=Signal()
     def __init__(self, address,binary_path,channel):
         super().__init__()
         self.recordTimer=QTimer()
@@ -44,6 +41,9 @@ class Biologic(QObject):
         self.address=address
         self.binary_path=binary_path
         self.channel=channel
+        self.api = None
+        self.id_ = None
+        self.is_running = False
 
         self.force_load_firmware=True
         if c_is_64b:
@@ -78,7 +78,8 @@ class Biologic(QObject):
                 fpga_path = ""
             case _:
                 self.signalLog.emit("> Board type detection failed, potentiostat thread terminated.")
-                self.finished.emit()
+                self.signalFinished.emit()
+                return
         # Load firmware
         self.signalLog.emit(f"> Loading {firmware_path} ...")
         # create a map from channel set
@@ -94,7 +95,8 @@ class Biologic(QObject):
 
         if not channel_info.is_kernel_loaded:
             self.signalLog.emit("> kernel must be loaded in order to run the experiment, potentiostat thread terminated.")
-            self.finished.emit()
+            self.signalFinished.emit()
+            return
         
         # Get available current ranges for this device
         self.current_ranges = self._get_enum_range(KBIO.I_RANGE, channel_info.MinIRange, channel_info.MaxIRange)
@@ -153,7 +155,12 @@ class Biologic(QObject):
             
             # BL_StartChannel
             self.api.StartChannel(self.id_, self.channel)
+            if self.recordTimer.isActive():
+                self.recordTimer.stop()
+            self.recordTimer.start()
+            self.is_running = True
             self.current_tech=None
+            self.signalLog.emit(f"> Experiment started on channel {self.channel}.")
 
     @errorDeco(signal='self.signalLog')
     def recordData(self):
@@ -162,10 +169,30 @@ class Biologic(QObject):
         
         for output in get_experiment_data(self.api, data, tech_name, self.board_type):
             self.writeData(output, tech_name)
+            self.signalData.emit(tech_name, output)
 
         if status == "STOP":
             self.recordTimer.stop()
+            self.is_running = False
             self.signalLog.emit(f"\nExperiment finished. Data recorded in {self.filename} series.")
+
+    @errorDeco(signal='self.signalLog')
+    def stopExperiment(self, disconnect: bool = False):
+        if self.recordTimer.isActive():
+            self.recordTimer.stop()
+
+        if self.api and self.id_ is not None and self.is_running:
+            self.api.StopChannel(self.id_, self.channel)
+            self.signalLog.emit(f"> Experiment stopped on channel {self.channel}.")
+
+        self.is_running = False
+
+        if disconnect and self.api and self.id_ is not None:
+            self.api.Disconnect(self.id_)
+            self.signalLog.emit(f"> Disconnected from device[{self.address}].")
+            self.api = None
+            self.id_ = None
+            self.signalFinished.emit()
     
     def _get_save_filename(self) -> str:
 
