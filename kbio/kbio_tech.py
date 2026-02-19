@@ -139,8 +139,54 @@ def get_experiment_data(api, data, tech_name, board_type):
 
             parsed_row = {"t": t, "Ewe": Ewe, "Iwe": Iwe, "cycle": cycle}
 
+        elif tech_name == "CA":
+            inx = ix + data_info.NbCols
+            t_high, t_low, *row = data_record[ix:inx]
+
+            nb_words = len(row)
+            if nb_words != 3:
+                raise RuntimeError(f"{tech_name} : unexpected record length ({nb_words})")
+
+            # Ewe is a float
+            Ewe = api.ConvertChannelNumericIntoSingle(row[0], board_type)
+
+            # current is a float
+            Iwe = api.ConvertChannelNumericIntoSingle(row[1], board_type)
+
+            # technique cycle is an integer
+            cycle = row[2]
+
+            # compute timestamp in seconds
+            t_rel = (t_high << 32) + t_low
+            t = current_values.TimeBase * t_rel
+
+            parsed_row = {"t": t, "Ewe": Ewe, "Iwe": Iwe, "cycle": cycle}
+
+        elif tech_name == "CV":
+            inx = ix + data_info.NbCols
+            t_high, t_low, *row = data_record[ix:inx]
+
+            nb_words = len(row)
+            if nb_words != 3:
+                raise RuntimeError(f"{tech_name} : unexpected record length ({nb_words})")
+
+            # Ewe is a float
+            Ewe = api.ConvertChannelNumericIntoSingle(row[0], board_type)
+
+            # current is a float
+            Iwe = api.ConvertChannelNumericIntoSingle(row[1], board_type)
+
+            # technique cycle is an integer
+            cycle = row[2]
+
+            # compute timestamp in seconds
+            t_rel = (t_high << 32) + t_low
+            t = current_values.TimeBase * t_rel
+
+            parsed_row = {"t": t, "Ewe": Ewe, "Iwe": Iwe, "cycle": cycle}
+
         else:
-            # besides the previous 2 known techniques, this is provided
+            # besides the previous known techniques, this is provided
             # to show a raw dump of the record
             inx = ix + data_info.NbCols
             row = data_record[ix:inx]
