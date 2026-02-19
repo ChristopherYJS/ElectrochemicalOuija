@@ -27,9 +27,6 @@ from pt_biologic import Biologic
 
 class ECO_pot(QMainWindow, Ui_MainWindow):
     def __init__(self):
-        CR=None
-        PR=None
-        BW=None
         super().__init__()
         self.dicTechWin={
             'CA':CAUI,
@@ -119,7 +116,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.treeWidget.itemClicked.connect(self.TreeItemClicked)
         self.treeWidget.itemRemoved.connect(self._onTechItemRemoved)
         self.pushButtonStart.clicked.connect(self.startTech)
-        self.pushButtonConnect.clicked.connect(self.startPotentiostat)
+        self.pushButtonConnect.clicked.connect(self.connectPT)
         self.pushButtonPsInfo.clicked.connect(self.configurePotentiostat)
         if hasattr(self, "lineEditLogInput"):
             self.lineEditLogInput.returnPressed.connect(self.evalLogInput)
@@ -153,10 +150,8 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     @errorDeco(logger='self.Log')
     def TreeItemClicked(self, item, column=None):
         page = self.itemTechPair.get(item)
-        
         if page is None:
             return
-
         # If page is in a floating window, close that window
         current_parent = page.parent()
         if current_parent is not None:
@@ -183,38 +178,32 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.bio_worker.runSequence(self.sequence)
         else:
             self.logMsg("> Potentiostat not connected.")
+        
+    @errorDeco(logger='self.Log')
+    def getChannelOptions(self, listOptions):
+        channel, CRlist, PRlist, BWlist = listOptions
+        self.ps_channel = channel
+        self.CRdic[channel] = CRlist
+        self.PRDic[channel] = PRlist
+        self.BWDic[channel] = BWlist
+        self._setPotentiostatConnected(True)
+        self._refreshTechOptions()
 
     # Start potentiostat thread
     @errorDeco(logger='self.Log')
-    def startPotentiostat(self):
+    def connectPT(self):
         if hasattr(self, 'bio_thread') and self.bio_thread.isRunning():
             self.logMsg("> Potentiostat thread is already running.")
             return
-
-        self._setPotentiostatConnected(False)
-
-        def setCR(SignalData):
-            channel, CRlist = SignalData
-            self.ps_channel = channel
-            for item in self.treeWidget.findItems("", Qt.MatchFlag.MatchContains | Qt.MatchFlag.MatchRecursive):
-                page=self.itemTechPair.get(item)
-                if page is not None and hasattr(page, "comboBoxCR"):
-                    page.comboBoxCR.clear()
-                    for cr in CRlist:
-                        label = getattr(cr, "name", str(cr))
-                        page.comboBoxCR.addItem(label, cr)
-                    self.CRdic={channel:CRlist}
-            self._setPotentiostatConnected(True)
-
+        
         self.bio_thread = QThread(self)
         self.bio_worker = Biologic(self.ps_address, self.ps_binary_path, self.ps_channel)
         self.bio_worker.moveToThread(self.bio_thread)
 
         self.bio_thread.started.connect(self.bio_worker.connectDevice)
-        self.bio_worker.signalCR.connect(setCR)
-        self.bio_worker.signalPR.connect(lambda PRlist: setattr(self, 'PR', PRlist))
-        self.bio_worker.signalBW.connect(lambda BWlist: setattr(self, 'BW', BWlist))
+
         self.bio_worker.signalData.connect(self._onBiologicData)
+        self.bio_worker.signalConnected.connect(self.getChannelOptions)
         self.bio_worker.signalFinished.connect(self.bio_thread.quit)
         self.bio_worker.signalLog.connect(self.Log.appendPlainText)
         self.bio_thread.finished.connect(lambda: self._setPotentiostatConnected(False))
@@ -498,6 +487,15 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         message = f"Potentiostat Channel: {self.ps_channel}" if self.isPSConnected else "Potentiostat Disconnected"
         self.statusBar().showMessage(message)
     
+    def _refreshTechOptions(self):
+        for page in self.itemTechPair.values():
+            if hasattr(page, "setCR") and self.ps_channel in self.CRdic:
+                page.setCR(self.CRdic[self.ps_channel])
+            if hasattr(page, "setPR") and self.ps_channel in self.PRDic:
+                page.setPR(self.PRDic[self.ps_channel])
+            if hasattr(page, "setBW") and self.ps_channel in self.BWDic:
+                page.setBW(self.BWDic[self.ps_channel])
+
     def closeEvent(self, event):
         if hasattr(self, 'bio_thread') and self.bio_thread.isRunning():
             self.bio_worker.stopExperiment(disconnect=True)

@@ -27,11 +27,9 @@ from PySide6.QtWidgets import QFileDialog
 from misc_handleException import errorDeco
 
 class Biologic(QObject):
-    signalLog=Signal(str)
-    signalCR=Signal(list)
-    signalPR=Signal(list)
-    signalBW=Signal(list)
+    signalLog=Signal(str) 
     signalData=Signal(str, object)
+    signalConnected=Signal(list)
     signalFinished=Signal()
     def __init__(self, address,binary_path,channel):
         super().__init__()
@@ -108,9 +106,7 @@ class Biologic(QObject):
         self.potential_ranges = self._get_all_enum_options(KBIO.E_RANGE)
         
         # Emit signals to main window for display
-        self.signalCR.emit([self.channel,self.current_ranges])
-        self.signalPR.emit([self.channel,self.potential_ranges])
-        self.signalBW.emit([self.channel,self.bandwidths])
+        self.signalConnected.emit([self.channel,self.current_ranges,self.potential_ranges,self.bandwidths])
 
     @errorDeco(signal='self.signalLog')
     def runSequence(self,sequence):
@@ -165,6 +161,7 @@ class Biologic(QObject):
     @errorDeco(signal='self.signalLog')
     def recordData(self):
         data = self.api.GetData(self.id_, self.channel)
+        print(data)
         status, tech_name = get_info_data(self.api, data)
         
         for output in get_experiment_data(self.api, data, tech_name, self.board_type):
