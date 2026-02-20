@@ -97,7 +97,7 @@ class Biologic(QObject):
             return
         
         # Get available current ranges for this device
-        self.current_ranges = self._get_enum_range(KBIO.I_RANGE, channel_info.MinIRange, channel_info.MaxIRange)
+        self.current_ranges = self._get_enum_range(KBIO.I_RANGE, channel_info.MinIRange, channel_info.MaxIRange)+["I_RANGE_AUTO"]
         
         # Get available bandwidth options (min is always BW_1)
         self.bandwidths = self._get_enum_range(KBIO.BANDWIDTH, 1, channel_info.MaxBandwidth)

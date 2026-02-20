@@ -108,6 +108,12 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         page = self._buildTab(ui_class, item, i_ranges=i_ranges)     # QWidget ready
         self.frame_pot.layout().addWidget(page)
         self.itemTechPair[item] = page
+        if hasattr(page, "setCR") and self.ps_channel in self.CRdic:
+                page.setCR(self.CRdic[self.ps_channel])
+        if hasattr(page, "setPR") and self.ps_channel in self.PRDic:
+            page.setPR(self.PRDic[self.ps_channel])
+        if hasattr(page, "setBW") and self.ps_channel in self.BWDic:
+            page.setBW(self.BWDic[self.ps_channel])
 
     #---------------- Signal-Slot binding ----------------
 
@@ -173,11 +179,14 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             page=self.itemTechPair.get(item)
             if page is not None:
                 self.sequence.append(page.outputParam())
-        if hasattr(self, 'bio_worker'):
-            self._setPlotTechItemsFromSequence(self.sequence)
-            self.bio_worker.runSequence(self.sequence)
-        else:
-            self.logMsg("> Potentiostat not connected.")
+        # if hasattr(self, 'bio_worker'):
+        #     self._setPlotTechItemsFromSequence(self.sequence)
+        #     self.bio_worker.runSequence(self.sequence)
+        # else:
+        #     self.logMsg("> Potentiostat not connected.")
+        for tech in self.sequence:
+            self.logMsg(f"> Starting {tech.get('technique', 'Unknown Tech')} with parameters: {tech}")
+
         
     @errorDeco(logger='self.Log')
     def getChannelOptions(self, listOptions):
