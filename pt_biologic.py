@@ -31,6 +31,7 @@ class Biologic(QObject):
     signalData=Signal(str, object)
     signalConnected=Signal(list)
     signalFinished=Signal()
+    signalChannels=Signal(list)
     def __init__(self, address,binary_path,channel):
         super().__init__()
         self.recordTimer=QTimer()
@@ -82,6 +83,7 @@ class Biologic(QObject):
         self.signalLog.emit(f"> Loading {firmware_path} ...")
         # create a map from channel set
         channel_map = self.api.channel_map({self.channel})
+        print(channel_map)
         # BL_LoadFirmware
         self.api.LoadFirmware(self.id_, channel_map, firmware=firmware_path, fpga=fpga_path, force=self.force_load_firmware)
         self.signalLog.emit("> ... firmware loaded")

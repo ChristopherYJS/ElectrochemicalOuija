@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_ECO_Main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -19,9 +19,9 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGraphicsView,
     QHBoxLayout, QHeaderView, QLabel, QLineEdit,
     QMainWindow, QMenu, QMenuBar, QPushButton,
-    QScrollArea, QSizePolicy, QSpacerItem, QSplitter,
-    QStatusBar, QTreeWidget, QTreeWidgetItem, QVBoxLayout,
-    QWidget)
+    QRadioButton, QScrollArea, QSizePolicy, QSpacerItem,
+    QSplitter, QStatusBar, QTreeWidget, QTreeWidgetItem,
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -189,6 +189,21 @@ class Ui_MainWindow(object):
         self.splitter_Tech.addWidget(self.treeWidget)
 
         self.verticalLayout_Tech.addWidget(self.splitter_Tech)
+
+        self.verticalLayout_Channel = QVBoxLayout()
+        self.verticalLayout_Channel.setObjectName(u"verticalLayout_Channel")
+        self.radioButton = QRadioButton(self.centralwidget)
+        self.radioButton.setObjectName(u"radioButton")
+
+        self.verticalLayout_Channel.addWidget(self.radioButton)
+
+        self.radioButton_2 = QRadioButton(self.centralwidget)
+        self.radioButton_2.setObjectName(u"radioButton_2")
+
+        self.verticalLayout_Channel.addWidget(self.radioButton_2)
+
+
+        self.verticalLayout_Tech.addLayout(self.verticalLayout_Channel)
 
         self.frame_tech = QFrame(self.centralwidget)
         self.frame_tech.setObjectName(u"frame_tech")
@@ -521,6 +536,8 @@ class Ui_MainWindow(object):
         self.labelTechEIS.setText(QCoreApplication.translate("MainWindow", u"EIS", None))
         self.labelMove.setText(QCoreApplication.translate("MainWindow", u"Move", None))
         self.labelLoop.setText(QCoreApplication.translate("MainWindow", u"Loop", None))
+        self.radioButton.setText(QCoreApplication.translate("MainWindow", u"CH 1", None))
+        self.radioButton_2.setText(QCoreApplication.translate("MainWindow", u"CH 2", None))
         self.pushButtonStart.setText(QCoreApplication.translate("MainWindow", u"Start", None))
         self.pushButtonErrorTest.setText(QCoreApplication.translate("MainWindow", u"Error", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))

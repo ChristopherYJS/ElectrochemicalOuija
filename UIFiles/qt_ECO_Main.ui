@@ -167,7 +167,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_Main" stretch="1,2,3">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_Tech">
+       <layout class="QVBoxLayout" name="verticalLayout_Tech" stretch="0,0,0">
         <item>
          <widget class="QSplitter" name="splitter_Tech">
           <property name="sizePolicy">
@@ -300,6 +300,24 @@
            </column>
           </widget>
          </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_Channel">
+          <item>
+           <widget class="QRadioButton" name="radioButton">
+            <property name="text">
+             <string>CH 1</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButton_2">
+            <property name="text">
+             <string>CH 2</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QFrame" name="frame_tech">
