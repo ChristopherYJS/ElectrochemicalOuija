@@ -33,7 +33,7 @@ class CA(QWidget, Ui_Form, PSTech):
 
         # 4) Validators on edits (optional but makes UX nicer)
         if i_ranges:
-            self._populate_current_ranges(i_ranges)
+            self.setCR(i_ranges)
         self.lineEditDuration.setValidator(QDoubleValidator(self))
         self.lineEditSampleTime.setValidator(QDoubleValidator(self))
         self.lineEditSampleCurrent.setValidator(QDoubleValidator(self))
@@ -57,12 +57,6 @@ class CA(QWidget, Ui_Form, PSTech):
 
         # ComboBoxs
         self.comboBoxCR.currentTextChanged.connect(self._pullFields)
-
-    def _populate_current_ranges(self, i_ranges):
-        self.comboBoxCR.clear()
-        for item in i_ranges:
-            label = getattr(item, "name", str(item))
-            self.comboBoxCR.addItem(label, item)
 
 
     def _setName(self):
@@ -101,3 +95,9 @@ class CA(QWidget, Ui_Form, PSTech):
                 'timebase': 0.000026
                    }
         return ca_settings
+    
+    def setCR(self,i_ranges):
+        self.comboBoxCR.clear()
+        for item in i_ranges:
+            label = getattr(item, "name", str(item))
+            self.comboBoxCR.addItem(label, item)
