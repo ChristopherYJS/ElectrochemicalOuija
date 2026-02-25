@@ -1,7 +1,7 @@
 #& "C:\Users\chrst\AppData\Roaming\Python\Python313\Scripts\pyside6-uic.exe" "uiEC.ui" "-o" "uiEC.py" "--from-imports"
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit
+from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit, QRadioButton,QMessageBox, QButtonGroup
 from PySide6.QtCore import QSize, Qt, QEvent, QMimeData, QModelIndex, QPoint, QRect, QObject, QThread, Signal, Slot
 from PySide6.QtWidgets import QAbstractItemView 
 from PySide6.QtGui import QMouseEvent,QDrag,QFont,QShortcut,QCursor,QAction,QKeySequence
@@ -38,6 +38,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             'Loop':LoopUI
         }
         self.itemTechPair={}
+        self.channelTechs={}
         self.setupUi(self)
         self.ps_address = "192.168.2.2"
         self.ps_channel = 1
@@ -45,8 +46,11 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.CRdic={}
         self.PRDic={}
         self.BWDic={}
-        self.currentChannel=1
+        self.channelRbtnDic={}
+        self.channelRbtnGroup=QButtonGroup(self)
+        self.channelButtonGroup.setExclusive(True)
         self.isPSConnected = False
+        self.isChannelRunning={} 
         self.plotDataByTech = {}
         self.currentMeasuredTech = None
         self.plotXAxisOptions = {}
@@ -61,19 +65,19 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
       
     def restyle(self):
         # Replace the treewidget in the ui file with our custom one
-        oldTreeWidget = self.treeWidget
-        self.treeWidget = TechTreeWidget(self.splitter_Tech)
-        self.splitter_Tech.insertWidget(1, self.treeWidget)
-        self.treeWidget.setGeometry(oldTreeWidget.geometry())
-        self.treeWidget.setObjectName(oldTreeWidget.objectName())
+        oldTreeWidget = self.treeWidget_Techs
+        self.treeWidget_Techs = TechTreeWidget(self.splitter_Tech)
+        self.splitter_Tech.insertWidget(1, self.treeWidget_Techs)
+        self.treeWidget_Techs.setGeometry(oldTreeWidget.geometry())
+        self.treeWidget_Techs.setObjectName(oldTreeWidget.objectName())
         oldTreeWidget.deleteLater()
-        self.treeWidget.clear()
-        self.treeWidget.setHeaderHidden(True)
-        self.treeWidget.setDragEnabled(True)
-        self.treeWidget.setAcceptDrops(True)
-        self.treeWidget.setDropIndicatorShown(True)
-        self.treeWidget.setDefaultDropAction(Qt.DropAction.MoveAction)
-        self.treeWidget.setDragDropMode(QTreeWidget.DragDropMode.InternalMove)
+        self.treeWidget_Techs.clear()
+        self.treeWidget_Techs.setHeaderHidden(True)
+        self.treeWidget_Techs.setDragEnabled(True)
+        self.treeWidget_Techs.setAcceptDrops(True)
+        self.treeWidget_Techs.setDropIndicatorShown(True)
+        self.treeWidget_Techs.setDefaultDropAction(Qt.DropAction.MoveAction)
+        self.treeWidget_Techs.setDragDropMode(QTreeWidget.DragDropMode.InternalMove)
         
         # Setup Log widget in the log section
         self.Log = QPlainTextEdit()
@@ -92,31 +96,45 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
     @errorDeco(logger='self.Log')
     def addTech(self,sender,event):
-        i_ranges = self.CRdic.get(self.currentChannel, [])
-        item = QTreeWidgetItem()
-        item.setText(0, sender.text())
-        item.setSizeHint(0,QSize(0,30))
-        font = QFont()
-        font.setPointSize(14)      
-        item.setFont(0, font) 
-        self.treeWidget.addTopLevelItem(item)
-        
-        # Remove all widgets from the potentiostat section before loading new Form
-        self._clearWidget(self.frame_pot)
+        isChannelFree=not self.isChannelRunning.get(self.ps_channel)
+        if self.isPSConnected and isChannelFree:
+            i_ranges = self.CRdic.get(self.ps_channel, [])
+            item = QTreeWidgetItem()
+            item.setText(0, sender.text())
+            item.setSizeHint(0,QSize(0,30))
+            font = QFont()
+            font.setPointSize(14)      
+            item.setFont(0, font) 
+            self.treeWidget_Techs.addTopLevelItem(item)
+            
+            # Remove all widgets from the potentiostat section before loading new Form
+            self._clearWidget(self.frame_pot)
 
-        ui_class = self.dicTechWin.get(sender.text())
-        page = self._buildTab(ui_class, item, i_ranges=i_ranges)     # QWidget ready
-        self.frame_pot.layout().addWidget(page)
-        self.itemTechPair[item] = page
+            ui_class = self.dicTechWin.get(sender.text())
+            page = self._buildTab(ui_class, item, i_ranges=i_ranges)     # QWidget ready
+            self.frame_pot.layout().addWidget(page)
+            self.itemTechPair[item] = page
+            if hasattr(page, "setCR") and self.ps_channel in self.CRdic:
+                    page.setCR(self.CRdic[self.ps_channel])
+            if hasattr(page, "setPR") and self.ps_channel in self.PRDic:
+                page.setPR(self.PRDic[self.ps_channel])
+            if hasattr(page, "setBW") and self.ps_channel in self.BWDic:
+                page.setBW(self.BWDic[self.ps_channel])
+        else:
+            #pop warning window to inform user to connect potentiostat or free the channel
+            warning_msg = "Please connect to the potentiostat and ensure the channel is free before editing experiment sequence."
+            QMessageBox.warning(self, "Cannot Add Technique", warning_msg) 
+
+            
 
     #---------------- Signal-Slot binding ----------------
 
     def bindSignalSlot(self):
         # Show the tech setup for the clicked tree item
-        self.treeWidget.itemClicked.connect(self.TreeItemClicked)
-        self.treeWidget.itemRemoved.connect(self._onTechItemRemoved)
+        self.treeWidget_Techs.itemClicked.connect(self.TreeItemClicked)
+        self.treeWidget_Techs.itemRemoved.connect(self._onTechItemRemoved)
         self.pushButtonStart.clicked.connect(self.startTech)
-        self.pushButtonConnect.clicked.connect(self.connectPT)
+        self.pushButtonConnect.clicked.connect(self.connectPs)
         self.pushButtonPsInfo.clicked.connect(self.configurePotentiostat)
         if hasattr(self, "lineEditLogInput"):
             self.lineEditLogInput.returnPressed.connect(self.evalLogInput)
@@ -143,7 +161,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self._updateStatusBar()
     
     def bindEvent(self):
-        for label in self.scrollAreaOption_Tech.findChildren(QLabel):
+        for label in self.scrollAreaOption_Techs.findChildren(QLabel):
             label.mouseDoubleClickEvent=lambda e, sender=label: self.addTech(sender,e)
         
     #---------------- Slot functions ----------------  
@@ -173,37 +191,66 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             page=self.itemTechPair.get(item)
             if page is not None:
                 self.sequence.append(page.outputParam())
-        if hasattr(self, 'bio_worker'):
-            self._setPlotTechItemsFromSequence(self.sequence)
-            self.bio_worker.runSequence(self.sequence)
-        else:
-            self.logMsg("> Potentiostat not connected.")
+        # if hasattr(self, 'bio_worker'):
+        #     self._setPlotTechItemsFromSequence(self.sequence)
+        #     self.bio_worker.runSequence(self.sequence)
+        # else:
+        #     self.logMsg("> Potentiostat not connected.")
+        for tech in self.sequence:
+            self.logMsg(f"> Starting {tech.get('technique', 'Unknown Tech')} with parameters: {tech}")
+
         
     @errorDeco(logger='self.Log')
-    def getChannelOptions(self, listOptions):
-        channel, CRlist, PRlist, BWlist = listOptions
-        self.ps_channel = channel
-        self.CRdic[channel] = CRlist
-        self.PRDic[channel] = PRlist
-        self.BWDic[channel] = BWlist
+    def getChannelInfo(self, listOptions):
+        if listOptions and isinstance(listOptions[0], list):
+            # Multiple channels: list of [channel, CRlist, PRlist, BWlist]
+            for options in listOptions:
+                channel, CRlist, PRlist, BWlist = options
+                self.CRdic[channel] = CRlist
+                self.PRDic[channel] = PRlist
+                self.BWDic[channel] = BWlist
+            # Set default channel to the first available
+            self.ps_channel = listOptions[0][0] if listOptions else 1
+        else:
+            # Single channel
+            channel, CRlist, PRlist, BWlist = listOptions
+            self.ps_channel = channel
+            self.CRdic[channel] = CRlist
+            self.PRDic[channel] = PRlist
+            self.BWDic[channel] = BWlist
+        
         self._setPotentiostatConnected(True)
         self._refreshTechOptions()
 
+    @errorDeco(logger='self.Log')
+    def updateChannelOption(self,channelList):
+        for channel in channelList:
+            channelRbutton=QRadioButton(f"CH {channel}")
+            channelRbutton.objectName=f"radioButton_CH{channel}"
+            self.formLayout_Channel.addWidget(channelRbutton)
+            self.channelRbtnDic[channel]=channelRbutton
+            self.channelRbtnGroup.addButton(channelRbutton, channel)
+            channelRbutton.toggled.connect(lambda ch=channel: self.switchChannel(ch))
+            if channel == self.ps_channel:
+                channelRbutton.setChecked(True)
+            self.isChannelRunning[channel]=False
+
     # Start potentiostat thread
     @errorDeco(logger='self.Log')
-    def connectPT(self):
+    def connectPs(self):
         if hasattr(self, 'bio_thread') and self.bio_thread.isRunning():
             self.logMsg("> Potentiostat thread is already running.")
             return
         
         self.bio_thread = QThread(self)
-        self.bio_worker = Biologic(self.ps_address, self.ps_binary_path, self.ps_channel)
+        self.bio_worker = Biologic(self.ps_address, self.ps_binary_path)
         self.bio_worker.moveToThread(self.bio_thread)
 
         self.bio_thread.started.connect(self.bio_worker.connectDevice)
 
         self.bio_worker.signalData.connect(self._onBiologicData)
-        self.bio_worker.signalConnected.connect(self.getChannelOptions)
+        self.bio_worker.signalConnected.connect(self.getChannelInfo)
+        self.bio_worker.signalChannelOption.connect(self.updateChannelOption)
         self.bio_worker.signalFinished.connect(self.bio_thread.quit)
         self.bio_worker.signalLog.connect(self.Log.appendPlainText)
         self.bio_thread.finished.connect(lambda: self._setPotentiostatConnected(False))
@@ -215,11 +262,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     def logMsg(self, msg:str):
         self.Log.appendPlainText(msg)
 
-    def _onTechItemRemoved(self, item: QTreeWidgetItem):
-        page = self.itemTechPair.pop(item, None)
-        if page is not None:
-            page.setParent(None)
-            page.deleteLater()
+    
 
     @errorDeco(logger='self.Log')
     def evalLogInput(self):
@@ -250,6 +293,14 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.logMsg(msg)
             print(msg)
 
+    @errorDeco(logger='self.Log')
+    def switchChannel(self, channel):
+        self.ps_channel = channel
+        self._refreshTechOptions()
+        self.logMsg(f"> Switched to channel {channel}")
+
+    
+
     #---------------- Helper functions ----------------
 
     def _clearWidget(self, widget: QWidget):
@@ -278,8 +329,8 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
     def _iter_tree_items(self, parent: QTreeWidgetItem | None = None):
         if parent is None:
-            for idx in range(self.treeWidget.topLevelItemCount()):
-                item = self.treeWidget.topLevelItem(idx)
+            for idx in range(self.treeWidget_Techs.topLevelItemCount()):
+                item = self.treeWidget_Techs.topLevelItem(idx)
                 if item is None:
                     continue
                 yield item
@@ -291,6 +342,12 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
                 continue
             yield item
             yield from self._iter_tree_items(item)
+
+    def _onTechItemRemoved(self, item: QTreeWidgetItem):
+        page = self.itemTechPair.pop(item, None)
+        if page is not None:
+            page.setParent(None)
+            page.deleteLater()
 
     def _setPotentiostatConnected(self, connected: bool):
         self.isPSConnected = connected

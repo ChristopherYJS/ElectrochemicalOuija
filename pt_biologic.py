@@ -31,14 +31,14 @@ class Biologic(QObject):
     signalData=Signal(str, object)
     signalConnected=Signal(list)
     signalFinished=Signal()
-    def __init__(self, address,binary_path,channel):
+    signalChannelOption=Signal(list)
+    def __init__(self,address,binary_path):
         super().__init__()
         self.recordTimer=QTimer()
         self.recordTimer.setInterval(1000)
         self.recordTimer.timeout.connect(self.recordData)
         self.address=address
         self.binary_path=binary_path
-        self.channel=channel
         self.api = None
         self.id_ = None
         self.is_running = False
@@ -62,7 +62,20 @@ class Biologic(QObject):
         self.id_, device_info = self.api.Connect(self.address)
         self.signalLog.emit(f"> device[{self.address}] info :")
         self.signalLog.emit(f"{device_info}")
-        # based on board_type, determine firmware filenames
+        
+        # Get all available channels
+        self.channels = list(self.api.GetChannelsPlugged(self.id_))
+        if not self.channels:
+            self.signalLog.emit("> No channels available on the device.")
+            self.signalFinished.emit()
+            return
+        self.signalLog.emit(f"> Available channels: {self.channels}")
+        self.signalChannelOption.emit(self.channels)
+        
+        # Use the first channel as default
+        self.channel = self.channels[0]
+        
+        # based on board_type, determine firmware filenames (assume same for all channels)
         self.board_type = self.api.GetChannelBoardType(self.id_, self.channel)
         match self.board_type:
             case KBIO.BOARD_TYPE.ESSENTIAL.value:
@@ -78,35 +91,39 @@ class Biologic(QObject):
                 self.signalLog.emit("> Board type detection failed, potentiostat thread terminated.")
                 self.signalFinished.emit()
                 return
-        # Load firmware
-        self.signalLog.emit(f"> Loading {firmware_path} ...")
-        # create a map from channel set
-        channel_map = self.api.channel_map({self.channel})
-        # BL_LoadFirmware
+        # Load firmware for all available channels
+        self.signalLog.emit(f"> Loading {firmware_path} for channels {self.channels} ...")
+        channel_map = self.api.channel_map(set(self.channels))
         self.api.LoadFirmware(self.id_, channel_map, firmware=firmware_path, fpga=fpga_path, force=self.force_load_firmware)
         self.signalLog.emit("> ... firmware loaded")
 
-        # BL_GetChannelInfos
-        channel_info = self.api.GetChannelInfo(self.id_, self.channel)
-        self.signalLog.emit(f"> Channel {self.channel} info :")
-        self.signalLog.emit(f"{channel_info}")
-
-        if not channel_info.is_kernel_loaded:
-            self.signalLog.emit("> kernel must be loaded in order to run the experiment, potentiostat thread terminated.")
+        # Get options for each channel
+        self.channels_options = []
+        for ch in self.channels:
+            channel_info = self.api.GetChannelInfo(self.id_, ch)
+            self.signalLog.emit(f"> Channel {ch} info :")
+            self.signalLog.emit(f"{channel_info}")
+            
+            if not channel_info.is_kernel_loaded:
+                self.signalLog.emit(f"> Channel {ch}: kernel must be loaded, skipping.")
+                continue
+            
+            # Get available current ranges
+            current_ranges = self._get_enum_range(KBIO.I_RANGE, channel_info.MinIRange, channel_info.MaxIRange) + ["I_RANGE_AUTO"]
+            # Get available bandwidth options
+            bandwidths = self._get_enum_range(KBIO.BANDWIDTH, 1, channel_info.MaxBandwidth)
+            # Get all potential ranges
+            potential_ranges = self._get_all_enum_options(KBIO.E_RANGE)
+            
+            self.channels_options.append([ch, current_ranges, potential_ranges, bandwidths])
+        
+        if not self.channels_options:
+            self.signalLog.emit("> No valid channels with loaded kernel.")
             self.signalFinished.emit()
             return
         
-        # Get available current ranges for this device
-        self.current_ranges = self._get_enum_range(KBIO.I_RANGE, channel_info.MinIRange, channel_info.MaxIRange)
-        
-        # Get available bandwidth options (min is always BW_1)
-        self.bandwidths = self._get_enum_range(KBIO.BANDWIDTH, 1, channel_info.MaxBandwidth)
-        
-        # Get all potential ranges (no device limits)
-        self.potential_ranges = self._get_all_enum_options(KBIO.E_RANGE)
-        
-        # Emit signals to main window for display
-        self.signalConnected.emit([self.channel,self.current_ranges,self.potential_ranges,self.bandwidths])
+        # Emit options for all channels
+        self.signalConnected.emit(self.channels_options)
 
     @errorDeco(signal='self.signalLog')
     def runSequence(self,sequence):

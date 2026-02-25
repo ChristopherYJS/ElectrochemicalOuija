@@ -104,3 +104,39 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+<<<<<<< HEAD
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+=======
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+>>>>>>> 9f1a9de9da64e3ddb159f40936be42b97eb9122d
