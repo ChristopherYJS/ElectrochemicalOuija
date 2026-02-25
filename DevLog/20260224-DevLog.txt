@@ -30,3 +30,7 @@ Error End.
 2026-02-24 20:57:49>>>Traceback Error: TypeError: ECO_pot.switchChannel() takes 1 positional argument but 2 were given
 File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
 Error End.
+2026-02-24 21:29:39>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute 'channelButtonGroup'
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 572	| Function: <module>
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 51	| Function: __init__
+Error End.

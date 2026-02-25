@@ -28,7 +28,7 @@ from pt_biologic import Biologic
 class ECO_pot(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        self.dicTechWin={
+        self.dictTechWin={
             'CA':CAUI,
             'CP':CPUI,
             'CV':CVUI,
@@ -37,26 +37,25 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             'Move':MoveUI,
             'Loop':LoopUI
         }
-        self.itemTechPair={}
-        self.channelTechs={}
+        self.dictChannelTechs={}
         self.setupUi(self)
-        self.ps_address = "192.168.2.2"
-        self.ps_channel = 1
+        self.addressPs = "192.168.2.2"
+        self.numCurrentChannel = 1
         self.ps_binary_path = os.environ.get("ECLIB_DIR", f"C:{os.sep}EC-Lab Development Package{os.sep}lib")
-        self.CRdic={}
-        self.PRDic={}
-        self.BWDic={}
-        self.channelRbtnDic={}
-        self.channelRbtnGroup=QButtonGroup(self)
-        self.channelButtonGroup.setExclusive(True)
+        self.dictCR={}
+        self.dictPR={}
+        self.dictBW={}
+        self.dictChannelRbtn={}
+        self.groupChannelRbtn=QButtonGroup(self)
+        self.groupChannelRbtn.setExclusive(True)
         self.isPSConnected = False
-        self.isChannelRunning={} 
+        self.dictChannelStatus={} 
         self.plotDataByTech = {}
         self.currentMeasuredTech = None
         self.plotXAxisOptions = {}
         self.plotYAxisOptions = {}
         self.restyle()
-        self.bindEvent()
+        self.bindTechLabels()
         self.bindSignalSlot()
         self._updateStatusBar()
         self.showMaximized()
@@ -82,13 +81,13 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         # Setup Log widget in the log section
         self.Log = QPlainTextEdit()
         self.Log.setReadOnly(True)
-        self._clearWidget(self.frame_Log)
-        self.frame_Log.layout().addWidget(self.Log)
+        self._clearWidget(self.frame_log)
+        self.frame_log.layout().addWidget(self.Log)
         self.lineEditLogInput = self.lineEdit
         self.lineEditLogInput.setPlaceholderText("Enter Python expression and press Enter")
         
         # Setup potentiostat section - add placeholder for tech details
-        self._clearWidget(self.frame_pot)
+        self._clearWidget(self.frame_ps)
 
         # Setup plot area and plot controls
         self._initPlotWidgets()
@@ -96,9 +95,11 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
     @errorDeco(logger='self.Log')
     def addTech(self,sender,event):
-        isChannelFree=not self.isChannelRunning.get(self.ps_channel)
+        isChannelFree=not self.dictChannelStatus.get(self.numCurrentChannel, False)
         if self.isPSConnected and isChannelFree:
-            i_ranges = self.CRdic.get(self.ps_channel, [])
+            if self.numCurrentChannel not in self.dictChannelTechs:
+                self.dictChannelTechs[self.numCurrentChannel] = {}
+            i_ranges = self.dictCR.get(self.numCurrentChannel, [])
             item = QTreeWidgetItem()
             item.setText(0, sender.text())
             item.setSizeHint(0,QSize(0,30))
@@ -108,18 +109,18 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.treeWidget_Techs.addTopLevelItem(item)
             
             # Remove all widgets from the potentiostat section before loading new Form
-            self._clearWidget(self.frame_pot)
+            self._clearWidget(self.frame_ps)
 
-            ui_class = self.dicTechWin.get(sender.text())
+            ui_class = self.dictTechWin.get(sender.text())
             page = self._buildTab(ui_class, item, i_ranges=i_ranges)     # QWidget ready
-            self.frame_pot.layout().addWidget(page)
-            self.itemTechPair[item] = page
-            if hasattr(page, "setCR") and self.ps_channel in self.CRdic:
-                    page.setCR(self.CRdic[self.ps_channel])
-            if hasattr(page, "setPR") and self.ps_channel in self.PRDic:
-                page.setPR(self.PRDic[self.ps_channel])
-            if hasattr(page, "setBW") and self.ps_channel in self.BWDic:
-                page.setBW(self.BWDic[self.ps_channel])
+            self.frame_ps.layout().addWidget(page)
+            self.dictChannelTechs[self.numCurrentChannel][item] = page
+            if hasattr(page, "setCR") and self.numCurrentChannel in self.dictCR:
+                    page.setCR(self.dictCR[self.numCurrentChannel])
+            if hasattr(page, "setPR") and self.numCurrentChannel in self.dictPR:
+                page.setPR(self.dictPR[self.numCurrentChannel])
+            if hasattr(page, "setBW") and self.numCurrentChannel in self.dictBW:
+                page.setBW(self.dictBW[self.numCurrentChannel])
         else:
             #pop warning window to inform user to connect potentiostat or free the channel
             warning_msg = "Please connect to the potentiostat and ensure the channel is free before editing experiment sequence."
@@ -128,11 +129,12 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             
 
     #---------------- Signal-Slot binding ----------------
-
+    @errorDeco(logger='self.Log')
     def bindSignalSlot(self):
         # Show the tech setup for the clicked tree item
         self.treeWidget_Techs.itemClicked.connect(self.TreeItemClicked)
         self.treeWidget_Techs.itemRemoved.connect(self._onTechItemRemoved)
+        self.treeWidget_Techs.itemsReordered.connect(self._onTechItemsReordered)
         self.pushButtonStart.clicked.connect(self.startTech)
         self.pushButtonConnect.clicked.connect(self.connectPs)
         self.pushButtonPsInfo.clicked.connect(self.configurePotentiostat)
@@ -144,30 +146,30 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.comboBoxPlotX.currentTextChanged.connect(lambda _: self._renderSelectedPlot())
         if hasattr(self, "comboBoxPlotY"):
             self.comboBoxPlotY.currentTextChanged.connect(lambda _: self._renderSelectedPlot())
+        self.groupChannelRbtn.buttonToggled.connect(lambda btn: self.switchChannel(btn) )
 
-    @errorDeco(logger='self.Log')
-    def configurePotentiostat(self):
-        result = get_potentiostat_info_from_dialog(
-            self,
-            self.ps_address,
-            self.ps_channel,
-            self.ps_binary_path,
-        )
-        if result is not None:
-            self.ps_address, self.ps_channel, self.ps_binary_path = result
-            self.logMsg(
-                f"> Potentiostat info updated: address={self.ps_address}, channel={self.ps_channel}, binary_path={self.ps_binary_path}"
-            )
-            self._updateStatusBar()
+    # @errorDeco(logger='self.Log')
+    # def configurePotentiostat(self):
+    #     result = get_potentiostat_info_from_dialog(
+    #         self,
+    #         self.addressPs,
+    #         self.ps_binary_path,
+    #     )
+    #     if result is not None:
+    #         self.addressPs, self.ps_binary_path = result
+    #         self.logMsg(
+    #             f"> Potentiostat info updated: address={self.addressPs}, binary_path={self.ps_binary_path}"
+    #         )
+    #         self._updateStatusBar()
     
-    def bindEvent(self):
+    def bindTechLabels(self):
         for label in self.scrollAreaOption_Techs.findChildren(QLabel):
             label.mouseDoubleClickEvent=lambda e, sender=label: self.addTech(sender,e)
         
     #---------------- Slot functions ----------------  
     @errorDeco(logger='self.Log')
     def TreeItemClicked(self, item, column=None):
-        page = self.itemTechPair.get(item)
+        page = self.dictChannelTechs[self.numCurrentChannel].get(item)
         if page is None:
             return
         # If page is in a floating window, close that window
@@ -181,14 +183,14 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             page.setParent(None)
         
         # Show the tech details in potentiostat section
-        self._clearWidget(self.frame_pot)
-        self.frame_pot.layout().addWidget(page)
+        self._clearWidget(self.frame_ps)
+        self.frame_ps.layout().addWidget(page)
 
     @errorDeco(logger='self.Log')
     def startTech(self):
         self.sequence=[]
         for item in self._iter_tree_items():
-            page=self.itemTechPair.get(item)
+            page=self.dictChannelTechs[self.numCurrentChannel].get(item)
             if page is not None:
                 self.sequence.append(page.outputParam())
         # if hasattr(self, 'bio_worker'):
@@ -206,18 +208,18 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             # Multiple channels: list of [channel, CRlist, PRlist, BWlist]
             for options in listOptions:
                 channel, CRlist, PRlist, BWlist = options
-                self.CRdic[channel] = CRlist
-                self.PRDic[channel] = PRlist
-                self.BWDic[channel] = BWlist
+                self.dictCR[channel] = CRlist
+                self.dictPR[channel] = PRlist
+                self.dictBW[channel] = BWlist
             # Set default channel to the first available
-            self.ps_channel = listOptions[0][0] if listOptions else 1
+            self.numCurrentChannel = listOptions[0][0] if listOptions else 1
         else:
             # Single channel
             channel, CRlist, PRlist, BWlist = listOptions
-            self.ps_channel = channel
-            self.CRdic[channel] = CRlist
-            self.PRDic[channel] = PRlist
-            self.BWDic[channel] = BWlist
+            self.numCurrentChannel = channel
+            self.dictCR[channel] = CRlist
+            self.dictPR[channel] = PRlist
+            self.dictBW[channel] = BWlist
         
         self._setPotentiostatConnected(True)
         self._refreshTechOptions()
@@ -228,12 +230,10 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             channelRbutton=QRadioButton(f"CH {channel}")
             channelRbutton.objectName=f"radioButton_CH{channel}"
             self.formLayout_Channel.addWidget(channelRbutton)
-            self.channelRbtnDic[channel]=channelRbutton
-            self.channelRbtnGroup.addButton(channelRbutton, channel)
-            channelRbutton.toggled.connect(lambda ch=channel: self.switchChannel(ch))
-            if channel == self.ps_channel:
-                channelRbutton.setChecked(True)
-            self.isChannelRunning[channel]=False
+            self.dictChannelRbtn[channel]=channelRbutton
+            self.groupChannelRbtn.addButton(channelRbutton, channel)
+            self.dictChannelStatus[channel]=False  
+
 
     # Start potentiostat thread
     @errorDeco(logger='self.Log')
@@ -243,7 +243,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             return
         
         self.bio_thread = QThread(self)
-        self.bio_worker = Biologic(self.ps_address, self.ps_binary_path)
+        self.bio_worker = Biologic(self.addressPs, self.ps_binary_path)
         self.bio_worker.moveToThread(self.bio_thread)
 
         self.bio_thread.started.connect(self.bio_worker.connectDevice)
@@ -294,13 +294,17 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             print(msg)
 
     @errorDeco(logger='self.Log')
-    def switchChannel(self, channel):
-        self.ps_channel = channel
-        self._refreshTechOptions()
-        self.logMsg(f"> Switched to channel {channel}")
-
-    
-
+    def switchChannel(self, btn):
+        channel = self.groupChannelRbtn.id(btn)
+        self.numCurrentChannel = channel
+        self.treeWidget_Techs.clear()
+        self._clearWidget(self.frame_ps)
+        sequence = self.dictChannelTechs.get(channel, {})
+        if sequence:
+            for item, page in sequence.items():
+                self.treeWidget_Techs.addTopLevelItem(item)
+                self.frame_ps.layout().addWidget(page)
+                
     #---------------- Helper functions ----------------
 
     def _clearWidget(self, widget: QWidget):
@@ -344,10 +348,22 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             yield from self._iter_tree_items(item)
 
     def _onTechItemRemoved(self, item: QTreeWidgetItem):
-        page = self.itemTechPair.pop(item, None)
-        if page is not None:
-            page.setParent(None)
-            page.deleteLater()
+        if self.numCurrentChannel in self.dictChannelTechs:
+            page = self.dictChannelTechs[self.numCurrentChannel].pop(item, None)
+            if page is not None:
+                page.setParent(None)
+                page.deleteLater()
+
+    def _onTechItemsReordered(self):
+        if self.numCurrentChannel not in self.dictChannelTechs:
+            return
+        # Reorder the dict to match the tree order
+        new_dict = {}
+        for idx in range(self.treeWidget_Techs.topLevelItemCount()):
+            item = self.treeWidget_Techs.topLevelItem(idx)
+            if item in self.dictChannelTechs[self.numCurrentChannel]:
+                new_dict[item] = self.dictChannelTechs[self.numCurrentChannel][item]
+        self.dictChannelTechs[self.numCurrentChannel] = new_dict
 
     def _setPotentiostatConnected(self, connected: bool):
         self.isPSConnected = connected
@@ -541,17 +557,18 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.plotCanvas.draw_idle()
 
     def _updateStatusBar(self):
-        message = f"Potentiostat Channel: {self.ps_channel}" if self.isPSConnected else "Potentiostat Disconnected"
+        message = f"Potentiostat Channel: {self.numCurrentChannel}" if self.isPSConnected else "Potentiostat Disconnected"
         self.statusBar().showMessage(message)
     
     def _refreshTechOptions(self):
-        for page in self.itemTechPair.values():
-            if hasattr(page, "setCR") and self.ps_channel in self.CRdic:
-                page.setCR(self.CRdic[self.ps_channel])
-            if hasattr(page, "setPR") and self.ps_channel in self.PRDic:
-                page.setPR(self.PRDic[self.ps_channel])
-            if hasattr(page, "setBW") and self.ps_channel in self.BWDic:
-                page.setBW(self.BWDic[self.ps_channel])
+        current_channel_dict = self.dictChannelTechs.get(self.numCurrentChannel, {})
+        for page in current_channel_dict.values():
+            if hasattr(page, "setCR") and self.numCurrentChannel in self.dictCR:
+                page.setCR(self.dictCR[self.numCurrentChannel])
+            if hasattr(page, "setPR") and self.numCurrentChannel in self.dictPR:
+                page.setPR(self.dictPR[self.numCurrentChannel])
+            if hasattr(page, "setBW") and self.numCurrentChannel in self.dictBW:
+                page.setBW(self.dictBW[self.numCurrentChannel])
 
     def closeEvent(self, event):
         if hasattr(self, 'bio_thread') and self.bio_thread.isRunning():

@@ -5,6 +5,7 @@ from PySide6.QtGui import QAction, QKeySequence, QMouseEvent, QCursor
 
 class TechTreeWidget(QTreeWidget):
     itemRemoved = Signal(QTreeWidgetItem)
+    itemsReordered = Signal()
 
     def dropEvent(self, event):
         target = self.itemAt(event.position().toPoint())
@@ -14,6 +15,7 @@ class TechTreeWidget(QTreeWidget):
                 event.ignore()
                 return
         super().dropEvent(event)
+        self.itemsReordered.emit()
         
     def keyPressEvent(self, event):
         if event.key() == Qt.Key.Key_Delete:

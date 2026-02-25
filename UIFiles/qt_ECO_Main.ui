@@ -456,7 +456,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QFrame" name="frame_pot">
+           <widget class="QFrame" name="frame_ps">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -491,7 +491,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QFrame" name="frame_pos">
+           <widget class="QFrame" name="frame_mp">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
               <horstretch>0</horstretch>
@@ -526,7 +526,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QFrame" name="frame_Log">
+           <widget class="QFrame" name="frame_log">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
               <horstretch>0</horstretch>

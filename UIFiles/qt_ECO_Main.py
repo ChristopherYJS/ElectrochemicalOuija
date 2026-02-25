@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_ECO_Main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.2
+## Created by: Qt User Interface Compiler version 6.10.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -270,13 +270,13 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_Pot.addWidget(self.label_2)
 
-        self.frame_pot = QFrame(self.verticalLayoutWidget_3)
-        self.frame_pot.setObjectName(u"frame_pot")
-        sizePolicy5.setHeightForWidth(self.frame_pot.sizePolicy().hasHeightForWidth())
-        self.frame_pot.setSizePolicy(sizePolicy5)
-        self.frame_pot.setFrameShape(QFrame.Panel)
+        self.frame_ps = QFrame(self.verticalLayoutWidget_3)
+        self.frame_ps.setObjectName(u"frame_ps")
+        sizePolicy5.setHeightForWidth(self.frame_ps.sizePolicy().hasHeightForWidth())
+        self.frame_ps.setSizePolicy(sizePolicy5)
+        self.frame_ps.setFrameShape(QFrame.Panel)
 
-        self.verticalLayout_Pot.addWidget(self.frame_pot)
+        self.verticalLayout_Pot.addWidget(self.frame_ps)
 
         self.splitter_Mid.addWidget(self.verticalLayoutWidget_3)
         self.verticalLayoutWidget_2 = QWidget(self.splitter_Mid)
@@ -292,13 +292,13 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_Pos.addWidget(self.label)
 
-        self.frame_pos = QFrame(self.verticalLayoutWidget_2)
-        self.frame_pos.setObjectName(u"frame_pos")
-        sizePolicy5.setHeightForWidth(self.frame_pos.sizePolicy().hasHeightForWidth())
-        self.frame_pos.setSizePolicy(sizePolicy5)
-        self.frame_pos.setFrameShape(QFrame.Panel)
+        self.frame_mp = QFrame(self.verticalLayoutWidget_2)
+        self.frame_mp.setObjectName(u"frame_mp")
+        sizePolicy5.setHeightForWidth(self.frame_mp.sizePolicy().hasHeightForWidth())
+        self.frame_mp.setSizePolicy(sizePolicy5)
+        self.frame_mp.setFrameShape(QFrame.Panel)
 
-        self.verticalLayout_Pos.addWidget(self.frame_pos)
+        self.verticalLayout_Pos.addWidget(self.frame_mp)
 
         self.splitter_Mid.addWidget(self.verticalLayoutWidget_2)
         self.verticalLayoutWidget_4 = QWidget(self.splitter_Mid)
@@ -314,13 +314,13 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_Log.addWidget(self.label_3)
 
-        self.frame_Log = QFrame(self.verticalLayoutWidget_4)
-        self.frame_Log.setObjectName(u"frame_Log")
-        sizePolicy5.setHeightForWidth(self.frame_Log.sizePolicy().hasHeightForWidth())
-        self.frame_Log.setSizePolicy(sizePolicy5)
-        self.frame_Log.setFrameShape(QFrame.Panel)
+        self.frame_log = QFrame(self.verticalLayoutWidget_4)
+        self.frame_log.setObjectName(u"frame_log")
+        sizePolicy5.setHeightForWidth(self.frame_log.sizePolicy().hasHeightForWidth())
+        self.frame_log.setSizePolicy(sizePolicy5)
+        self.frame_log.setFrameShape(QFrame.Panel)
 
-        self.verticalLayout_Log.addWidget(self.frame_Log)
+        self.verticalLayout_Log.addWidget(self.frame_log)
 
         self.lineEdit = QLineEdit(self.verticalLayoutWidget_4)
         self.lineEdit.setObjectName(u"lineEdit")

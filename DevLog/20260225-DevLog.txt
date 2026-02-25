@@ -1,0 +1,4 @@
+2026-02-25 00:44:13>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute 'configurePotentiostat'
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 140	| Function: bindSignalSlot
+Error End.
