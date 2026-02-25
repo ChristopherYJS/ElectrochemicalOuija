@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_ECO_Main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.10.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -16,10 +16,10 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGraphicsView,
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-    QMainWindow, QMenu, QMenuBar, QPushButton,
-    QRadioButton, QScrollArea, QSizePolicy, QSpacerItem,
+from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QFrame,
+    QGraphicsView, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QMainWindow, QMenu, QMenuBar,
+    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
     QSplitter, QStatusBar, QTreeWidget, QTreeWidgetItem,
     QVBoxLayout, QWidget)
 
@@ -117,14 +117,14 @@ class Ui_MainWindow(object):
         sizePolicy2.setHeightForWidth(self.splitter_Tech.sizePolicy().hasHeightForWidth())
         self.splitter_Tech.setSizePolicy(sizePolicy2)
         self.splitter_Tech.setOrientation(Qt.Vertical)
-        self.scrollAreaOption_Tech = QScrollArea(self.splitter_Tech)
-        self.scrollAreaOption_Tech.setObjectName(u"scrollAreaOption_Tech")
+        self.scrollAreaOption_Techs = QScrollArea(self.splitter_Tech)
+        self.scrollAreaOption_Techs.setObjectName(u"scrollAreaOption_Techs")
         sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.scrollAreaOption_Tech.sizePolicy().hasHeightForWidth())
-        self.scrollAreaOption_Tech.setSizePolicy(sizePolicy4)
-        self.scrollAreaOption_Tech.setWidgetResizable(True)
+        sizePolicy4.setHeightForWidth(self.scrollAreaOption_Techs.sizePolicy().hasHeightForWidth())
+        self.scrollAreaOption_Techs.setSizePolicy(sizePolicy4)
+        self.scrollAreaOption_Techs.setWidgetResizable(True)
         self.scrollAreaWidgetContents_Tech = QWidget()
         self.scrollAreaWidgetContents_Tech.setObjectName(u"scrollAreaWidgetContents_Tech")
         self.scrollAreaWidgetContents_Tech.setGeometry(QRect(0, 0, 196, 126))
@@ -174,36 +174,26 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.labelLoop)
 
-        self.scrollAreaOption_Tech.setWidget(self.scrollAreaWidgetContents_Tech)
-        self.splitter_Tech.addWidget(self.scrollAreaOption_Tech)
-        self.treeWidget = QTreeWidget(self.splitter_Tech)
+        self.scrollAreaOption_Techs.setWidget(self.scrollAreaWidgetContents_Tech)
+        self.splitter_Tech.addWidget(self.scrollAreaOption_Techs)
+        self.treeWidget_Techs = QTreeWidget(self.splitter_Tech)
         __qtreewidgetitem = QTreeWidgetItem()
         __qtreewidgetitem.setText(0, u"1");
-        self.treeWidget.setHeaderItem(__qtreewidgetitem)
-        self.treeWidget.setObjectName(u"treeWidget")
+        self.treeWidget_Techs.setHeaderItem(__qtreewidgetitem)
+        self.treeWidget_Techs.setObjectName(u"treeWidget_Techs")
         sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
         sizePolicy5.setHorizontalStretch(0)
         sizePolicy5.setVerticalStretch(0)
-        sizePolicy5.setHeightForWidth(self.treeWidget.sizePolicy().hasHeightForWidth())
-        self.treeWidget.setSizePolicy(sizePolicy5)
-        self.splitter_Tech.addWidget(self.treeWidget)
+        sizePolicy5.setHeightForWidth(self.treeWidget_Techs.sizePolicy().hasHeightForWidth())
+        self.treeWidget_Techs.setSizePolicy(sizePolicy5)
+        self.splitter_Tech.addWidget(self.treeWidget_Techs)
 
         self.verticalLayout_Tech.addWidget(self.splitter_Tech)
 
-        self.verticalLayout_Channel = QVBoxLayout()
-        self.verticalLayout_Channel.setObjectName(u"verticalLayout_Channel")
-        self.radioButton = QRadioButton(self.centralwidget)
-        self.radioButton.setObjectName(u"radioButton")
+        self.formLayout_Channel = QFormLayout()
+        self.formLayout_Channel.setObjectName(u"formLayout_Channel")
 
-        self.verticalLayout_Channel.addWidget(self.radioButton)
-
-        self.radioButton_2 = QRadioButton(self.centralwidget)
-        self.radioButton_2.setObjectName(u"radioButton_2")
-
-        self.verticalLayout_Channel.addWidget(self.radioButton_2)
-
-
-        self.verticalLayout_Tech.addLayout(self.verticalLayout_Channel)
+        self.verticalLayout_Tech.addLayout(self.formLayout_Channel)
 
         self.frame_tech = QFrame(self.centralwidget)
         self.frame_tech.setObjectName(u"frame_tech")
@@ -257,6 +247,8 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_Tech.addWidget(self.frame_tech)
 
+        self.verticalLayout_Tech.setStretch(0, 8)
+        self.verticalLayout_Tech.setStretch(1, 2)
 
         self.horizontalLayout_Main.addLayout(self.verticalLayout_Tech)
 
@@ -536,10 +528,8 @@ class Ui_MainWindow(object):
         self.labelTechEIS.setText(QCoreApplication.translate("MainWindow", u"EIS", None))
         self.labelMove.setText(QCoreApplication.translate("MainWindow", u"Move", None))
         self.labelLoop.setText(QCoreApplication.translate("MainWindow", u"Loop", None))
-        self.radioButton.setText(QCoreApplication.translate("MainWindow", u"CH 1", None))
-        self.radioButton_2.setText(QCoreApplication.translate("MainWindow", u"CH 2", None))
         self.pushButtonStart.setText(QCoreApplication.translate("MainWindow", u"Start", None))
-        self.pushButtonErrorTest.setText(QCoreApplication.translate("MainWindow", u"Error", None))
+        self.pushButtonErrorTest.setText(QCoreApplication.translate("MainWindow", u"asd", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Potentiostat", None))

@@ -167,7 +167,7 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_Main" stretch="1,2,3">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_Tech" stretch="0,0,0">
+       <layout class="QVBoxLayout" name="verticalLayout_Tech" stretch="8,2,0">
         <item>
          <widget class="QSplitter" name="splitter_Tech">
           <property name="sizePolicy">
@@ -179,7 +179,7 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QScrollArea" name="scrollAreaOption_Tech">
+          <widget class="QScrollArea" name="scrollAreaOption_Techs">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
              <horstretch>0</horstretch>
@@ -286,7 +286,7 @@
             </layout>
            </widget>
           </widget>
-          <widget class="QTreeWidget" name="treeWidget">
+          <widget class="QTreeWidget" name="treeWidget_Techs">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -302,22 +302,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_Channel">
-          <item>
-           <widget class="QRadioButton" name="radioButton">
-            <property name="text">
-             <string>CH 1</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="radioButton_2">
-            <property name="text">
-             <string>CH 2</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QFormLayout" name="formLayout_Channel"/>
         </item>
         <item>
          <widget class="QFrame" name="frame_tech">
@@ -386,7 +371,7 @@
               </size>
              </property>
              <property name="text">
-              <string>Error</string>
+              <string>asd</string>
              </property>
             </widget>
            </item>

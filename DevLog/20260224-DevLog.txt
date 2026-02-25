@@ -1,0 +1,32 @@
+2026-02-24 19:56:29>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute 'treeWidget'
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 540	| Function: <module>
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 55	| Function: __init__
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 65	| Function: restyle
+Error End.
+2026-02-24 19:57:09>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute 'scrollAreaOption_Tech'
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 540	| Function: <module>
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 56	| Function: __init__
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindEvent
+Error End.
+2026-02-24 19:57:20>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute 'scrollAreaOption_Tech'
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 540	| Function: <module>
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 56	| Function: __init__
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindEvent
+Error End.
+2026-02-24 20:53:04>>>Traceback Error: TypeError: Biologic.__init__() takes 3 positional arguments but 4 were given
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 241	| Function: connectPs
+Error End.
+2026-02-24 20:53:39>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute 'verticalLayout_Channel'
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 228	| Function: updateChannelOption
+Error End.
+2026-02-24 20:54:54>>>Traceback Error: TypeError: ECO_pot.switchChannel() takes 1 positional argument but 2 were given
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+Error End.
+2026-02-24 20:57:49>>>Traceback Error: TypeError: ECO_pot.switchChannel() takes 1 positional argument but 2 were given
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+Error End.
+2026-02-24 20:57:49>>>Traceback Error: TypeError: ECO_pot.switchChannel() takes 1 positional argument but 2 were given
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+Error End.
