@@ -125,6 +125,7 @@ class CV(QWidget, Ui_Form, PSTech):
             return {}
         cv_settings = {
             "technique": "cv",
+            "name": self.name,
             "Ei": self.Ei,
             "E1": self.E1,
             "E2": self.E2,

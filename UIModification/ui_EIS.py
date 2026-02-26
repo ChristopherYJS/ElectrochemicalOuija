@@ -148,6 +148,7 @@ class EIS(QWidget, Ui_Form, PSTech):
         """Return current parameters as a dict."""
         eis_settings = {
             'technique': 'eis',  # Technique identifier
+            'name': self.name,  # User-defined name for this EIS step
             'potential': self.potential,  # DC potential in V vs ref
             'duration': self.duration,  # Duration before EIS in s
             'record_dt': self.sampleTime,  # Record at each time increment in s

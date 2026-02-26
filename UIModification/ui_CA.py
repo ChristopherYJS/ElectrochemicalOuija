@@ -83,17 +83,19 @@ class CA(QWidget, Ui_Form, PSTech):
     def outputParam(self) -> dict:
         self._pullFields()  # Ensure model is up-to-date with UI
         """Return current parameters as a dict."""
-        ca_settings= { 'technique': 'ca', # Technique identifier
-                'voltage': self.potential, # Voltage applied in V vs ref
-                'duration': self.duration, # Duration of CA measurement in s
-                'vs_init': False, # Voltage step vs initial one
-                'repeat_count': self.repeat, # Repetition of measurement
-                'record_dt': self.sampleTime, # Record potential at each time increment in s
-                'record_dI': self.sampleCurrent, # Record potential at each potential increment in A
-                'i_range': self.CR, # Current range for CA measurement
-                'charge': 64, # Record total charge
-                'timebase': 0.000026
-                   }
+        ca_settings= { 
+            'technique': 'ca', # Technique identifier
+            'name': self.name, # User-defined name for this CA step
+            'voltage': self.potential, # Voltage applied in V vs ref
+            'duration': self.duration, # Duration of CA measurement in s
+            'vs_init': False, # Voltage step vs initial one
+            'repeat_count': self.repeat, # Repetition of measurement
+            'record_dt': self.sampleTime, # Record potential at each time increment in s
+            'record_dI': self.sampleCurrent, # Record potential at each potential increment in A
+            'i_range': self.CR, # Current range for CA measurement
+            'charge': 64, # Record total charge
+            'timebase': 0.000026
+        }
         return ca_settings
     
     def setCR(self,i_ranges):

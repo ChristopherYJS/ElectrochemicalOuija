@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_ECO_Main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -16,12 +16,11 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QFrame,
-    QGraphicsView, QHBoxLayout, QHeaderView, QLabel,
-    QLineEdit, QMainWindow, QMenu, QMenuBar,
-    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
-    QSplitter, QStatusBar, QTreeWidget, QTreeWidgetItem,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QFormLayout, QFrame, QHBoxLayout,
+    QHeaderView, QLabel, QLineEdit, QMainWindow,
+    QMenu, QMenuBar, QPushButton, QScrollArea,
+    QSizePolicy, QSpacerItem, QSplitter, QStatusBar,
+    QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -333,145 +332,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_Plot = QVBoxLayout()
         self.verticalLayout_Plot.setObjectName(u"verticalLayout_Plot")
-        self.graphicsView = QGraphicsView(self.centralwidget)
-        self.graphicsView.setObjectName(u"graphicsView")
-        sizePolicy5.setHeightForWidth(self.graphicsView.sizePolicy().hasHeightForWidth())
-        self.graphicsView.setSizePolicy(sizePolicy5)
-
-        self.verticalLayout_Plot.addWidget(self.graphicsView)
-
-        self.horizontalLayout_PlotSelect = QHBoxLayout()
-        self.horizontalLayout_PlotSelect.setObjectName(u"horizontalLayout_PlotSelect")
-        self.labelPlotTech = QLabel(self.centralwidget)
-        self.labelPlotTech.setObjectName(u"labelPlotTech")
-        sizePolicy6.setHeightForWidth(self.labelPlotTech.sizePolicy().hasHeightForWidth())
-        self.labelPlotTech.setSizePolicy(sizePolicy6)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotTech)
-
-        self.comboBoxPlotTech = QComboBox(self.centralwidget)
-        self.comboBoxPlotTech.setObjectName(u"comboBoxPlotTech")
-
-        self.horizontalLayout_PlotSelect.addWidget(self.comboBoxPlotTech)
-
-        self.line = QFrame(self.centralwidget)
-        self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.Shape.VLine)
-        self.line.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.line)
-
-        self.labelPlotRepeat = QLabel(self.centralwidget)
-        self.labelPlotRepeat.setObjectName(u"labelPlotRepeat")
-        sizePolicy6.setHeightForWidth(self.labelPlotRepeat.sizePolicy().hasHeightForWidth())
-        self.labelPlotRepeat.setSizePolicy(sizePolicy6)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotRepeat)
-
-        self.comboBoxPlotRepeat = QComboBox(self.centralwidget)
-        self.comboBoxPlotRepeat.setObjectName(u"comboBoxPlotRepeat")
-
-        self.horizontalLayout_PlotSelect.addWidget(self.comboBoxPlotRepeat)
-
-        self.line_2 = QFrame(self.centralwidget)
-        self.line_2.setObjectName(u"line_2")
-        self.line_2.setFrameShape(QFrame.Shape.VLine)
-        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.line_2)
-
-        self.labelPlotX = QLabel(self.centralwidget)
-        self.labelPlotX.setObjectName(u"labelPlotX")
-        sizePolicy6.setHeightForWidth(self.labelPlotX.sizePolicy().hasHeightForWidth())
-        self.labelPlotX.setSizePolicy(sizePolicy6)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotX)
-
-        self.comboBoxPlotX = QComboBox(self.centralwidget)
-        self.comboBoxPlotX.setObjectName(u"comboBoxPlotX")
-
-        self.horizontalLayout_PlotSelect.addWidget(self.comboBoxPlotX)
-
-        self.line_3 = QFrame(self.centralwidget)
-        self.line_3.setObjectName(u"line_3")
-        self.line_3.setFrameShape(QFrame.Shape.VLine)
-        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.line_3)
-
-        self.labelPlotY = QLabel(self.centralwidget)
-        self.labelPlotY.setObjectName(u"labelPlotY")
-        sizePolicy6.setHeightForWidth(self.labelPlotY.sizePolicy().hasHeightForWidth())
-        self.labelPlotY.setSizePolicy(sizePolicy6)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotY)
-
-        self.comboBoxPlotY = QComboBox(self.centralwidget)
-        self.comboBoxPlotY.setObjectName(u"comboBoxPlotY")
-
-        self.horizontalLayout_PlotSelect.addWidget(self.comboBoxPlotY)
-
-        self.line_5 = QFrame(self.centralwidget)
-        self.line_5.setObjectName(u"line_5")
-        self.line_5.setFrameShape(QFrame.Shape.VLine)
-        self.line_5.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.line_5)
-
-        self.labelPlotColor = QLabel(self.centralwidget)
-        self.labelPlotColor.setObjectName(u"labelPlotColor")
-        sizePolicy6.setHeightForWidth(self.labelPlotColor.sizePolicy().hasHeightForWidth())
-        self.labelPlotColor.setSizePolicy(sizePolicy6)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotColor)
-
-        self.comboPlotColor = QComboBox(self.centralwidget)
-        self.comboPlotColor.setObjectName(u"comboPlotColor")
-
-        self.horizontalLayout_PlotSelect.addWidget(self.comboPlotColor)
-
-        self.line_4 = QFrame(self.centralwidget)
-        self.line_4.setObjectName(u"line_4")
-        self.line_4.setFrameShape(QFrame.Shape.VLine)
-        self.line_4.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.line_4)
-
-        self.labelPlotLine = QLabel(self.centralwidget)
-        self.labelPlotLine.setObjectName(u"labelPlotLine")
-        sizePolicy6.setHeightForWidth(self.labelPlotLine.sizePolicy().hasHeightForWidth())
-        self.labelPlotLine.setSizePolicy(sizePolicy6)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotLine)
-
-        self.comboBoxPlotLine = QComboBox(self.centralwidget)
-        self.comboBoxPlotLine.setObjectName(u"comboBoxPlotLine")
-
-        self.horizontalLayout_PlotSelect.addWidget(self.comboBoxPlotLine)
-
-        self.line_6 = QFrame(self.centralwidget)
-        self.line_6.setObjectName(u"line_6")
-        self.line_6.setFrameShape(QFrame.Shape.VLine)
-        self.line_6.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.line_6)
-
-        self.labelPlotScatter = QLabel(self.centralwidget)
-        self.labelPlotScatter.setObjectName(u"labelPlotScatter")
-        sizePolicy6.setHeightForWidth(self.labelPlotScatter.sizePolicy().hasHeightForWidth())
-        self.labelPlotScatter.setSizePolicy(sizePolicy6)
-
-        self.horizontalLayout_PlotSelect.addWidget(self.labelPlotScatter)
-
-        self.comboBoxPlotScatter = QComboBox(self.centralwidget)
-        self.comboBoxPlotScatter.setObjectName(u"comboBoxPlotScatter")
-
-        self.horizontalLayout_PlotSelect.addWidget(self.comboBoxPlotScatter)
-
-
-        self.verticalLayout_Plot.addLayout(self.horizontalLayout_PlotSelect)
-
-        self.verticalLayout_Plot.setStretch(0, 1)
 
         self.horizontalLayout_Main.addLayout(self.verticalLayout_Plot)
 
@@ -535,13 +395,6 @@ class Ui_MainWindow(object):
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Potentiostat", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Positioner", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"Log", None))
-        self.labelPlotTech.setText(QCoreApplication.translate("MainWindow", u"Tech", None))
-        self.labelPlotRepeat.setText(QCoreApplication.translate("MainWindow", u"Repeat", None))
-        self.labelPlotX.setText(QCoreApplication.translate("MainWindow", u"X", None))
-        self.labelPlotY.setText(QCoreApplication.translate("MainWindow", u"Y", None))
-        self.labelPlotColor.setText(QCoreApplication.translate("MainWindow", u"Color", None))
-        self.labelPlotLine.setText(QCoreApplication.translate("MainWindow", u"Line", None))
-        self.labelPlotScatter.setText(QCoreApplication.translate("MainWindow", u"Scatter", None))
         self.menuConnect.setTitle(QCoreApplication.translate("MainWindow", u"Connect", None))
         self.menuPreference.setTitle(QCoreApplication.translate("MainWindow", u"Preference", None))
         self.menuWindows.setTitle(QCoreApplication.translate("MainWindow", u"Windows", None))

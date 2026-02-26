@@ -116,6 +116,7 @@ class CP(QWidget, Ui_Form, PSTech):
             return {}
         cp_settings = {
             'technique': 'cp',
+            'name': self.name,
             'current': self.current,
             'duration': self.duration,
             'vs_init': False,

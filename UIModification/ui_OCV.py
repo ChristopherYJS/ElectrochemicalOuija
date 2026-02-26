@@ -100,6 +100,7 @@ class OCV(QWidget, Ui_Form, PSTech):
         """Return current parameters as a dict."""
         ocv_settings = {
             'technique': 'ocv',  # Technique identifier
+            'name': self.name,  # User-defined name for this OCV step
             'duration': self.duration,  # Duration of OCV measurement in s
             'record_dt': self.sampleTime,  # Record potential at each time increment in s
             'record_dE': self.samplePotential,  # Record potential at each potential increment in V

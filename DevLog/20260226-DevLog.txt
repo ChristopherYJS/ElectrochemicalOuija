@@ -1,0 +1,298 @@
+2026-02-26 10:56:03>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute 'configurePotentiostat'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 140	| Function: bindSignalSlot
+Error End.
+2026-02-26 11:03:58>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute 'verticalLayout_4'
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 575	| Function: <module>
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 58	| Function: __init__
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 94	| Function: restyle
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 371	| Function: _initPlotWidgets
+Error End.
+2026-02-26 11:05:50>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute 'configurePotentiostat'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 141	| Function: bindSignalSlot
+Error End.
+2026-02-26 11:40:51>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute 'configurePotentiostat'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 141	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:30>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:30>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:31>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:31>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:32>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:32>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:33>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:33>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:34>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:34>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:35>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:35>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:36>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:37>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:37>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:38>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 15:15:38>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 151	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:19:55>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:19:55>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:19:56>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:19:56>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:19:57>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:19:57>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:19:58>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:19:58>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:19:59>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:19:59>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:00>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:00>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:01>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:01>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:02>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:02>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:03>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:03>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:04>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:05>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:05>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:06>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:06>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:07>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:07>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:08>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:08>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:09>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:09>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:10>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:10>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:11>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:11>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:12>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:12>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:13>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:13>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:14>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:14>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:15>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:15>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:16>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:16>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:17>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:17>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:18>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:18>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:19>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:19>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:20>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:20>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:21>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.
+2026-02-26 16:20:21>>>Traceback Error: AttributeError: 'PySide6.QtWidgets.QTreeWidget' object has no attribute 'itemRemoved'
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 155	| Function: bindSignalSlot
+Error End.

@@ -34,9 +34,7 @@ class Biologic(QObject):
     signalChannelOption=Signal(list)
     def __init__(self,address,binary_path):
         super().__init__()
-        self.recordTimer=QTimer()
-        self.recordTimer.setInterval(1000)
-        self.recordTimer.timeout.connect(self.recordData)
+        self.recordTimers = {}  # dict of channel: QTimer
         self.address=address
         self.binary_path=binary_path
         self.api = None
@@ -71,6 +69,13 @@ class Biologic(QObject):
             return
         self.signalLog.emit(f"> Available channels: {self.channels}")
         self.signalChannelOption.emit(self.channels)
+        
+        # Create timers for each channel
+        for ch in self.channels:
+            timer = QTimer()
+            timer.setInterval(1000)
+            timer.timeout.connect(lambda ch=ch: self.recordData(ch))
+            self.recordTimers[ch] = timer
         
         # Use the first channel as default
         self.channel = self.channels[0]
@@ -126,12 +131,13 @@ class Biologic(QObject):
         self.signalConnected.emit(self.channels_options)
 
     @errorDeco(signal='self.signalLog')
-    def runSequence(self,sequence):
+    def runSequence(self,sequence, channel):
         #check if potentiostat is connected and kernel is loaded
         if not hasattr(self, "api") or not self.api:
             self.signalLog.emit("> Device not connected. Please connect to the device first.")
             return
         else:
+            self.channel = channel  # Set current channel
             verbosity = 1
             tech_count = 0
             for measurement in sequence:
@@ -149,7 +155,8 @@ class Biologic(QObject):
                         tech_file, ecc_parms = cp_parm(self.board_type, self.api, measurement)
                         tech_count += 1
                     case _:
-                        self.signalLog.emit(f"Technique: {measurement} at Step:{tech_count} is not an valid technique")
+                        self.signalLog.emit(f"Technique: {measurement} at Step:{tech_count} is not a valid PS technique")
+                        continue
                 # BL_LoadTechnique
                 if len(sequence) == 1:
                     self.api.LoadTechnique(self.id_, self.channel, tech_file, ecc_parms, first=True, last=True, display=(verbosity > 1))
@@ -168,16 +175,16 @@ class Biologic(QObject):
             
             # BL_StartChannel
             self.api.StartChannel(self.id_, self.channel)
-            if self.recordTimer.isActive():
-                self.recordTimer.stop()
-            self.recordTimer.start()
+            if self.recordTimers[self.channel].isActive():
+                self.recordTimers[self.channel].stop()
+            self.recordTimers[self.channel].start()
             self.is_running = True
             self.current_tech=None
             self.signalLog.emit(f"> Experiment started on channel {self.channel}.")
 
     @errorDeco(signal='self.signalLog')
-    def recordData(self):
-        data = self.api.GetData(self.id_, self.channel)
+    def recordData(self, channel):
+        data = self.api.GetData(self.id_, channel)
         print(data)
         status, tech_name = get_info_data(self.api, data)
         
@@ -186,20 +193,21 @@ class Biologic(QObject):
             self.signalData.emit(tech_name, output)
 
         if status == "STOP":
-            self.recordTimer.stop()
+            self.recordTimers[channel].stop()
             self.is_running = False
             self.signalLog.emit(f"\nExperiment finished. Data recorded in {self.filename} series.")
 
     @errorDeco(signal='self.signalLog')
     def stopExperiment(self, disconnect: bool = False):
-        if self.recordTimer.isActive():
-            self.recordTimer.stop()
+        for ch, timer in self.recordTimers.items():
+            if timer.isActive():
+                timer.stop()
 
         if self.api and self.id_ is not None and self.is_running:
-            self.api.StopChannel(self.id_, self.channel)
-            self.signalLog.emit(f"> Experiment stopped on channel {self.channel}.")
-
-        self.is_running = False
+            for ch in self.channels:
+                self.api.StopChannel(self.id_, ch)
+            self.signalLog.emit(f"> Experiments stopped on all channels.")
+            self.is_running = False
 
         if disconnect and self.api and self.id_ is not None:
             self.api.Disconnect(self.id_)
@@ -210,7 +218,7 @@ class Biologic(QObject):
     
     def _get_save_filename(self) -> str:
 
-        default_name = f"{time.strftime('%Y%m%d')}-result.csv"
+        default_name = f"{time.strftime('%Y%m%d')}.csv"
         filename, _ = QFileDialog.getSaveFileName(
             None,
             "Save Experiment Data",
