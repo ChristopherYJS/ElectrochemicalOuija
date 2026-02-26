@@ -67,6 +67,13 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.current_tech = None
         self.tech_counters = {}
         self.current_seq_index = -1
+        self.restyle()
+        self.bindTechLabels()
+        self.bindSignalSlot()
+        self._updateStatusBar()
+        self.showMaximized()
+        self._repl_globals = {"__builtins__": __builtins__}
+        self._repl_locals = {"self": self}
 
     def _check_and_replot(self):
         if self.new_data_available:
@@ -74,12 +81,6 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             if selectedTech == "Current Tech" or selectedTech == self.currentMeasuredTech:
                 self._renderSelectedPlot()
             self.new_data_available = False
-        self.bindTechLabels()
-        self.bindSignalSlot()
-        self._updateStatusBar()
-        self.showMaximized()
-        self._repl_globals = {"__builtins__": __builtins__}
-        self._repl_locals = {"self": self}
       
     def restyle(self):
         # Replace the treewidget in the ui file with our custom one
@@ -202,8 +203,9 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     #---------------- Slot functions ----------------  
     @errorDeco(logger='self.Log')
     def TreeItemClicked(self, item, column=None):
-        page = self.dictChannelTechs[self.numCurrentChannel].get(item)
+        page = self.dictChannelTechs.get(self.numCurrentChannel, {}).get(item)
         if page is None:
+            self._clearWidget(self.frame_ps)
             return
         # If page is in a floating window, close that window
         current_parent = page.parent()
@@ -377,13 +379,16 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     def switchChannel(self, btn):
         channel = self.groupChannelRbtn.id(btn)
         self.numCurrentChannel = channel
-        self.treeWidget_Techs.clear()
+        self._detachTreeItems()
         self._clearWidget(self.frame_ps)
         sequence = self.dictChannelTechs.get(channel, {})
         if sequence:
             for item, page in sequence.items():
                 self.treeWidget_Techs.addTopLevelItem(item)
-                self.frame_ps.layout().addWidget(page)
+            first_item = self.treeWidget_Techs.topLevelItem(0)
+            if first_item is not None:
+                self.treeWidget_Techs.setCurrentItem(first_item)
+                self.TreeItemClicked(first_item, 0)
                 
     #---------------- Helper functions ----------------
 
@@ -396,7 +401,12 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             layoutItem = layout.takeAt(0)
             childWidget = layoutItem.widget()
             if childWidget:
+                childWidget.hide()
                 childWidget.setParent(None)
+
+    def _detachTreeItems(self):
+        while self.treeWidget_Techs.topLevelItemCount() > 0:
+            self.treeWidget_Techs.takeTopLevelItem(0)
 
     def _buildTab(self, ui_class, item: QTreeWidgetItem, *, i_ranges: list[str] | None = None) -> QWidget:
         try:
@@ -437,10 +447,9 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     def _onTechItemsReordered(self):
         if self.numCurrentChannel not in self.dictChannelTechs:
             return
-        # Reorder the dict to match the tree order
+        # Reorder the dict to match the full tree order (top-level + children)
         new_dict = {}
-        for idx in range(self.treeWidget_Techs.topLevelItemCount()):
-            item = self.treeWidget_Techs.topLevelItem(idx)
+        for item in self._iter_tree_items():
             if item in self.dictChannelTechs[self.numCurrentChannel]:
                 new_dict[item] = self.dictChannelTechs[self.numCurrentChannel][item]
         self.dictChannelTechs[self.numCurrentChannel] = new_dict

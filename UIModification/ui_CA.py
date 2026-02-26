@@ -29,7 +29,6 @@ class CA(QWidget, Ui_Form, PSTech):
 
 
         # 3) Load combobox options from main UI
-        if i_ranges:   self.comboBoxCR.addItems(i_ranges)
 
         # 4) Validators on edits (optional but makes UX nicer)
         if i_ranges:
