@@ -20,8 +20,6 @@ from UIModification.ui_OCV import OCV as OCVUI
 from UIModification.ui_EIS import EIS as EISUI
 from UIModification.ui_Loop import Loop as LoopUI
 from UIModification.ui_Move import Move as MoveUI
-from UIFiles.qt_Move import Ui_Form as MoveUI
-from UIFiles.qt_Loop import Ui_Form as LoopUI
 from ui_PsInfoDialog import get_potentiostat_info_from_dialog
 from misc_plot_axis_options import get_axis_options, apply_axis_transform, normalize_technique_name
 from ui_plot import ElectrochemPlotter
@@ -71,6 +69,10 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.bindTechLabels()
         self.bindSignalSlot()
         self._updateStatusBar()
+
+        #test
+        self.updateChannelOption([1,2])
+
         self.showMaximized()
         self._repl_globals = {"__builtins__": __builtins__}
         self._repl_locals = {"self": self}
@@ -116,7 +118,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     @errorDeco(logger='self.Log')
     def addTech(self,sender,event):
         isChannelFree=not self.dictChannelStatus.get(self.numCurrentChannel, False)
-        if self.isPSConnected and isChannelFree:
+        if True: #if self.isPSConnected and isChannelFree:
             if self.numCurrentChannel not in self.dictChannelTechs:
                 self.dictChannelTechs[self.numCurrentChannel] = {}
             i_ranges = self.dictCR.get(self.numCurrentChannel, [])
@@ -189,7 +191,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         for idx, meta in enumerate(self.sequence_meta):
             param = meta['param']
             loop_path = meta['loop_path']
-            tech_name = param['Technique']
+            tech_name = param['technique']
             if loop_path:
                 loop_str = '-LOOP(' + ','.join(map(str, loop_path)) + ')'
                 seq_str = ''
@@ -204,22 +206,10 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     @errorDeco(logger='self.Log')
     def TreeItemClicked(self, item, column=None):
         page = self.dictChannelTechs.get(self.numCurrentChannel, {}).get(item)
-        if page is None:
-            self._clearWidget(self.frame_ps)
-            return
-        # If page is in a floating window, close that window
-        current_parent = page.parent()
-        if current_parent is not None:
-            # Check if parent is a FloatingTabWindow
-            if isinstance(current_parent, FloatingTabWindow):
-                print(f"[DEBUG] Closing floating window for {page}")
-                current_parent.close()
-            # Reparent from any other parent
-            page.setParent(None)
-        
-        # Show the tech details in potentiostat section
+        print(page)
         self._clearWidget(self.frame_ps)
         self.frame_ps.layout().addWidget(page)
+        page.show()
 
     @errorDeco(logger='self.Log')
     def startTech(self):
@@ -237,8 +227,8 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
         # Build sequence with loop expansion
         seq = self._buildSequence()
-        self.sequence = [item['param'] for item in seq]
-        self.sequence_meta = seq
+        self.sequence = [page.outputParam() for page in seq]
+        self.sequence_meta = [{'param': page.outputParam(), 'loop_path': page.loop} for page in seq]
 
         if not self.sequence:
             self.logMsg("> No techniques to run.")
@@ -253,6 +243,41 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.logMsg(f"> Starting {item['param'].get('technique', 'Unknown Tech')} with parameters: {item['param']}")
 
     def _buildSequence(self, parent=None, loop_path=None):
+        seq = []
+        if parent is None:
+            # Top level items
+            topitems = self.dictChannelTechs.get(self.numCurrentChannel, {})
+            for item in topitems:
+                page = topitems.get(item)
+                if page and page.tech == "Loop":
+                    iterations = page.iterations
+                    for i in range(1, iterations + 1):
+                        new_path = loop_path + [i] if loop_path else [i]
+                        subtree_seq = self._buildSequence(item, new_path)
+                        seq.extend(subtree_seq)
+                else:
+                    if page:
+                        page.loop = loop_path if loop_path else []
+                        seq.append(page)
+        else:
+            # Children of parent
+            for idx in range(parent.childCount()):
+                item = parent.child(idx)
+                if item is None:
+                    continue
+                page = self.dictChannelTechs[self.numCurrentChannel].get(item)
+                if page and page.tech == "Loop":
+                    iterations = page.iterations
+                    for i in range(1, iterations + 1):
+                        new_path = loop_path + [i] if loop_path else [i]
+                        subtree_seq = self._buildSequence(item, new_path)
+                        seq.extend(subtree_seq)
+                else:
+                    if page:
+                        page.loop = loop_path if loop_path else []
+                        seq.append(page)
+        return seq
+        '''
         if loop_path is None:
             loop_path = []
         seq = []
@@ -282,6 +307,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
                 if page:
                     seq.append({'param': page.outputParam(), 'loop_path': loop_path})
         return seq
+        '''
 
         
     @errorDeco(logger='self.Log')
@@ -315,6 +341,8 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.dictChannelRbtn[channel]=channelRbutton
             self.groupChannelRbtn.addButton(channelRbutton, channel)
             self.dictChannelStatus[channel]=False  
+        self.numCurrentChannel=channelList[0]
+        self.groupChannelRbtn.button(self.numCurrentChannel).setChecked(True)
 
 
     # Start potentiostat thread

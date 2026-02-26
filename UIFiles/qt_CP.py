@@ -88,11 +88,6 @@ class Ui_Form(object):
 
         self.gridLayout.addWidget(self.labelSampleCurrent, 5, 0, 1, 1)
 
-        self.lineEditSampleCurrent = QLineEdit(Form)
-        self.lineEditSampleCurrent.setObjectName(u"lineEditSampleCurrent")
-
-        self.gridLayout.addWidget(self.lineEditSampleCurrent, 5, 1, 1, 1)
-
         self.labelSampleTime = QLabel(Form)
         self.labelSampleTime.setObjectName(u"labelSampleTime")
 
@@ -113,10 +108,15 @@ class Ui_Form(object):
 
         self.gridLayout.addWidget(self.labelSampleRepeat, 6, 0, 1, 1)
 
+        self.lineEditSampleCurrent = QLineEdit(Form)
+        self.lineEditSampleCurrent.setObjectName(u"lineEditSampleCurrent")
+
+        self.gridLayout.addWidget(self.lineEditSampleCurrent, 5, 1, 1, 2)
+
         self.lineEditSampleRepeat = QLineEdit(Form)
         self.lineEditSampleRepeat.setObjectName(u"lineEditSampleRepeat")
 
-        self.gridLayout.addWidget(self.lineEditSampleRepeat, 6, 1, 1, 1)
+        self.gridLayout.addWidget(self.lineEditSampleRepeat, 6, 1, 1, 2)
 
 
         self.horizontalLayout.addLayout(self.gridLayout)
@@ -137,11 +137,11 @@ class Ui_Form(object):
         self.labelName.setText(QCoreApplication.translate("Form", u"Name", None))
         self.labelCR.setText(QCoreApplication.translate("Form", u"Current Range", None))
         self.labelSampleCurrent.setText(QCoreApplication.translate("Form", u"Sample per potential /  V ", None))
-        self.lineEditSampleCurrent.setPlaceholderText(QCoreApplication.translate("Form", u"<float>", None))
         self.labelSampleTime.setText(QCoreApplication.translate("Form", u"Sample per time /  s ", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"Duration / s", None))
         self.label.setText(QCoreApplication.translate("Form", u"Current / A", None))
         self.labelSampleRepeat.setText(QCoreApplication.translate("Form", u"Repeat", None))
+        self.lineEditSampleCurrent.setPlaceholderText(QCoreApplication.translate("Form", u"<float>", None))
         self.lineEditSampleRepeat.setPlaceholderText(QCoreApplication.translate("Form", u"<int>", None))
     # retranslateUi
 

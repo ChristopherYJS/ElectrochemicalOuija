@@ -11,7 +11,7 @@ def _float_or_none(text: str) -> float | None:
         return None
     return float(t)
 
-class Loop(QWidget, Ui_Form, PSTech):
+class Loop(QWidget, Ui_Form):
     tech="Loop"
     def __init__(self, *,i_ranges: list[str] = None):
         super().__init__()
