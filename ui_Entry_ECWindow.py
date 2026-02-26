@@ -156,6 +156,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.treeWidget_Techs.itemsReordered.connect(self._onTechItemsReordered)
         self.pushButtonStart.clicked.connect(self.startTech)
         self.pushButtonConnect.clicked.connect(self.connectPs)
+        self.pushButtonErrorTest.clicked.connect(self.errorTest)
         # self.pushButtonPsInfo.clicked.connect(self.configurePotentiostat)
         if hasattr(self, "lineEditLogInput"):
             self.lineEditLogInput.returnPressed.connect(self.evalLogInput)
@@ -178,6 +179,25 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     def bindTechLabels(self):
         for label in self.scrollAreaOption_Techs.findChildren(QLabel):
             label.mouseDoubleClickEvent=lambda e, sender=label: self.addTech(sender,e)
+    
+    def errorTest(self):
+        # Build the sequence
+        self.sequence_meta = self._buildSequence()
+        self.tech_counters = {}
+        print("Tech Sequence:")
+        for idx, meta in enumerate(self.sequence_meta):
+            param = meta['param']
+            loop_path = meta['loop_path']
+            tech_name = param['Technique']
+            if loop_path:
+                loop_str = '-LOOP(' + ','.join(map(str, loop_path)) + ')'
+                seq_str = ''
+            else:
+                self.tech_counters[tech_name] = self.tech_counters.get(tech_name, 0) + 1
+                seq_str = f'-SEQ{self.tech_counters[tech_name]}'
+                loop_str = ''
+            filename = f'{self.user_filename}-CH{self.numCurrentChannel}{seq_str}{loop_str}-{tech_name.upper()}.csv'
+            print(f"Step {idx+1}: {tech_name} -> {filename}")
         
     #---------------- Slot functions ----------------  
     @errorDeco(logger='self.Log')
