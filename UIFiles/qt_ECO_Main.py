@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_ECO_Main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.2
+## Created by: Qt User Interface Compiler version 6.10.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -390,7 +390,7 @@ class Ui_MainWindow(object):
         self.labelLoop.setText(QCoreApplication.translate("MainWindow", u"Loop", None))
         self.pushButtonStart.setText(QCoreApplication.translate("MainWindow", u"Start", None))
         self.pushButtonErrorTest.setText(QCoreApplication.translate("MainWindow", u"asd", None))
-        self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Test", None))
         self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Potentiostat", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Positioner", None))

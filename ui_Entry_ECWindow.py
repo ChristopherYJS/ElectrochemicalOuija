@@ -189,18 +189,10 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.tech_counters = {}
         print("Tech Sequence:")
         for idx, meta in enumerate(self.sequence_meta):
-            param = meta['param']
-            loop_path = meta['loop_path']
-            tech_name = param['technique']
-            if loop_path:
-                loop_str = '-LOOP(' + ','.join(map(str, loop_path)) + ')'
-                seq_str = ''
-            else:
-                self.tech_counters[tech_name] = self.tech_counters.get(tech_name, 0) + 1
-                seq_str = f'-SEQ{self.tech_counters[tech_name]}'
-                loop_str = ''
-            filename = f'{self.user_filename}-CH{self.numCurrentChannel}{seq_str}{loop_str}-{tech_name.upper()}.csv'
-            print(f"Step {idx+1}: {tech_name} -> {filename}")
+            techname=meta.tech
+            expname=meta.name
+            loop=meta.loop
+            print(f"{idx+1}. {techname} - {expname} - loop: {loop}")
         
     #---------------- Slot functions ----------------  
     @errorDeco(logger='self.Log')
@@ -277,37 +269,6 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
                         page.loop = loop_path if loop_path else []
                         seq.append(page)
         return seq
-        '''
-        if loop_path is None:
-            loop_path = []
-        seq = []
-        if parent is None:
-            # Top level items
-            for idx in range(self.treeWidget_Techs.topLevelItemCount()):
-                item = self.treeWidget_Techs.topLevelItem(idx)
-                if item is None:
-                    continue
-                page = self.dictChannelTechs[self.numCurrentChannel].get(item)
-                if page:
-                    if page.tech == 'Loop':
-                        iterations = page.iterations
-                        for i in range(1, iterations + 1):
-                            new_path = loop_path + [i]
-                            subtree_seq = self._buildSequence(item, new_path)
-                            seq.extend(subtree_seq)
-                    else:
-                        seq.append({'param': page.outputParam(), 'loop_path': loop_path})
-        else:
-            # Children of parent
-            for idx in range(parent.childCount()):
-                item = parent.child(idx)
-                if item is None:
-                    continue
-                page = self.dictChannelTechs[self.numCurrentChannel].get(item)
-                if page:
-                    seq.append({'param': page.outputParam(), 'loop_path': loop_path})
-        return seq
-        '''
 
         
     @errorDeco(logger='self.Log')

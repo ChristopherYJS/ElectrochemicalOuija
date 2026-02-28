@@ -396,7 +396,7 @@
               </size>
              </property>
              <property name="text">
-              <string>PushButton</string>
+              <string>Test</string>
              </property>
             </widget>
            </item>
@@ -546,7 +546,7 @@
        </widget>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_Plot" stretch=""/>
+       <layout class="QVBoxLayout" name="verticalLayout_Plot"/>
       </item>
      </layout>
     </item>
