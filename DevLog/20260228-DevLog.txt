@@ -1,0 +1,4 @@
+2026-02-28 23:53:27>>>Traceback Error: TypeError: Expected signal or callable, got "NoneType"
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 165	| Function: bindSignalSlot
+Error End.

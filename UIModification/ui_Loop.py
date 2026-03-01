@@ -18,6 +18,7 @@ class Loop(QWidget, Ui_Form):
         self.setupUi(self)
 
         # Model defaults
+        self.loop=[0]
         self.name: str = "Loop"
         self.iterations: int = 5
 

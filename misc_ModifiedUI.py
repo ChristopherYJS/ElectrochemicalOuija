@@ -7,13 +7,29 @@ class TechTreeWidget(QTreeWidget):
     itemRemoved = Signal(QTreeWidgetItem)
     itemsReordered = Signal()
 
+    def _is_loop_item(self, item: QTreeWidgetItem | None) -> bool:
+        if item is None:
+            return False
+        return item.text(0).strip().startswith('Loop')
+
     def dropEvent(self, event):
         target = self.itemAt(event.position().toPoint())
-        if target and target.text(0) != 'Loop':
-            drop_indicator = self.dropIndicatorPosition()
+        drop_indicator = self.dropIndicatorPosition()
+
+        destination_parent = None
+        if target is not None:
             if drop_indicator == QAbstractItemView.DropIndicatorPosition.OnItem:
-                event.ignore()
-                return
+                destination_parent = target
+            elif drop_indicator in (
+                QAbstractItemView.DropIndicatorPosition.AboveItem,
+                QAbstractItemView.DropIndicatorPosition.BelowItem,
+            ):
+                destination_parent = target.parent()
+
+        if destination_parent is not None and not self._is_loop_item(destination_parent):
+            event.ignore()
+            return
+
         super().dropEvent(event)
         self.itemsReordered.emit()
         

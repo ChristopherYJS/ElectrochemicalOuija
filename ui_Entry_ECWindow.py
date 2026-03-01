@@ -1,5 +1,5 @@
 #& "C:\Users\chrst\AppData\Roaming\Python\Python313\Scripts\pyside6-uic.exe" "uiEC.ui" "-o" "uiEC.py" "--from-imports"
-import sys, os, csv
+import sys, os, csv, types
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit, QRadioButton,QMessageBox, QButtonGroup, QInputDialog
 from PySide6.QtCore import QSize, Qt, QEvent, QMimeData, QModelIndex, QPoint, QRect, QObject, QThread, Signal, Slot, QTimer
@@ -23,6 +23,8 @@ from UIModification.ui_Move import Move as MoveUI
 from ui_PsInfoDialog import get_potentiostat_info_from_dialog
 from misc_plot_axis_options import get_axis_options, apply_axis_transform, normalize_technique_name
 from ui_plot import ElectrochemPlotter
+
+from defaultSeq import build_default_sequence_ui
 
 from pt_biologic import Biologic
 
@@ -122,13 +124,25 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             if self.numCurrentChannel not in self.dictChannelTechs:
                 self.dictChannelTechs[self.numCurrentChannel] = {}
             i_ranges = self.dictCR.get(self.numCurrentChannel, [])
+
+            current_item = self.treeWidget_Techs.currentItem()
+            target_parent = None
+            if current_item is not None:
+                current_page = self.dictChannelTechs[self.numCurrentChannel].get(current_item)
+                if current_page and getattr(current_page, "tech", "") == "Loop":
+                    target_parent = current_item
+
             item = QTreeWidgetItem()
             item.setText(0, sender.text())
             item.setSizeHint(0,QSize(0,30))
             font = QFont()
             font.setPointSize(14)      
             item.setFont(0, font) 
-            self.treeWidget_Techs.addTopLevelItem(item)
+            if target_parent is not None:
+                target_parent.addChild(item)
+                target_parent.setExpanded(True)
+            else:
+                self.treeWidget_Techs.addTopLevelItem(item)
             
             # Remove all widgets from the potentiostat section before loading new Form
             self._clearWidget(self.frame_ps)
@@ -137,6 +151,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             page = self._buildTab(ui_class, item, i_ranges=i_ranges)     # QWidget ready
             self.frame_ps.layout().addWidget(page)
             self.dictChannelTechs[self.numCurrentChannel][item] = page
+            self.treeWidget_Techs.setCurrentItem(item)
             if hasattr(page, "setCR") and self.numCurrentChannel in self.dictCR:
                     page.setCR(self.dictCR[self.numCurrentChannel])
             if hasattr(page, "setPR") and self.numCurrentChannel in self.dictPR:
@@ -160,6 +175,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.pushButtonStart.clicked.connect(self.startTech)
         self.pushButtonConnect.clicked.connect(self.connectPs)
         self.pushButtonErrorTest.clicked.connect(self.errorTest)
+        self.pushButton_3.clicked.connect(lambda: build_default_sequence_ui(self))
         # self.pushButtonPsInfo.clicked.connect(self.configurePotentiostat)
         if hasattr(self, "lineEditLogInput"):
             self.lineEditLogInput.returnPressed.connect(self.evalLogInput)
@@ -185,20 +201,18 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     
     def errorTest(self):
         # Build the sequence
-        self.sequence_meta = self._buildSequence()
-        self.tech_counters = {}
+        seq_pairs = self._buildSequence()
         print("Tech Sequence:")
-        for idx, meta in enumerate(self.sequence_meta):
-            techname=meta.tech
-            expname=meta.name
-            loop=meta.loop
-            print(f"{idx+1}. {techname} - {expname} - loop: {loop}")
+        for idx, page in enumerate(seq_pairs):
+            techname = page.tech
+            expname = page.name
+            loop = page.loop
+            print(f"{idx+1}. {techname}_{expname} - loop: {loop}")
         
     #---------------- Slot functions ----------------  
     @errorDeco(logger='self.Log')
     def TreeItemClicked(self, item, column=None):
         page = self.dictChannelTechs.get(self.numCurrentChannel, {}).get(item)
-        print(page)
         self._clearWidget(self.frame_ps)
         self.frame_ps.layout().addWidget(page)
         page.show()
@@ -218,9 +232,9 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.tech_counters = {}  # Reset counters
 
         # Build sequence with loop expansion
-        seq = self._buildSequence()
-        self.sequence = [page.outputParam() for page in seq]
-        self.sequence_meta = [{'param': page.outputParam(), 'loop_path': page.loop} for page in seq]
+        seq_pairs = self._buildSequence()
+        self.sequence = [page for page, _ in seq_pairs]
+        self.sequence_meta = [{'param': page.outputParam(), 'loop_current': loop} for page, loop in seq_pairs]
 
         if not self.sequence:
             self.logMsg("> No techniques to run.")
@@ -234,40 +248,55 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         for item in self.sequence_meta:
             self.logMsg(f"> Starting {item['param'].get('technique', 'Unknown Tech')} with parameters: {item['param']}")
 
-    def _buildSequence(self, parent=None, loop_path=None):
+
+    def _buildSequence(self, parent=None, current_path=None):
+        """
+        This builds the sequence for both biologic to run and to output correct filename. 
+        I dont know how this works but it works, so don't change it.
+        """
         seq = []
+
+        if current_path is None:
+            current_path = [1]
+
+        channel_dict = self.dictChannelTechs.get(self.numCurrentChannel, {})
+
         if parent is None:
-            # Top level items
-            topitems = self.dictChannelTechs.get(self.numCurrentChannel, {})
-            for item in topitems:
-                page = topitems.get(item)
-                if page and page.tech == "Loop":
-                    iterations = page.iterations
-                    for i in range(1, iterations + 1):
-                        new_path = loop_path + [i] if loop_path else [i]
-                        subtree_seq = self._buildSequence(item, new_path)
-                        seq.extend(subtree_seq)
-                else:
-                    if page:
-                        page.loop = loop_path if loop_path else []
-                        seq.append(page)
+            items = [
+                self.treeWidget_Techs.topLevelItem(i)
+                for i in range(self.treeWidget_Techs.topLevelItemCount())
+            ]
         else:
-            # Children of parent
-            for idx in range(parent.childCount()):
-                item = parent.child(idx)
-                if item is None:
-                    continue
-                page = self.dictChannelTechs[self.numCurrentChannel].get(item)
-                if page and page.tech == "Loop":
-                    iterations = page.iterations
-                    for i in range(1, iterations + 1):
-                        new_path = loop_path + [i] if loop_path else [i]
-                        subtree_seq = self._buildSequence(item, new_path)
-                        seq.extend(subtree_seq)
-                else:
-                    if page:
-                        page.loop = loop_path if loop_path else []
-                        seq.append(page)
+            items = [parent.child(i) for i in range(parent.childCount())]
+
+        for item in items:
+            if item is None:
+                continue
+
+            page = channel_dict.get(item)
+            if page is None:
+                continue
+
+            if page.tech == "Loop":
+                for i in range(1, int(page.iterations) + 1):
+                    seq.extend(self._buildSequence(item, current_path + [i]))
+                continue
+
+            # create one independent runtime tech object for this emitted step
+            runtime = page.__class__()  # same tech type object
+            runtime.tech = page.tech
+            runtime.name = page.name
+            runtime.loop = current_path.copy()
+
+            # freeze params from UI page at build time
+            frozen_param = page.outputParam()
+
+            def _frozen_output(self, _param=frozen_param):
+                return dict(_param)
+
+            runtime.outputParam = types.MethodType(_frozen_output, runtime)
+            seq.append(runtime)
+
         return seq
 
         
@@ -470,9 +499,9 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             if self.current_file:
                 self.current_file.close()
             self.current_seq_index += 1
-            loop_path = self.sequence_meta[self.current_seq_index]['loop_path']
-            if loop_path:
-                loop_str = '-LOOP(' + ','.join(map(str, loop_path)) + ')'
+            loop_current = self.sequence_meta[self.current_seq_index]['loop_current']
+            if loop_current:
+                loop_str = '-LOOP(' + ','.join(map(str, loop_current)) + ')'
                 seq_str = ''
             else:
                 self.tech_counters[tech_name] = self.tech_counters.get(tech_name, 0) + 1
