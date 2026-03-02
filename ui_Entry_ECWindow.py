@@ -7,13 +7,10 @@ from PySide6.QtCore import QSize, Qt, QEvent, QMimeData, QModelIndex, QPoint, QR
 from PySide6.QtWidgets import QAbstractItemView 
 from PySide6.QtGui import QMouseEvent,QDrag,QFont,QShortcut,QCursor,QAction,QKeySequence
 
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-
 from misc_handleException import exception2msg, msg2file, errorDeco
 from misc_ModifiedUI import TechTreeWidget
 
-from pt_biologic import Biologic
+from ps_biologic import Biologic
 
 from UIFiles.qt_ECO_Main import Ui_MainWindow
 from UIModification.misc_BaseTech import MOTech
@@ -26,11 +23,9 @@ from UIModification.ui_Loop import Loop as LoopUI
 from UIModification.ui_Move import Move as MoveUI
 
 from ui_PsInfoDialog import get_potentiostat_info_from_dialog
-from misc_plot_axis_options import get_axis_options, apply_axis_transform, normalize_technique_name
-from ui_plot import ElectrochemPlotter
 
 
-from defaultSeq import build_default_sequence_ui
+from test_defaultSeq import build_default_sequence_ui
 
 
 
@@ -64,15 +59,6 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
         self.is_PSConnected = False
         self.filename_User = None #user set filename for data output
-
-        self.plotDataByTech = {}
-        self.currentMeasuredTech = None
-        self.plotXAxisOptions = {}
-        self.plotYAxisOptions = {}
-        self.new_data_available = False
-        self.plot_timer = QTimer()
-        self.plot_timer.timeout.connect(self._check_and_replot)
-        self.plot_timer.start(500)  # Update plot every 500ms
         
         self.current_file = None
         self.current_writer = None
@@ -95,13 +81,6 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self._repl_locals = {"self": self}
 
         self.showMaximized()
-
-    def _check_and_replot(self):
-        if self.new_data_available:
-            selectedTech = self.plotter.tech_combo.currentText()
-            if selectedTech == "Current Tech" or selectedTech == self.currentMeasuredTech:
-                self._renderSelectedPlot()
-            self.new_data_available = False
     ##=====================================================================================## 
     # Restyle and UI setup functions 
     ##=====================================================================================##
@@ -134,8 +113,6 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.lineEditLogInput.setPlaceholderText("Enter Python expression and press Enter")
         # Setup potentiostat section - add placeholder for tech details
         self._clearPSFrameWidget(self.frame_ps)
-        # Setup plot area and plot controls
-        # self._initPlotWidgets()
     ##=====================================================================================##
     # Signal-slot binding functions
     ##=====================================================================================##
@@ -230,23 +207,17 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
     @errorDeco(logger='self.Log')
     def startTech(self):
+        #check if potentiostat is connected
         if not hasattr(self, 'bio_worker'):
             self.logMsg("> Potentiostat not connected.")
             return
-
+        # Get filename from user
         filename, ok = QInputDialog.getText(self, "Enter Filename", "Enter base filename for data files:")
         if not ok or not filename:
             return
         self.filename_User = filename
 
-        if self.current_file:
-            self.current_file.close()
-            self.current_file = None
-        self.current_writer = None
-        self.current_tech = None
-        self.current_seq_index = -1
-        self.tech_counters = {}
-
+        # Build sequence for the selected channel and start the experiment
         sequence = self._buildSequence(self.channel_Current)
         if not sequence:
             msg = f"Channel {self.channel_Current} has an empty sequence."
@@ -258,7 +229,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             step.outputParam() if hasattr(step, "outputParam") and callable(step.outputParam) else step
             for step in self.sequence
         ]
-        self._setPlotTechItemsFromSequence(plot_sequence)
+
         self.bio_worker.runSequence(self.sequence, self.channel_Current, self.filename_User)
         self.logMsg(f"> Starting single-channel run on CH {self.channel_Current}")
 
@@ -273,8 +244,8 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.logMsg("> Potentiostat not connected.")
             return
 
-        run_channels = self._selectMultiRunChannels()
-        if not run_channels:
+        list_ChannelSelected = self._selectMultiRunChannels()
+        if not list_ChannelSelected:
             return
 
         filename, ok = QInputDialog.getText(self, "Enter Filename", "Enter base filename for data files:")
@@ -292,7 +263,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
         channel_sequences = {}
         empty_channels = []
-        for channel in run_channels:
+        for channel in list_ChannelSelected:
             seq = self._buildSequence(channel)
             if not seq:
                 empty_channels.append(channel)
@@ -304,7 +275,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             QMessageBox.critical(self, "Start Error", msg)
             raise ValueError(msg)
 
-        primary_channel = self.channel_Current if self.channel_Current in channel_sequences else run_channels[0]
+        primary_channel = self.channel_Current if self.channel_Current in channel_sequences else list_ChannelSelected[0]
         self.sequence = channel_sequences[primary_channel]
 
         plot_sequence = [
@@ -313,10 +284,10 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         ]
         self._setPlotTechItemsFromSequence(plot_sequence)
 
-        self.bio_worker.runSequence(channel_sequences, run_channels, self.filename_User)
-        self.logMsg(f"> Starting multi-channel run on CH {run_channels}")
+        self.bio_worker.runSequence(channel_sequences, list_ChannelSelected, self.filename_User)
+        self.logMsg(f"> Starting multi-channel run on CH {list_ChannelSelected}")
 
-        for channel in run_channels:
+        for channel in list_ChannelSelected:
             for step in channel_sequences[channel]:
                 params = step.outputParam() if hasattr(step, "outputParam") and callable(step.outputParam) else step
                 if isinstance(params, dict):
@@ -524,7 +495,9 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
                 self.treeWidget_Techs.setCurrentItem(first_item)
                 self.TreeItemClicked(first_item, 0)
                 
-    #---------------- Helper functions ----------------
+    ##=====================================================================================##
+    # Potentiostat related methods
+    ##=====================================================================================##
 
     def _clearPSFrameWidget(self, widget: QWidget):
         layout = widget.layout()
@@ -591,232 +564,6 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     def _setPotentiostatConnected(self, connected: bool):
         self.is_PSConnected = connected
         self._updateStatusBar()
-
-    # def _initPlotWidgets(self):
-    #     # Create the plotter widget
-    #     self.plotter = ElectrochemPlotter()
-    #     self.verticalLayout_Plot.addWidget(self.plotter)
-    #     # Connect signals
-    #     self.plotter.tech_combo.currentTextChanged.connect(self._onPlotTechSelectionChanged)
-    #     self.plotter.x_combo.currentTextChanged.connect(lambda _: self._renderSelectedPlot())
-    #     self.plotter.y_combo.currentTextChanged.connect(lambda _: self._renderSelectedPlot())
-    #     self.plotter.axisUnitChanged.connect(self._on_axis_unit_changed)
-
-    # def _on_axis_unit_changed(self, axis, unit):
-    #     # Re-render the plot with new units
-    #     self._renderSelectedPlot()
-
-    # def _onBiologicData(self, tech_name: str, output):
-    #     self.currentMeasuredTech = tech_name
-    #     self.plotDataByTech.setdefault(tech_name, []).append(output)
-    #     self.new_data_available = True
-
-    # def _setPlotTechItemsFromSequence(self, sequence: list):
-    #     previousSelection = self.plotter.tech_combo.currentText()
-    #     self.plotter.tech_combo.blockSignals(True)
-    #     self.plotter.tech_combo.clear()
-    #     self.plotter.tech_combo.addItem("Current Tech")
-
-    #     seen = set()
-    #     for measurement in sequence:
-    #         tech_name = str(measurement.get("technique", "")).upper()
-    #         if not tech_name or tech_name in seen:
-    #             continue
-    #         seen.add(tech_name)
-    #         self.plotter.tech_combo.addItem(tech_name)
-
-    #     if previousSelection and self.plotter.tech_combo.findText(previousSelection) >= 0:
-    #         self.plotter.tech_combo.setCurrentText(previousSelection)
-    #     else:
-    #         self.plotter.tech_combo.setCurrentText("Current Tech")
-    #     self.plotter.tech_combo.blockSignals(False)
-    #     self._configureAxisCombosForSelectedTech()
-
-    # def _onPlotTechSelectionChanged(self, _selected: str):
-    #     self._configureAxisCombosForSelectedTech()
-    #     self._renderSelectedPlot()
-
-    # def _configureAxisCombosForSelectedTech(self):
-    #     selectedTech = self.plotter.tech_combo.currentText()
-    #     if not selectedTech:
-    #         self.plotter.x_combo.clear()
-    #         self.plotter.y_combo.clear()
-    #         self.plotXAxisOptions = {}
-    #         self.plotYAxisOptions = {}
-    #         return
-
-    #     techForAxes = self.currentMeasuredTech if selectedTech == "Current Tech" else selectedTech
-    #     if not techForAxes:
-    #         return
-
-    #     axis_options = get_axis_options(normalize_technique_name(techForAxes))
-    #     x_options = axis_options.get("x", [])
-    #     y_options = axis_options.get("y", [])
-
-    #     if not x_options or not y_options:
-    #         return
-
-    #     previousX = self.plotter.x_combo.currentText()
-    #     previousY = self.plotter.y_combo.currentText()
-
-    #     self.plotXAxisOptions = {option.label: option for option in x_options}
-    #     self.plotYAxisOptions = {option.label: option for option in y_options}
-
-    #     self.plotter.x_combo.blockSignals(True)
-    #     self.plotter.y_combo.blockSignals(True)
-    #     self.plotter.x_combo.clear()
-    #     self.plotter.y_combo.clear()
-    #     self.plotter.x_combo.addItems(list(self.plotXAxisOptions.keys()))
-    #     self.plotter.y_combo.addItems(list(self.plotYAxisOptions.keys()))
-    #     if previousX in self.plotXAxisOptions:
-    #         self.plotter.x_combo.setCurrentText(previousX)
-    #     if previousY in self.plotYAxisOptions:
-    #         self.plotter.y_combo.setCurrentText(previousY)
-    #     self.plotter.x_combo.blockSignals(False)
-    #     self.plotter.y_combo.blockSignals(False)
-
-    # def _renderSelectedPlot(self):
-    #     selectedTech = self.plotter.tech_combo.currentText()
-    #     techToPlot = self.currentMeasuredTech if selectedTech == "Current Tech" else selectedTech
-
-    #     if not techToPlot:
-    #         self._clearPlot("No tested data")
-    #         return
-
-    #     rows = self.plotDataByTech.get(techToPlot, [])
-    #     if not rows:
-    #         self._clearPlot(f"No tested data for {techToPlot}")
-    #         return
-
-    #     sample = next((row for row in rows if isinstance(row, dict) and row), None)
-    #     if sample is None:
-    #         self._clearPlot(f"No plottable data for {techToPlot}")
-    #         return
-
-    #     availableKeys = list(sample.keys())
-    #     self._syncAxisCombo(self.plotter.x_combo, availableKeys, prefer="t")
-    #     self._syncAxisCombo(self.plotter.y_combo, availableKeys, prefer="Ewe")
-
-    #     xKey = self.plotter.x_combo.currentText()
-    #     yKey = self.plotter.y_combo.currentText()
-    #     if not xKey or not yKey:
-    #         self._clearPlot(f"No axis selected for {techToPlot}")
-    #         return
-
-    #     # Determine axis types
-    #     x_type = 'time' if 't' in xKey.lower() else 'other'
-    #     y_type = 'current' if 'i' in yKey.lower() else ('potential' if 'e' in yKey.lower() or 'v' in yKey.lower() else 'other')
-    #     self.plotter.set_axis_types(x_type, y_type)
-
-    #     xAxisOption = self.plotXAxisOptions.get(xKey)
-    #     yAxisOption = self.plotYAxisOptions.get(yKey)
-
-    #     xData = []
-    #     yData = []
-    #     for row in rows:
-    #         if not isinstance(row, dict):
-    #             continue
-    #         try:
-    #             if xAxisOption and yAxisOption:
-    #                 xRaw = row.get(xAxisOption.source)
-    #                 yRaw = row.get(yAxisOption.source)
-    #                 if xRaw is None or yRaw is None:
-    #                     continue
-    #                 xVal = apply_axis_transform(xAxisOption.transform, float(xRaw))
-    #                 yVal = apply_axis_transform(yAxisOption.transform, float(yRaw))
-    #             else:
-    #                 xVal = row.get(xKey)
-    #                 yVal = row.get(yKey)
-    #                 if xVal is None or yVal is None:
-    #                     continue
-    #                 xVal = float(xVal)
-    #                 yVal = float(yVal)
-
-    #             if xVal is None or yVal is None:
-    #                 continue
-    #             xData.append(xVal)
-    #             yData.append(yVal)
-    #         except (TypeError, ValueError):
-    #             continue
-
-    #     if not xData:
-    #         self._clearPlot(f"No numeric points for {techToPlot}")
-    #         return
-
-    #     # Apply unit scaling
-    #     xData = self._scale_data(xData, self.plotter.current_x_unit, x_type)
-    #     yData = self._scale_data(yData, self.plotter.current_y_unit, y_type)
-
-    #     # Downsample if too many points
-    #     if len(xData) > 1000:
-    #         xData, yData = self._downsample(xData, yData, 1000)
-
-    #     self.plotter.ax.clear()
-    #     self.plotter.ax.plot(xData, yData)
-    #     self.plotter.ax.set_title(f"{techToPlot}")
-    #     self.plotter.ax.set_xlabel(f"{xKey} ({self.plotter.current_x_unit})")
-    #     self.plotter.ax.set_ylabel(f"{yKey} ({self.plotter.current_y_unit})")
-    #     self.plotter.ax.grid(True)
-    #     self.plotter.canvas.draw_idle()
-
-    # def _scale_data(self, data, unit, axis_type):
-    #     if axis_type == 'current':
-    #         # Data in mA
-    #         if unit == 'A':
-    #             return [v / 1000 for v in data]
-    #         elif unit == 'mA':
-    #             return data
-    #         elif unit == 'uA':
-    #             return [v * 1000 for v in data]
-    #         elif unit == 'nA':
-    #             return [v * 1000000 for v in data]
-    #     elif axis_type == 'potential':
-    #         # Data in V
-    #         if unit == 'V':
-    #             return data
-    #         elif unit == 'mV':
-    #             return [v * 1000 for v in data]
-    #         elif unit == 'uV':
-    #             return [v * 1000000 for v in data]
-    #     elif axis_type == 'time':
-    #         # Data in s
-    #         if unit == 's':
-    #             return data
-    #         elif unit == 'ms':
-    #             return [v * 1000 for v in data]
-    #         elif unit == 'us':
-    #             return [v * 1000000 for v in data]
-    #     return data
-
-    # def _downsample(self, x_data, y_data, max_points):
-    #     if len(x_data) <= max_points:
-    #         return x_data, y_data
-    #     step = len(x_data) // max_points
-    #     x_down = x_data[::step]
-    #     y_down = y_data[::step]
-    #     return x_down, y_down
-
-    # def _syncAxisCombo(self, combo, keys: list[str], *, prefer: str):
-    #     current = combo.currentText()
-    #     if [combo.itemText(i) for i in range(combo.count())] == keys:
-    #         if current in keys:
-    #             combo.setCurrentText(current)
-    #         return
-
-    #     combo.blockSignals(True)
-    #     combo.clear()
-    #     combo.addItems(keys)
-    #     if prefer in keys:
-    #         combo.setCurrentText(prefer)
-    #     elif current in keys:
-    #         combo.setCurrentText(current)
-    #     combo.blockSignals(False)
-
-    # def _clearPlot(self, title: str):
-    #     self.plotter.ax.clear()
-    #     self.plotter.ax.set_title(title)
-    #     self.plotter.ax.grid(True)
-    #     self.plotter.canvas.draw_idle()
 
     def _updateStatusBar(self):
         message = f"Potentiostat Channel: {self.channel_Current}" if self.is_PSConnected else "Potentiostat Disconnected"

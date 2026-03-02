@@ -16,10 +16,10 @@ from kbio.kbio_api import KBIO_api
 from kbio.kbio_tech import get_experiment_data
 from kbio.kbio_tech import get_info_data
 
-from CA_biologic import ca_parm
-from OCV_biologic import ocv_parm
-from CP_biologic import cp_parm
-from CV_biologic import cv_parm
+from ps_CA import ca_parm
+from ps_OCV import ocv_parm
+from ps_CP import cp_parm
+from ps_CV import cv_parm
 
 from PySide6.QtCore import Signal,QObject,QTimer
 from PySide6.QtWidgets import QFileDialog
@@ -39,9 +39,8 @@ class Biologic(QObject):
         self.binary_path=binary_path
         self.api = None
         self.id_ = None
-        self.is_running = False
-        self.sequence=None
-        self.sequence_by_channel = {}
+        self.dictChannelStatus = {}
+        self.dictChannelTechParams = {}
         self.active_channels = set()
 
         self.force_load_firmware=True
@@ -152,16 +151,16 @@ class Biologic(QObject):
             return
 
         if isinstance(sequence, dict):
-            sequence_by_channel = {ch: sequence.get(ch, []) for ch in run_channels}
+            dictChannelTechParams = {ch: sequence.get(ch, []) for ch in run_channels}
         else:
-            sequence_by_channel = {ch: sequence for ch in run_channels}
+            dictChannelTechParams = {ch: sequence for ch in run_channels}
 
-        self.sequence_by_channel = {}
+        self.dictChannelTechParams = {}
         loaded_channels = []
         verbosity = 1
 
         for ch in run_channels:
-            sequence_ch = sequence_by_channel.get(ch, [])
+            sequence_ch = dictChannelTechParams.get(ch, [])
             if not sequence_ch:
                 self.signalLog.emit(f"> CH {ch}: no techniques to load, skipping.")
                 continue
@@ -200,7 +199,7 @@ class Biologic(QObject):
                 last = index == len(tech_to_load) - 1
                 self.api.LoadTechnique(self.id_, ch, tech_file, ecc_parms, first=first, last=last, display=(verbosity > 1))
 
-            self.sequence_by_channel[ch] = sequence_ch
+            self.dictChannelTechParams[ch] = sequence_ch
             loaded_channels.append(ch)
 
         if not loaded_channels:
@@ -228,10 +227,11 @@ class Biologic(QObject):
                 self.recordTimers[ch].start()
             self.signalLog.emit(f"> Experiment started on channels {loaded_channels}.")
 
-        self.sequence = self.sequence_by_channel.get(loaded_channels[0], [])
+        self.sequence = self.dictChannelTechParams.get(loaded_channels[0], [])
         self.channel = loaded_channels[0]
         self.active_channels = set(loaded_channels)
-        self.is_running = True
+        for ch in loaded_channels:
+            self.dictChannelStatus[ch] = True
 
     @errorDeco(signal='self.signalLog')
     def recordData(self, channel):
@@ -239,7 +239,7 @@ class Biologic(QObject):
         current_values, data_info, _ = data
         techIndex=data_info.TechniqueIndex
 
-        sequence_ch = self.sequence_by_channel.get(channel, self.sequence)
+        sequence_ch = self.dictChannelTechParams.get(channel, self.sequence)
         step_data = sequence_ch[techIndex - 1] if sequence_ch and techIndex - 1 < len(sequence_ch) else None
 
         if isinstance(step_data, dict):
@@ -258,10 +258,10 @@ class Biologic(QObject):
 
         if status == "STOP":
             self.recordTimers[channel].stop()
+            self.dictChannelStatus[channel] = False
             if channel in self.active_channels:
                 self.active_channels.remove(channel)
             if not self.active_channels:
-                self.is_running = False
                 self.signalLog.emit(f"\nExperiment finished. Data recorded in {self.filenameUser} series.")
             else:
                 self.signalLog.emit(f"> Channel {channel} finished. Remaining channels: {sorted(self.active_channels)}")
@@ -272,11 +272,12 @@ class Biologic(QObject):
             if timer.isActive():
                 timer.stop()
 
-        if self.api and self.id_ is not None and self.is_running:
+        if self.api and self.id_ is not None and any(self.dictChannelStatus.values()):
             for ch in self.channels:
                 self.api.StopChannel(self.id_, ch)
             self.signalLog.emit(f"> Experiments stopped on all channels.")
-            self.is_running = False
+            for ch in self.channels:
+                self.dictChannelStatus[ch] = False
 
         if disconnect and self.api and self.id_ is not None:
             self.api.Disconnect(self.id_)
