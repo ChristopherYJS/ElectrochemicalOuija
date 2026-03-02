@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
 from UIFiles.qt_Move import Ui_Form
-from misc_BaseTech import MPTech, PSTech
+from UIModification.misc_BaseTech import MPTech, PSTech
 
 def _float_or_none(text: str) -> float | None:
     t = text.strip()
@@ -14,7 +14,10 @@ def _float_or_none(text: str) -> float | None:
 class Move(QWidget, Ui_Form, PSTech, MPTech):
     tech="Move"
     def __init__(self, *,i_ranges: list[str] = None):
-        super().__init__()
+        QWidget.__init__(self)
+        PSTech.__init__(self)
+        MPTech.__init__(self)
+        Ui_Form.__init__(self)
         self.setupUi(self)
 
         # Model defaults
@@ -78,5 +81,7 @@ class Move(QWidget, Ui_Form, PSTech, MPTech):
             'absolute': self.absolute,
             'x_pos': self.x_pos,
             'y_pos': self.y_pos,
-            'z_pos': self.z_pos
+            'z_pos': self.z_pos,
+
+            'loop': self.loop # Loop count for this technique (from base class)
         }

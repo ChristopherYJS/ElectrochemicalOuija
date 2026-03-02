@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
 from UIFiles.qt_CA import Ui_Form
-from misc_BaseTech import PSTech
+from UIModification.misc_BaseTech import PSTech
 
 def _float_or_none(text: str) -> float | None:
     t = text.strip()
@@ -14,7 +14,9 @@ def _float_or_none(text: str) -> float | None:
 class CA(QWidget, Ui_Form, PSTech):
     tech="CA"
     def __init__(self, *,i_ranges: list[str] = None):
-        super().__init__()
+        QWidget.__init__(self)
+        PSTech.__init__(self)
+        Ui_Form.__init__(self)
         self.setupUi(self)
 
         # 2) Model defaults
@@ -93,7 +95,9 @@ class CA(QWidget, Ui_Form, PSTech):
             'record_dI': self.sampleCurrent, # Record potential at each potential increment in A
             'i_range': self.CR, # Current range for CA measurement
             'charge': 64, # Record total charge
-            'timebase': 0.000026
+            'timebase': 0.000026,
+
+            'loop': self.loop # Loop count for this technique (from base class)
         }
         return ca_settings
     

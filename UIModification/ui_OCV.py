@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
 from UIFiles.qt_OCV import Ui_Form
-from misc_BaseTech import PSTech
+from UIModification.misc_BaseTech import PSTech
 
 def _float_or_none(text: str) -> float | None:
     t = text.strip()
@@ -15,7 +15,9 @@ class OCV(QWidget, Ui_Form, PSTech):
     tech = "OCV"
     
     def __init__(self, *, e_ranges: list[str] = None):
-        super().__init__()
+        QWidget.__init__(self)
+        PSTech.__init__(self)
+        Ui_Form.__init__(self)
         self.setupUi(self)
 
         # 2) Model defaults
@@ -105,6 +107,8 @@ class OCV(QWidget, Ui_Form, PSTech):
             'record_dt': self.sampleTime,  # Record potential at each time increment in s
             'record_dE': self.samplePotential,  # Record potential at each potential increment in V
             'e_range': self.ER,  # Potential range for OCV measurement
-            'timebase': 0.000026
+            'timebase': 0.000026,
+
+            'loop': self.loop # Loop count for this technique (from base class)
         }
         return ocv_settings

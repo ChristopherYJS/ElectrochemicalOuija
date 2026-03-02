@@ -1,0 +1,34 @@
+2026-03-01 23:08:55>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute '_initPlotWidgets'
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 848	| Function: <module>
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 78	| Function: __init__
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 132	| Function: restyle
+Error End.
+2026-03-01 23:09:17>>>Traceback Error: AttributeError: 'ECO_pot' object has no attribute '_initPlotWidgets'
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 848	| Function: <module>
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 78	| Function: __init__
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 132	| Function: restyle
+Error End.
+2026-03-01 23:17:31>>>Traceback Error: RuntimeError: Invalid parameter None passed to addLayoutOwnership().
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 222	| Function: TreeItemClicked
+Error End.
+2026-03-01 23:17:33>>>Traceback Error: RuntimeError: Invalid parameter None passed to addLayoutOwnership().
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 222	| Function: TreeItemClicked
+Error End.
+2026-03-01 23:18:48>>>Traceback Error: RuntimeError: Invalid parameter None passed to addLayoutOwnership().
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 222	| Function: TreeItemClicked
+Error End.
+2026-03-01 23:38:12>>>Traceback Error: RuntimeError: Invalid parameter None passed to addLayoutOwnership().
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 222	| Function: TreeItemClicked
+Error End.
+2026-03-01 23:39:24>>>Traceback Error: RuntimeError: Invalid parameter None passed to addLayoutOwnership().
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 222	| Function: TreeItemClicked
+Error End.
+2026-03-01 23:40:37>>>Traceback Error: RuntimeError: Invalid parameter None passed to addLayoutOwnership().
+File: c:\GitFolder\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitFolder\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 222	| Function: TreeItemClicked
+Error End.

@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
 from UIFiles.qt_EIS import Ui_Form
-from misc_BaseTech import PSTech
+from UIModification.misc_BaseTech import PSTech
 
 def _float_or_none(text: str) -> float | None:
     t = text.strip()
@@ -15,7 +15,9 @@ class EIS(QWidget, Ui_Form, PSTech):
     tech = "EIS"
     
     def __init__(self, *, i_ranges: list[str] = None, e_ranges: list[str] = None):
-        super().__init__()
+        QWidget.__init__(self)
+        PSTech.__init__(self)
+        Ui_Form.__init__(self)
         self.setupUi(self)
 
         # 2) Model defaults
@@ -163,6 +165,8 @@ class EIS(QWidget, Ui_Form, PSTech):
             'correction_periods': self.correctNum,  # Number of periods for correction
             'i_range': self.CR,  # Current range
             'e_range': self.ER,  # Potential range
-            'timebase': 0.000026
+            'timebase': 0.000026,
+
+            'loop': self.loop # Loop count for this technique (from base class)
         }
         return eis_settings

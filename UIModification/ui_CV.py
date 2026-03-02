@@ -2,7 +2,7 @@ from __future__ import annotations
 from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
-from misc_BaseTech import PSTech
+from UIModification.misc_BaseTech import PSTech
 from UIFiles.qt_CV import Ui_Form
 
 
@@ -18,7 +18,9 @@ class CV(QWidget, Ui_Form, PSTech):
     tech = "CV"
 
     def __init__(self):
-        super().__init__()
+        QWidget.__init__(self)
+        PSTech.__init__(self)
+        Ui_Form.__init__(self)
         self.setupUi(self)
 
         # 2) Model defaults
@@ -137,5 +139,7 @@ class CV(QWidget, Ui_Form, PSTech):
             "average_dE": self.average,
             "begin_step": self.stepBegin,
             "end_step": self.stepEnd,
+
+            "loop": self.loop # Loop count for this technique (from base class)
         }
         return cv_settings

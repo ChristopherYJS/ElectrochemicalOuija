@@ -31,7 +31,7 @@ def ca_parm(board_type, api, ca_param):
     # The Label text need to be exact from the manual or it won't work!
     #==============================================================================#
 
-    CP_parms = {
+    CA_parms = {
         "voltage_step": ECC_parm("Voltage_step", float),
         "step_duration": ECC_parm("Duration_step", float),
         "vs_init": ECC_parm("vs_initial", bool),
@@ -47,22 +47,22 @@ def ca_parm(board_type, api, ca_param):
     # Creating the ecc_parms for LoadTechnique method of api instance of kbio.kbio_api
     #==============================================================================#
 
-    p_voltage_step = make_ecc_parm(api, CP_parms["voltage_step"], ca_param['voltage'])
-    p_step_duration = make_ecc_parm(api, CP_parms["step_duration"], ca_param['duration'])
-    p_vs_init = make_ecc_parm(api, CP_parms["vs_init"], ca_param['vs_init'])
+    p_voltage_step = make_ecc_parm(api, CA_parms["voltage_step"], ca_param['voltage'])
+    p_step_duration = make_ecc_parm(api, CA_parms["step_duration"], ca_param['duration'])
+    p_vs_init = make_ecc_parm(api, CA_parms["vs_init"], ca_param['vs_init'])
 
     # number of steps is one less than len(steps)
-    p_nb_steps = make_ecc_parm(api, CP_parms["nb_steps"], 0)
+    p_nb_steps = make_ecc_parm(api, CA_parms["nb_steps"], 0)
 
     # record parameters
-    p_record_dt = make_ecc_parm(api, CP_parms["record_dt"], ca_param['record_dt'])
-    p_record_dI = make_ecc_parm(api, CP_parms["record_dI"], ca_param['record_dI'])
+    p_record_dt = make_ecc_parm(api, CA_parms["record_dt"], ca_param['record_dt'])
+    p_record_dI = make_ecc_parm(api, CA_parms["record_dI"], ca_param['record_dI'])
 
     # repeating factor
-    p_repeat = make_ecc_parm(api, CP_parms["repeat"], ca_param['repeat_count'])
+    p_repeat = make_ecc_parm(api, CA_parms["repeat"], ca_param['repeat_count'])
 
-    #p_charge = make_ecc_parm(api, CP_parms["charge"], ca_param['charge'])
-    #p_timebase = make_ecc_parm(api, CP_parms["timebase"], ca_param['timebase'])
+    #p_charge = make_ecc_parm(api, CA_parms["charge"], ca_param['charge'])
+    #p_timebase = make_ecc_parm(api, CA_parms["timebase"], ca_param['timebase'])
 
     # make the technique parameter array
     ecc_parms = make_ecc_parms(api, p_voltage_step, p_step_duration, p_vs_init, p_nb_steps, p_record_dt, p_record_dI, p_repeat)

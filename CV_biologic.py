@@ -29,7 +29,7 @@ def cv_parm(board_type, api, cv_param):
     # The Label text need to be exact from the manual or it won't work!
     #==============================================================================#
 
-    CP_parms = {
+    CV_parms = {
         "voltage_step": ECC_parm("Voltage_step", float),
         "scan_rate": ECC_parm("Scan_Rate", float),
         "vs_init": ECC_parm("vs_initial", bool),
@@ -47,22 +47,22 @@ def cv_parm(board_type, api, cv_param):
 
     p_steps= list()
 
-    p_steps.append(make_ecc_parm(api, CP_parms["voltage_step"], cv_param['Ei'], 0))
-    p_steps.append(make_ecc_parm(api, CP_parms["voltage_step"], cv_param['E1'], 1))
-    p_steps.append(make_ecc_parm(api, CP_parms["voltage_step"], cv_param['E2'], 2))
-    p_steps.append(make_ecc_parm(api, CP_parms["voltage_step"], cv_param['Ei'], 3))
-    p_steps.append(make_ecc_parm(api, CP_parms["voltage_step"], cv_param['Ef'], 4))
+    p_steps.append(make_ecc_parm(api, CV_parms["voltage_step"], cv_param['Ei'], 0))
+    p_steps.append(make_ecc_parm(api, CV_parms["voltage_step"], cv_param['E1'], 1))
+    p_steps.append(make_ecc_parm(api, CV_parms["voltage_step"], cv_param['E2'], 2))
+    p_steps.append(make_ecc_parm(api, CV_parms["voltage_step"], cv_param['Ei'], 3))
+    p_steps.append(make_ecc_parm(api, CV_parms["voltage_step"], cv_param['Ef'], 4))
 
     for idx in range(5):
-        p_steps.append(make_ecc_parm(api, CP_parms["scan_rate"], cv_param['scan_rate'], idx))
-        p_steps.append(make_ecc_parm(api, CP_parms["vs_init"], False, idx))
+        p_steps.append(make_ecc_parm(api, CV_parms["scan_rate"], cv_param['scan_rate'], idx))
+        p_steps.append(make_ecc_parm(api, CV_parms["vs_init"], False, idx))
 
-    p_scan_number= make_ecc_parm(api, CP_parms["n_scan"], cv_param['scan_number'])
-    p_average_dE= make_ecc_parm(api, CP_parms["average_dE"], cv_param['average_dE'])
-    p_record_dE= make_ecc_parm(api, CP_parms["record_dE"], cv_param['record_dE'])
-    p_N_cycles= make_ecc_parm(api, CP_parms["number of cycle"], cv_param['N_cycles'])
-    p_begin_step= make_ecc_parm(api, CP_parms["begin_step"], cv_param['begin_step'])
-    p_end_step= make_ecc_parm(api, CP_parms["end_step"], cv_param['end_step'])
+    p_scan_number= make_ecc_parm(api, CV_parms["n_scan"], cv_param['scan_number'])
+    p_average_dE= make_ecc_parm(api, CV_parms["average_dE"], cv_param['average_dE'])
+    p_record_dE= make_ecc_parm(api, CV_parms["record_dE"], cv_param['record_dE'])
+    p_N_cycles= make_ecc_parm(api, CV_parms["number of cycle"], cv_param['N_cycles'])
+    p_begin_step= make_ecc_parm(api, CV_parms["begin_step"], cv_param['begin_step'])
+    p_end_step= make_ecc_parm(api, CV_parms["end_step"], cv_param['end_step'])
 
     # make the technique parameter array
     ecc_parms = make_ecc_parms(api, *p_steps, p_scan_number, p_average_dE, p_record_dE, p_N_cycles, p_begin_step, p_end_step)

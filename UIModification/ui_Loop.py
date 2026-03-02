@@ -3,7 +3,7 @@ from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
 from UIFiles.qt_Loop import Ui_Form
-from misc_BaseTech import PSTech
+from UIModification.misc_BaseTech import MOTech
 
 def _float_or_none(text: str) -> float | None:
     t = text.strip()
@@ -11,10 +11,12 @@ def _float_or_none(text: str) -> float | None:
         return None
     return float(t)
 
-class Loop(QWidget, Ui_Form):
+class Loop(QWidget, Ui_Form, MOTech):
     tech="Loop"
     def __init__(self, *,i_ranges: list[str] = None):
-        super().__init__()
+        QWidget.__init__(self)
+        MOTech.__init__(self)
+        Ui_Form.__init__(self)
         self.setupUi(self)
 
         # Model defaults
@@ -42,5 +44,7 @@ class Loop(QWidget, Ui_Form):
         return {
             'technique': self.tech.lower(),
             'name': self.name,
-            'iterations': self.iterations
+            'iterations': self.iterations,
+
+            'loop': self.loop # Loop count for this technique (from base class)
         }

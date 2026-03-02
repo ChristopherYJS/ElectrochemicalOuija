@@ -2,7 +2,7 @@ from __future__ import annotations
 from PySide6.QtWidgets import QWidget, QMessageBox
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QDoubleValidator, QIntValidator
-from misc_BaseTech import PSTech
+from UIModification.misc_BaseTech import PSTech
 from UIFiles.qt_CP import Ui_Form
 
 def _float_or_none(text: str) -> float | None:
@@ -15,7 +15,9 @@ class CP(QWidget, Ui_Form, PSTech):
     tech="CP"
 
     def __init__(self, *, i_ranges: list[str] = None):
-        super().__init__()
+        QWidget.__init__(self)
+        PSTech.__init__(self)
+        Ui_Form.__init__(self)
         self.setupUi(self)
 
         # 2) Model defaults
@@ -125,5 +127,7 @@ class CP(QWidget, Ui_Form, PSTech):
             'record_dE': self.sampleCurrent,
             'i_range': self.CR,
             'timebase': 0.000026,
+
+            'loop': self.loop # Loop count for this technique (from base class)
         }
         return cp_settings
