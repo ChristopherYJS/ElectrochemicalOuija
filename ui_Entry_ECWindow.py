@@ -1,18 +1,22 @@
 #& "C:\Users\chrst\AppData\Roaming\Python\Python313\Scripts\pyside6-uic.exe" "uiEC.ui" "-o" "uiEC.py" "--from-imports"
 import sys, os, csv, types
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit, QRadioButton,QMessageBox, QButtonGroup, QInputDialog, QDialog, QDialogButtonBox, QCheckBox
 from PySide6.QtCore import QSize, Qt, QEvent, QMimeData, QModelIndex, QPoint, QRect, QObject, QThread, Signal, Slot, QTimer
 from PySide6.QtWidgets import QAbstractItemView 
 from PySide6.QtGui import QMouseEvent,QDrag,QFont,QShortcut,QCursor,QAction,QKeySequence
+
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from UIFiles.qt_ECO_Main import Ui_MainWindow
 
 from misc_handleException import exception2msg, msg2file, errorDeco
+from misc_ModifiedUI import TechTreeWidget
 
-from misc_ModifiedUI import TechTreeWidget, FloatingTabWindow  
+from pt_biologic import Biologic
 
+from UIFiles.qt_ECO_Main import Ui_MainWindow
+from UIModification.misc_BaseTech import MOTech
 from UIModification.ui_CV import CV as CVUI
 from UIModification.ui_CA import CA as CAUI 
 from UIModification.ui_CP import CP as CPUI
@@ -20,13 +24,15 @@ from UIModification.ui_OCV import OCV as OCVUI
 from UIModification.ui_EIS import EIS as EISUI
 from UIModification.ui_Loop import Loop as LoopUI
 from UIModification.ui_Move import Move as MoveUI
+
 from ui_PsInfoDialog import get_potentiostat_info_from_dialog
 from misc_plot_axis_options import get_axis_options, apply_axis_transform, normalize_technique_name
 from ui_plot import ElectrochemPlotter
 
+
 from defaultSeq import build_default_sequence_ui
 
-from pt_biologic import Biologic
+
 
 class ECO_pot(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -204,7 +210,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.dict_ChannelTechs[self.channel_Current][item] = page
             self.treeWidget_Techs.setCurrentItem(item)
             if hasattr(page, "setCR") and self.channel_Current in self.dict_CR:
-                    page.setCR(self.dict_CR[self.channel_Current])
+                page.setCR(self.dict_CR[self.channel_Current])
             if hasattr(page, "setPR") and self.channel_Current in self.dict_PR:
                 page.setPR(self.dict_PR[self.channel_Current])
             if hasattr(page, "setBW") and self.channel_Current in self.dict_BW:
@@ -349,11 +355,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
         return selected_channels
 
-
-        
-
-
-    def _buildSequence(self, channel: int, parent=None, pathCurrent=None) -> list:
+    def _buildSequence(self, channel: int, parent=None, pathCurrent=None) -> list[MOTech]:
         """
         This builds the sequence for both biologic to run and to output correct filename. 
         I dont know how this works but it works, so don't change it.
