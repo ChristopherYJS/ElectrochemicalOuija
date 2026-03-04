@@ -14,17 +14,31 @@
    <string>Form</string>
   </property>
   <layout class="QFormLayout" name="formLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
+   <item row="1" column="0">
+    <widget class="QLabel" name="labelIter">
      <property name="text">
       <string>Number of iteration</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="lineEdit">
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="lineEditIter">
      <property name="text">
-      <string>5</string>
+      <string>2</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="labelName">
+     <property name="text">
+      <string>Name</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="lineEditName">
+     <property name="placeholderText">
+      <string>&lt;string&gt;</string>
      </property>
     </widget>
    </item>

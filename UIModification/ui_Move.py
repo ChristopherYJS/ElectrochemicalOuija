@@ -13,7 +13,7 @@ def _float_or_none(text: str) -> float | None:
 
 class Move(QWidget, Ui_Form, PSTech, MPTech):
     tech="Move"
-    def __init__(self, *,i_ranges: list[str] = None):
+    def __init__(self, *, _i_ranges: list[str] = None):
         QWidget.__init__(self)
         PSTech.__init__(self)
         MPTech.__init__(self)
@@ -50,17 +50,17 @@ class Move(QWidget, Ui_Form, PSTech, MPTech):
         self.lineEdit_2.editingFinished.connect(self._setY)
         self.lineEdit_3.editingFinished.connect(self._setZ)
 
-    def _setDeltaX(self, state):
-        self.delta_x = state == 2  # Checked
+    def _setDeltaX(self, check_state):
+        self.delta_x = check_state == 2  # Checked
 
-    def _setDeltaY(self, state):
-        self.delta_y = state == 2
+    def _setDeltaY(self, check_state):
+        self.delta_y = check_state == 2
 
-    def _setDeltaZ(self, state):
-        self.delta_z = state == 2
+    def _setDeltaZ(self, check_state):
+        self.delta_z = check_state == 2
 
-    def _setAbsolute(self, state):
-        self.absolute = state == 2
+    def _setAbsolute(self, check_state):
+        self.absolute = check_state == 2
 
     def _setX(self):
         self.x_pos = _float_or_none(self.lineEdit.text())

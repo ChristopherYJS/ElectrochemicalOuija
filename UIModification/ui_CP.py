@@ -14,7 +14,7 @@ def _float_or_none(text: str) -> float | None:
 class CP(QWidget, Ui_Form, PSTech):
     tech="CP"
 
-    def __init__(self, *, i_ranges: list[str] = None):
+    def __init__(self, *, i_ranges: list[str] | None = None):
         QWidget.__init__(self)
         PSTech.__init__(self)
         Ui_Form.__init__(self)
@@ -24,10 +24,10 @@ class CP(QWidget, Ui_Form, PSTech):
         self.name: str = "CP"
         self.current: float | int | None = None
         self.duration: int | float = 0
-        self.sampleTime: int | float = 0
-        self.sampleCurrent: int | float = 0
+        self.sample_time: int | float = 0
+        self.sample_current: int | float = 0
         self.repeat: int = 1
-        self.CR: str | None = None       # current range
+        self.current_range: str | None = None       # current range
 
         # 3) Load combobox options from main UI
         if i_ranges:
@@ -79,16 +79,18 @@ class CP(QWidget, Ui_Form, PSTech):
             self.name = self.lineEditName.text()
             self.current = _float_or_none(self.lineEditCurrent.text())
             self.duration = float(self.lineEditDuration.text() or 0)
-            self.sampleTime = float(self.lineEditSampleTime.text() or 0)
-            self.sampleCurrent = float(self.lineEditSampleCurrent.text() or 0)
+            self.sample_time = float(self.lineEditSampleTime.text() or 0)
+            self.sample_current = float(self.lineEditSampleCurrent.text() or 0)
             self.repeat = int(self.lineEditSampleRepeat.text() or 1)
             current_data = self.comboBoxCR.currentData()
-            self.CR = current_data if current_data is not None else (self.comboBoxCR.currentText() or None)
+            self.current_range = current_data if current_data is not None else (self.comboBoxCR.currentText() or None)
         except ValueError as e:
+            self.validated = False
             QMessageBox.warning(self, "Parse error", str(e))
             return
 
-    def _validate_before_output(self) -> bool:
+    def _validateParams(self) -> bool:
+        self.validated = False
         checks = [
             ("Current", self.lineEditCurrent.text().strip(), float),
             ("Duration", self.lineEditDuration.text().strip(), float),
@@ -99,7 +101,7 @@ class CP(QWidget, Ui_Form, PSTech):
 
         for field_name, raw_value, expected_type in checks:
             if raw_value == "":
-                QMessageBox.warning(self, "Missing field", f"{field_name} cannot be empty.")
+                QMessageBox.warning(self, "Missing field", f"{self.tech}_{self.name}: {field_name} cannot be empty.")
                 return False
             try:
                 if expected_type is float:
@@ -107,15 +109,17 @@ class CP(QWidget, Ui_Form, PSTech):
                 elif expected_type is int:
                     int(raw_value)
             except ValueError:
-                QMessageBox.warning(self, "Invalid type", f"{field_name} must be {expected_type.__name__}.")
+                QMessageBox.warning(self, "Invalid type", f"{self.tech}_{self.name}: {field_name} must be {expected_type.__name__}.")
                 return False
 
+        self.validated = True
         return True
 
-    def outputParam(self) -> dict:
+    def outputParam(self) -> dict | None:
         self._pullFields()  # Ensure model is up-to-date with UI
-        if not self._validate_before_output():
-            return {}
+        self._validateParams()
+        if not self.validated:
+            return
         cp_settings = {
             'technique': 'cp',
             'name': self.name,
@@ -123,9 +127,9 @@ class CP(QWidget, Ui_Form, PSTech):
             'duration': self.duration,
             'vs_init': False,
             'repeat_count': self.repeat,
-            'record_dt': self.sampleTime,
-            'record_dE': self.sampleCurrent,
-            'i_range': self.CR,
+            'record_dt': self.sample_time,
+            'record_dE': self.sample_current,
+            'i_range': self.current_range,
             'timebase': 0.000026,
 
             'loop': self.loop # Loop count for this technique (from base class)

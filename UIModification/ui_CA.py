@@ -13,7 +13,7 @@ def _float_or_none(text: str) -> float | None:
 
 class CA(QWidget, Ui_Form, PSTech):
     tech="CA"
-    def __init__(self, *,i_ranges: list[str] = None):
+    def __init__(self, *,i_ranges: list[str] | None = None):
         QWidget.__init__(self)
         PSTech.__init__(self)
         Ui_Form.__init__(self)
@@ -24,10 +24,10 @@ class CA(QWidget, Ui_Form, PSTech):
         self.potential: float | int | None = None
         self.duration: int | float = 0
 
-        self.sampleTime: int | float = 0
-        self.sampleCurrent: int | float = 0
+        self.sample_time: int | float = 0
+        self.sample_current: int | float = 0
         self.repeat: int = 1
-        self.CR: str | None = None       # current range
+        self.current_range: str | None = None       # current range
 
 
         # 3) Load combobox options from main UI
@@ -71,18 +71,48 @@ class CA(QWidget, Ui_Form, PSTech):
             self.name=self.lineEditName.text()
             self.potential = _float_or_none(self.lineEditPotential.text())
             self.duration = float(self.lineEditDuration.text() or 0)
-            self.sampleTime = float(self.lineEditSampleTime.text() or 0)
-            self.sampleCurrent = float(self.lineEditSampleCurrent.text() or 0)
+            self.sample_time = float(self.lineEditSampleTime.text() or 0)
+            self.sample_current = float(self.lineEditSampleCurrent.text() or 0)
             self.repeat = int(self.lineEditRepeat.text() or 1)
             current_data = self.comboBoxCR.currentData()
-            self.CR = current_data if current_data is not None else (self.comboBoxCR.currentText() or None)
+            self.current_range = current_data if current_data is not None else (self.comboBoxCR.currentText() or None)
 
         except ValueError as e:
+            self.validated = False
             QMessageBox.warning(self, "Parse error", str(e))
             return
 
-    def outputParam(self) -> dict:
+    def _validateParams(self) -> bool:
+        self.validated = False
+        checks = [
+            ("Potential", self.lineEditPotential.text().strip(), float),
+            ("Duration", self.lineEditDuration.text().strip(), float),
+            ("Sample Time", self.lineEditSampleTime.text().strip(), float),
+            ("Sample Current", self.lineEditSampleCurrent.text().strip(), float),
+            ("Repeat", self.lineEditRepeat.text().strip(), int),
+        ]
+
+        for field_name, raw_value, expected_type in checks:
+            if raw_value == "":
+                QMessageBox.warning(self, "Missing field", f"{self.tech}_{self.name}: {field_name} cannot be empty.")
+                return False
+            try:
+                if expected_type is float:
+                    float(raw_value)
+                elif expected_type is int:
+                    int(raw_value)
+            except ValueError:
+                QMessageBox.warning(self, "Invalid type", f"{self.tech}_{self.name}: {field_name} must be {expected_type.__name__}.")
+                return False
+
+        self.validated = True
+        return True
+
+    def outputParam(self) -> dict | None:
         self._pullFields()  # Ensure model is up-to-date with UI
+        self._validateParams()
+        if not self.validated:
+            return
         """Return current parameters as a dict."""
         ca_settings= { 
             'technique': 'ca', # Technique identifier
@@ -91,9 +121,9 @@ class CA(QWidget, Ui_Form, PSTech):
             'duration': self.duration, # Duration of CA measurement in s
             'vs_init': False, # Voltage step vs initial one
             'repeat_count': self.repeat, # Repetition of measurement
-            'record_dt': self.sampleTime, # Record potential at each time increment in s
-            'record_dI': self.sampleCurrent, # Record potential at each potential increment in A
-            'i_range': self.CR, # Current range for CA measurement
+            'record_dt': self.sample_time, # Record potential at each time increment in s
+            'record_dI': self.sample_current, # Record potential at each potential increment in A
+            'i_range': self.current_range, # Current range for CA measurement
             'charge': 64, # Record total charge
             'timebase': 0.000026,
 

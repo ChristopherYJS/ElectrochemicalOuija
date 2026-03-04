@@ -1,0 +1,21 @@
+2026-03-04 15:41:04>>>Traceback Error: RuntimeError: Internal C++ object (PySide6.QtWidgets.QTreeWidgetItem) already deleted.
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 453	| Function: switchChannel
+Error End.
+2026-03-04 15:41:05>>>Traceback Error: RuntimeError: Internal C++ object (PySide6.QtWidgets.QTreeWidgetItem) already deleted.
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 453	| Function: switchChannel
+Error End.
+2026-03-04 15:41:13>>>Traceback Error: RuntimeError: Internal C++ object (PySide6.QtWidgets.QTreeWidgetItem) already deleted.
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 453	| Function: switchChannel
+Error End.
+2026-03-04 15:41:13>>>Traceback Error: RuntimeError: Internal C++ object (PySide6.QtWidgets.QTreeWidgetItem) already deleted.
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 453	| Function: switchChannel
+Error End.
+2026-03-04 15:41:15>>>Traceback Error: RuntimeError: Internal C++ object (PySide6.QtWidgets.QTreeWidgetItem) already deleted.
+File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 209	| Function: addTech
+File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 514	| Function: _ensureUniqueTechName
+Error End.

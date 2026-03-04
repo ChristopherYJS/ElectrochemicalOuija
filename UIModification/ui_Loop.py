@@ -5,41 +5,37 @@ from PySide6.QtGui import QDoubleValidator, QIntValidator
 from UIFiles.qt_Loop import Ui_Form
 from UIModification.misc_BaseTech import MOTech
 
-def _float_or_none(text: str) -> float | None:
-    t = text.strip()
-    if t == "" or t.lower() == "none":
-        return None
-    return float(t)
 
 class Loop(QWidget, Ui_Form, MOTech):
     tech="Loop"
-    def __init__(self, *,i_ranges: list[str] = None):
+    def __init__(self, *, _i_ranges: list[str] = None):
         QWidget.__init__(self)
         MOTech.__init__(self)
         Ui_Form.__init__(self)
         self.setupUi(self)
 
         # Model defaults
-        self.loop=[0]
         self.name: str = "Loop"
         self.iterations: int = 5
 
         # Validators
-        self.lineEdit.setValidator(QIntValidator(1, 100, self))  # 1 to 100 iterations
+        self.lineEditIter.setValidator(QIntValidator(1, 100, self))  # 1 to 100 iterations
 
         # Bind signals
         self.bindSignalSlot()
 
     def bindSignalSlot(self):
-        self.lineEdit.editingFinished.connect(self._setIterations)
+        self.lineEditIter.editingFinished.connect(self._pullFields)
 
-    def _setIterations(self):
+    def _pullFields(self):
+        """Pull current UI values into the model (with light parsing)."""
         try:
-            self.iterations = int(self.lineEdit.text())
-        except ValueError:
-            QMessageBox.warning(self, "Invalid Input", "Please enter a valid number for iterations.")
-            self.lineEdit.setText(str(self.iterations))
-
+            self.name = self.lineEditName.text()
+            self.iterations = int(self.lineEditIter.text())
+        except ValueError as e:
+            QMessageBox.warning(self, "Parse error", str(e))
+            return
+        
     def outputParam(self) -> dict:
         return {
             'technique': self.tech.lower(),

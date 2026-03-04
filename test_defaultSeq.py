@@ -5,14 +5,14 @@ from PySide6.QtGui import QFont
 from UIModification.ui_CA import CA as CAUI
 from UIModification.ui_Loop import Loop as LoopUI
 
-def build_default_sequence_ui(main_window):
+def buildTestSequence(main_window):
     """
     Builds the default sequence in the UI by adding techs programmatically.
     main_window: the ECO_pot instance
     """
     # Clear existing techs
     main_window.treeWidget_Techs.clear()
-    main_window.dict_ChannelTechs[main_window.channel_Current] = {}
+    main_window.channel_pages[main_window.channel_active] = {}
     
     font = QFont()
     font.setPointSize(14)
@@ -24,7 +24,7 @@ def build_default_sequence_ui(main_window):
     item1.setFont(0, font)
     main_window.treeWidget_Techs.addTopLevelItem(item1)
     page1 = main_window._buildTechPage(CAUI, item1, i_ranges=[])
-    main_window.dict_ChannelTechs[main_window.channel_Current][item1] = page1
+    main_window.channel_pages[main_window.channel_active][item1] = page1
     page1.lineEditName.setText('1')
     page1.lineEditName.editingFinished.emit()     # trigger nameChanged signal to set initial name
     
@@ -35,7 +35,7 @@ def build_default_sequence_ui(main_window):
     item2.setFont(0, font)
     main_window.treeWidget_Techs.addTopLevelItem(item2)
     page2 = main_window._buildTechPage(LoopUI, item2, i_ranges=[])
-    main_window.dict_ChannelTechs[main_window.channel_Current][item2] = page2
+    main_window.channel_pages[main_window.channel_active][item2] = page2
     page2.lineEdit.setText('2')
     page2.lineEdit.editingFinished.emit()     # trigger editingFinished signal to set initial iterations
     
@@ -46,7 +46,7 @@ def build_default_sequence_ui(main_window):
     item3.setFont(0, font)
     item2.addChild(item3)
     page3 = main_window._buildTechPage(CAUI, item3, i_ranges=[])
-    main_window.dict_ChannelTechs[main_window.channel_Current][item3] = page3
+    main_window.channel_pages[main_window.channel_active][item3] = page3
     page3.lineEditName.setText('2')
     page3.lineEditName.editingFinished.emit()     # trigger nameChanged signal to set initial name
     
@@ -57,7 +57,7 @@ def build_default_sequence_ui(main_window):
     item4.setFont(0, font)
     item2.addChild(item4)
     page4 = main_window._buildTechPage(LoopUI, item4, i_ranges=[])
-    main_window.dict_ChannelTechs[main_window.channel_Current][item4] = page4
+    main_window.channel_pages[main_window.channel_active][item4] = page4
     page4.lineEdit.setText('3')
     page4.lineEdit.editingFinished.emit()     # trigger editingFinished signal to set initial iterations
     
@@ -68,6 +68,6 @@ def build_default_sequence_ui(main_window):
     item5.setFont(0, font)
     item4.addChild(item5)
     page5 = main_window._buildTechPage(CAUI, item5, i_ranges=[])
-    main_window.dict_ChannelTechs[main_window.channel_Current][item5] = page5
+    main_window.channel_pages[main_window.channel_active][item5] = page5
     page5.lineEditName.setText('3')
     page5.lineEditName.editingFinished.emit()     # trigger nameChanged signal to set initial name

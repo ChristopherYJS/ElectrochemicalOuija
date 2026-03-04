@@ -404,7 +404,7 @@ class Ui_MainWindow(object):
 "Run", None))
         self.pushButton_StopAll.setText(QCoreApplication.translate("MainWindow", u"Stop\n"
 "All", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Potentiostat", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Parameters", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Positioner", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"Log", None))
         self.menuConnect.setTitle(QCoreApplication.translate("MainWindow", u"Connect", None))

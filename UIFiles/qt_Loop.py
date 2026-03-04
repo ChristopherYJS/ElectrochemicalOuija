@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_Loop.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -25,15 +25,25 @@ class Ui_Form(object):
         Form.resize(400, 300)
         self.formLayout = QFormLayout(Form)
         self.formLayout.setObjectName(u"formLayout")
-        self.label = QLabel(Form)
-        self.label.setObjectName(u"label")
+        self.labelIter = QLabel(Form)
+        self.labelIter.setObjectName(u"labelIter")
 
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label)
+        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.labelIter)
 
-        self.lineEdit = QLineEdit(Form)
-        self.lineEdit.setObjectName(u"lineEdit")
+        self.lineEditIter = QLineEdit(Form)
+        self.lineEditIter.setObjectName(u"lineEditIter")
 
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.lineEdit)
+        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.lineEditIter)
+
+        self.labelName = QLabel(Form)
+        self.labelName.setObjectName(u"labelName")
+
+        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.labelName)
+
+        self.lineEditName = QLineEdit(Form)
+        self.lineEditName.setObjectName(u"lineEditName")
+
+        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.lineEditName)
 
 
         self.retranslateUi(Form)
@@ -43,7 +53,9 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
-        self.label.setText(QCoreApplication.translate("Form", u"Number of iteration", None))
-        self.lineEdit.setText(QCoreApplication.translate("Form", u"5", None))
+        self.labelIter.setText(QCoreApplication.translate("Form", u"Number of iteration", None))
+        self.lineEditIter.setText(QCoreApplication.translate("Form", u"2", None))
+        self.labelName.setText(QCoreApplication.translate("Form", u"Name", None))
+        self.lineEditName.setPlaceholderText(QCoreApplication.translate("Form", u"<string>", None))
     # retranslateUi
 

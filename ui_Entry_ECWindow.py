@@ -22,17 +22,17 @@ from UIModification.ui_EIS import EIS as EISUI
 from UIModification.ui_Loop import Loop as LoopUI
 from UIModification.ui_Move import Move as MoveUI
 
-from ui_PsInfoDialog import get_potentiostat_info_from_dialog
-
-
-from test_defaultSeq import build_default_sequence_ui
+from test_defaultSeq import buildTestSequence
 
 
 
 class ECO_pot(QMainWindow, Ui_MainWindow):
+    requestRunSequence = Signal(object, object)
+    requestDisconnect = Signal()
+    requestStopChannels = Signal(list)
     def __init__(self):
         super().__init__()
-        self.dictTechWin={
+        self.tech_ui_classes={
             'CA':CAUI,
             'CP':CPUI,
             'CV':CVUI,
@@ -41,24 +41,24 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             'Move':MoveUI,
             'Loop':LoopUI
         }
-        self.dict_ChannelTechs={} # QTreeWidgetItem and MOTech pair of each channel
-        self.dict_ChannelParams={} #Tech params for each channel 
-        self.dict_ChannelStatus={} #status of each channel
+        self.channel_pages={} # QTreeWidgetItem and MOTech pair of each channel. {<channel number>: {<QTreeWidgetItem>: <MOTech subclass instance>}}
+        self.channel_params={} #Tech params for each channel. {<channel number>: {<tech attribute>: <value>}}
+        self.channel_is_running={} #status of each channel. {<channel number>: <bool>}
 
-        self.address_PS = "192.168.2.2"
-        self.channel_Current = 1 #channel number of whose setup is being displayed
-        self.path_BinaryPS = os.environ.get("ECLIB_DIR", f"C:{os.sep}EC-Lab Development Package{os.sep}lib")
+        self.address_ps = "192.168.2.2"
+        self.channel_active = 1 #channel number of whose setup is being displayed
+        self.binary_path_ps = os.environ.get("ECLIB_DIR", f"C:{os.sep}EC-Lab Development Package{os.sep}lib")
 
-        self.dict_CR={} #current ranges for each channel
-        self.dict_PR={} #potential ranges for each channel
-        self.dict_BW={} #bandwidth options for each channel
+        self.channel_current_ranges={} #current ranges for each channel
+        self.channel_potential_ranges={} #potential ranges for each channel
+        self.channel_bandwidths={} #bandwidth options for each channel
 
-        self.dict_ChannelRbtn={} #channel number to its radio button widget in the UI
-        self.group_ChannelRbtn=QButtonGroup(self)
-        self.group_ChannelRbtn.setExclusive(True)
+        self.channel_radio_buttons={} #channel number to its radio button widget in the UI
+        self.channel_radio_group=QButtonGroup(self)
+        self.channel_radio_group.setExclusive(True)
 
-        self.is_PSConnected = False
-        self.filename_User = None #user set filename for data output
+        self.is_ps_connected = False
+        self.filename_user = None #user set filename for data output
         
         self.current_file = None
         self.current_writer = None
@@ -121,13 +121,15 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.treeWidget_Techs.itemClicked.connect(self.TreeItemClicked)
         self.treeWidget_Techs.itemRemoved.connect(self._onTechItemRemoved)
         self.treeWidget_Techs.itemsReordered.connect(self._onTechItemsReordered)
-        self.pushButton_SingleRun.clicked.connect(self.startTech)
-        self.pushButton_MultiRun.clicked.connect(self.startMultiTech)
-        self.pushButtonConnect.clicked.connect(self.connectPs)
+        self.pushButton_SingleRun.clicked.connect(lambda: self.startChannels([self.channel_active]))
+        self.pushButton_MultiRun.clicked.connect(self.selectMultiRunChannels)
+        self.pushButtonConnect.clicked.connect(self.connectPS)
         self.pushButton_ErrorTest.clicked.connect(self.errorTest)
-        self.pushButton_3.clicked.connect(lambda: build_default_sequence_ui(self))
+        self.pushButton_3.clicked.connect(lambda: buildTestSequence(self))
         self.lineEditLogInput.returnPressed.connect(self.evalLogInput)
-        self.group_ChannelRbtn.buttonToggled.connect(lambda btn: self.switchChannel(btn) )
+        self.channel_radio_group.buttonToggled.connect(lambda btn: self.switchChannel(btn) )
+        self.pushButton_StopSingle.clicked.connect(lambda: self.stopChannel([self.channel_active]))
+        self.pushButton_StopAll.clicked.connect(lambda: self.stopChannel(list(self.channel_is_running.keys()))) 
     ##=====================================================================================##
     # Tech label binding functions
     ##=====================================================================================##
@@ -136,35 +138,59 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             label.mouseDoubleClickEvent=lambda e, sender=label: self.addTech(sender,e)
 
     def errorTest(self):
-        sequence = self._buildSequence(self.channel_Current)
+        sequence = self._buildSequence(self.channel_active)
+        if not sequence:
+            return
         print("Tech Sequence:")
         for idx, page in enumerate(sequence):
             techname = page.tech
             expname = page.name
             loop = page.loop
-            print(f"{idx+1}. CH{self.channel_Current}_{techname}_{expname}_loop{loop}")
+            print(f"{idx+1}. CH{self.channel_active}_{techname}_{expname}_loop{loop}")
         
     ##=====================================================================================##
-    # Slot functions
+    # Potentiostat related
     ##=====================================================================================##
+
+    @errorDeco(logger='self.Log')
+    def connectPS(self):
+        if hasattr(self, 'bio_thread') and self.bio_thread.isRunning():
+            self.logMsg("> Potentiostat thread is already running.")
+            return
+        
+        self.bio_thread = QThread(self)
+        self.bio_worker = Biologic(self.address_ps, self.binary_path_ps)
+        self.bio_worker.moveToThread(self.bio_thread)
+
+        self.bio_thread.started.connect(self.bio_worker.connectDevice)
+        self.bio_thread.finished.connect(lambda: self._setPotentiostatConnected(False))
+        self.bio_thread.finished.connect(self.bio_thread.deleteLater)
+
+        # self.bio_worker.signalData.connect(self._onBiologicData)
+        self.bio_worker.signalConnected.connect(self._getChannelInfo)
+        self.bio_worker.signalChannelOption.connect(self.updateChannelOption)
+        self.bio_worker.signalFinished.connect(self.bio_thread.quit)
+        self.bio_worker.signalLog.connect(self.Log.appendPlainText)
+        self.requestRunSequence.connect(self.bio_worker.runSequence, Qt.ConnectionType.QueuedConnection)
+        self.requestDisconnect.connect(self.bio_worker.disconnectDevice, Qt.ConnectionType.QueuedConnection)
+        self.requestStopChannels.connect(self.bio_worker.stopExperiment, Qt.ConnectionType.QueuedConnection)
+        self.bio_thread.start()
+
     @errorDeco(logger='self.Log')
     def addTech(self,sender,event) -> None:
-        """
-        Add a technique to the sequence tree when its label is double-clicked in the UI.
-        """
-        isChannelFree=not self.dict_ChannelStatus.get(self.channel_Current, False)
-        if self.is_PSConnected and isChannelFree: 
-            if self.channel_Current not in self.dict_ChannelTechs:
-                self.dict_ChannelTechs[self.channel_Current] = {}
-            i_ranges = self.dict_CR.get(self.channel_Current, [])
+        #Add a technique to the sequence tree when its label is double-clicked in the UI.
+        if self.is_ps_connected and not self.channel_is_running.get(self.channel_active): 
+            if self.channel_active not in self.channel_pages:
+                self.channel_pages[self.channel_active] = {}
+            i_ranges = self.channel_current_ranges.get(self.channel_active, [])
 
             # If a loop item is focused, add new technique as its child; otherwise, add as a new top-level item
-            treeWidgetFocused = self.treeWidget_Techs.currentItem()
+            tree_widget_focused = self.treeWidget_Techs.currentItem()
             target_parent = None
-            if treeWidgetFocused is not None:
-                current_page = self.dict_ChannelTechs[self.channel_Current].get(treeWidgetFocused)
+            if tree_widget_focused is not None:
+                current_page = self.channel_pages[self.channel_active].get(tree_widget_focused)
                 if current_page and getattr(current_page, "tech", "") == "Loop":
-                    target_parent = treeWidgetFocused
+                    target_parent = tree_widget_focused
 
             item = QTreeWidgetItem()
             item.setText(0, sender.text())
@@ -181,17 +207,18 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             # Remove all widgets from the potentiostat section before loading new Form
             self._clearPSFrameWidget(self.frame_ps)
 
-            ui_class = self.dictTechWin.get(sender.text())
+            ui_class = self.tech_ui_classes.get(sender.text())
             page = self._buildTechPage(ui_class, item, i_ranges=i_ranges)     
             self.frame_ps.layout().addWidget(page)
-            self.dict_ChannelTechs[self.channel_Current][item] = page
+            self.channel_pages[self.channel_active][item] = page
+            self._ensureUniqueTechName(page, item, self.channel_active)
             self.treeWidget_Techs.setCurrentItem(item)
-            if hasattr(page, "setCR") and self.channel_Current in self.dict_CR:
-                page.setCR(self.dict_CR[self.channel_Current])
-            if hasattr(page, "setPR") and self.channel_Current in self.dict_PR:
-                page.setPR(self.dict_PR[self.channel_Current])
-            if hasattr(page, "setBW") and self.channel_Current in self.dict_BW:
-                page.setBW(self.dict_BW[self.channel_Current])
+            if hasattr(page, "setCR") and self.channel_active in self.channel_current_ranges:
+                page.setCR(self.channel_current_ranges[self.channel_active])
+            if hasattr(page, "setPR") and self.channel_active in self.channel_potential_ranges:
+                page.setPR(self.channel_potential_ranges[self.channel_active])
+            if hasattr(page, "setBW") and self.channel_active in self.channel_bandwidths:
+                page.setBW(self.channel_bandwidths[self.channel_active])
         else:
             #pop warning window to inform user to connect potentiostat or free the channel
             warning_msg = "Please connect to the potentiostat and ensure the channel is free before editing experiment sequence."
@@ -200,101 +227,53 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
     @errorDeco(logger='self.Log')
     def TreeItemClicked(self, item, column=None):
-        page = self.dict_ChannelTechs.get(self.channel_Current, {}).get(item)
+        '''
+        show the technique setup page in the potentiostat section when its item is clicked in the tree widget
+        '''
+        page = self.channel_pages.get(self.channel_active, {}).get(item)
         self._clearPSFrameWidget(self.frame_ps)
         self.frame_ps.layout().addWidget(page)
         page.show()
 
     @errorDeco(logger='self.Log')
-    def startTech(self):
+    def startChannels(self,channels):
+        '''
+        send param sequence(s) to selected channel(s) to biologic to run
+        '''
         #check if potentiostat is connected
-        if not hasattr(self, 'bio_worker'):
+        if not self.is_ps_connected:
             self.logMsg("> Potentiostat not connected.")
             return
         # Get filename from user
         filename, ok = QInputDialog.getText(self, "Enter Filename", "Enter base filename for data files:")
         if not ok or not filename:
             return
-        self.filename_User = filename
+        self.filename_user = filename #?
 
         # Build sequence for the selected channel and start the experiment
-        sequence = self._buildSequence(self.channel_Current)
-        if not sequence:
-            msg = f"Channel {self.channel_Current} has an empty sequence."
-            QMessageBox.critical(self, "Start Error", msg)
-            raise ValueError(msg)
+        self.channel_params = {}
+        for ch in channels:
+            if self.channel_is_running.get(ch, False):
+                self.logMsg(f"> Channel {ch} is currently running.")
+                return
+            sequence = self._buildSequence(ch)
+            if not sequence:
+                self.logMsg(f"> Sequence build cancelled on CH {ch} due to invalid technique input.")
+                return
+            self.channel_params[ch] = [page.outputParam() for page in sequence]
 
-        self.sequence = sequence
-        plot_sequence = [
-            step.outputParam() if hasattr(step, "outputParam") and callable(step.outputParam) else step
-            for step in self.sequence
-        ]
-
-        self.bio_worker.runSequence(self.sequence, self.channel_Current, self.filename_User)
-        self.logMsg(f"> Starting single-channel run on CH {self.channel_Current}")
-
-        for step in self.sequence:
-            params = step.outputParam() if hasattr(step, "outputParam") and callable(step.outputParam) else step
-            if isinstance(params, dict):
-                self.logMsg(f"> CH {self.channel_Current} starting {params.get('technique', 'Unknown Tech')} with parameters: {params}")
+        self.requestRunSequence.emit(self.channel_params, self.filename_user)
+        self.channel_is_running.update(
+            getattr(self.bio_worker, 'channel_is_running', {ch: True for ch in self.channel_params})
+        )
+        self.logMsg(f"> Starting single-channel run on CH {'&'.join(list(map(str, self.channel_params.keys())))}")
 
     @errorDeco(logger='self.Log')
-    def startMultiTech(self):
-        if not hasattr(self, 'bio_worker'):
-            self.logMsg("> Potentiostat not connected.")
-            return
-
-        list_ChannelSelected = self._selectMultiRunChannels()
-        if not list_ChannelSelected:
-            return
-
-        filename, ok = QInputDialog.getText(self, "Enter Filename", "Enter base filename for data files:")
-        if not ok or not filename:
-            return
-        self.filename_User = filename
-
-        if self.current_file:
-            self.current_file.close()
-            self.current_file = None
-        self.current_writer = None
-        self.current_tech = None
-        self.current_seq_index = -1
-        self.tech_counters = {}
-
-        channel_sequences = {}
-        empty_channels = []
-        for channel in list_ChannelSelected:
-            seq = self._buildSequence(channel)
-            if not seq:
-                empty_channels.append(channel)
-            else:
-                channel_sequences[channel] = seq
-
-        if empty_channels:
-            msg = f"Selected channel(s) have empty sequence: {empty_channels}"
-            QMessageBox.critical(self, "Start Error", msg)
-            raise ValueError(msg)
-
-        primary_channel = self.channel_Current if self.channel_Current in channel_sequences else list_ChannelSelected[0]
-        self.sequence = channel_sequences[primary_channel]
-
-        plot_sequence = [
-            step.outputParam() if hasattr(step, "outputParam") and callable(step.outputParam) else step
-            for step in self.sequence
-        ]
-        self._setPlotTechItemsFromSequence(plot_sequence)
-
-        self.bio_worker.runSequence(channel_sequences, list_ChannelSelected, self.filename_User)
-        self.logMsg(f"> Starting multi-channel run on CH {list_ChannelSelected}")
-
-        for channel in list_ChannelSelected:
-            for step in channel_sequences[channel]:
-                params = step.outputParam() if hasattr(step, "outputParam") and callable(step.outputParam) else step
-                if isinstance(params, dict):
-                    self.logMsg(f"> CH {channel} starting {params.get('technique', 'Unknown Tech')} with parameters: {params}")
-
-    def _selectMultiRunChannels(self) -> list[int]:
-        connected_channels = sorted(self.dict_ChannelRbtn.keys())
+    def selectMultiRunChannels(self) -> list[int]:
+        '''
+        Show a dialog to select multiple channels for running experiments.
+        '''
+        connected_channels = sorted(self.channel_is_running.keys())
         if not connected_channels:
             QMessageBox.warning(self, "No Channels", "No connected channels available.")
             return []
@@ -307,7 +286,8 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         checkboxes = {}
         for channel in connected_channels:
             checkbox = QCheckBox(f"CH {channel}")
-            checkbox.setChecked(channel == self.channel_Current)
+            checkbox.setChecked(self.channel_is_running.get(channel, False))
+            checkbox.setEnabled(not self.channel_is_running.get(channel, False))
             checkboxes[channel] = checkbox
             layout.addWidget(checkbox)
 
@@ -323,23 +303,26 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         if not selected_channels:
             QMessageBox.warning(self, "No Selection", "Please select at least one channel.")
             return []
+        else:
+            self.startChannels(selected_channels)
 
-        return selected_channels
-
-    def _buildSequence(self, channel: int, parent=None, pathCurrent=None) -> list[MOTech]:
+    def _buildSequence(self, channel: int, parent=None, path_current=None) -> list[MOTech]:
         """
+        Build the tech sequence for ONE given channel by traversing the tree widget. 
+
         This builds the sequence for both biologic to run and to output correct filename. 
         I dont know how this works but it works, so don't change it.
         """
         seq = []
 
-        if pathCurrent is None:
-            pathCurrent = [1]
+        if path_current is None:
+            path_current = [1]
 
-        dictTechs = self.dict_ChannelTechs.get(channel, {})
+        self._pruneChannelPages(channel)
+        channel_pages = self.channel_pages.get(channel, {})
 
         if parent is None:
-            items = [item for item in dictTechs.keys() if item.parent() is None]
+            items = [self.treeWidget_Techs.topLevelItem(i) for i in range(self.treeWidget_Techs.topLevelItemCount())]
         else:
             items = [parent.child(i) for i in range(parent.childCount())]
 
@@ -347,21 +330,28 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             if item is None:
                 continue
 
-            page = dictTechs.get(item)
+            page = channel_pages.get(item)
             if page is None:
                 continue
 
             if page.tech == "Loop":
                 for i in range(1, int(page.iterations) + 1):
-                    seq.extend(self._buildSequence(channel, item, pathCurrent + [i]))
+                    loop_seq = self._buildSequence(channel, item, path_current + [i])
+                    if not loop_seq:
+                        return []
+                    seq.extend(loop_seq)
                 continue
 
             runtime = page.__class__()
             runtime.tech = page.tech
             runtime.name = page.name
-            runtime.loop = pathCurrent.copy()
+            runtime.loop = path_current.copy()
 
             frozen_param = page.outputParam()
+            page.validated = bool(frozen_param)
+            runtime.validated = page.validated
+            if not frozen_param:
+                return []
 
             def _frozen_output(self, _param=frozen_param):
                 return dict(_param)
@@ -373,83 +363,86 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
         
     @errorDeco(logger='self.Log')
-    def getChannelInfo(self, listOptions):
+    def _getChannelInfo(self, listOptions):
         if listOptions and isinstance(listOptions[0], list):
             # Multiple channels: list of [channel, CRlist, PRlist, BWlist]
             for options in listOptions:
-                channel, CRlist, PRlist, BWlist = options
-                self.dict_CR[channel] = CRlist
-                self.dict_PR[channel] = PRlist
-                self.dict_BW[channel] = BWlist
+                channel, cr_list, pr_list, bw_list = options
+                self.channel_current_ranges[channel] = cr_list
+                self.channel_potential_ranges[channel] = pr_list
+                self.channel_bandwidths[channel] = bw_list
             # Set default channel to the first available
-            self.channel_Current = listOptions[0][0] if listOptions else 1
+            self.channel_active = listOptions[0][0] if listOptions else 1
         else:
             # Single channel
-            channel, CRlist, PRlist, BWlist = listOptions
-            self.channel_Current = channel
-            self.dict_CR[channel] = CRlist
-            self.dict_PR[channel] = PRlist
-            self.dict_BW[channel] = BWlist
+            channel, cr_list, pr_list, bw_list = listOptions
+            self.channel_active = channel
+            self.channel_current_ranges[channel] = cr_list
+            self.channel_potential_ranges[channel] = pr_list
+            self.channel_bandwidths[channel] = bw_list
         
         self._setPotentiostatConnected(True)
         self._refreshTechOptions()
 
     @errorDeco(logger='self.Log')
-    def updateChannelOption(self,channelList):
+    def updateChannelOption(self,channel_list):
         channels_frame = getattr(self, "fram_Channels", None) or getattr(self, "frame_Channels", None)
         channels_layout = channels_frame.layout() if channels_frame is not None else None
         if channels_frame is not None and channels_layout is None:
             channels_layout = QVBoxLayout(channels_frame)
             channels_layout.setContentsMargins(0, 0, 0, 0)
 
-        for button in self.group_ChannelRbtn.buttons():
-            self.group_ChannelRbtn.removeButton(button)
+        for button in self.channel_radio_group.buttons():
+            self.channel_radio_group.removeButton(button)
             button.setParent(None)
             button.deleteLater()
-        self.dict_ChannelRbtn.clear()
+        self.channel_radio_buttons.clear()
 
-        for channel in channelList:
-            channelRbutton=QRadioButton(f"CH {channel}")
-            channelRbutton.objectName=f"radioButton_CH{channel}"
+        for channel in channel_list:
+            channel_rbutton=QRadioButton(f"CH {channel}")
+            channel_rbutton.objectName=f"radioButton_CH{channel}"
             if channels_layout is not None:
-                channels_layout.addWidget(channelRbutton)
+                channels_layout.addWidget(channel_rbutton)
             elif hasattr(self, "formLayout_Channel"):
-                self.formLayout_Channel.addWidget(channelRbutton)
-            self.dict_ChannelRbtn[channel]=channelRbutton
-            self.group_ChannelRbtn.addButton(channelRbutton, channel)
-            self.dict_ChannelStatus[channel]=False  
-        self.channel_Current=channelList[0]
-        self.group_ChannelRbtn.button(self.channel_Current).setChecked(True)
+                self.formLayout_Channel.addWidget(channel_rbutton)
+            self.channel_radio_buttons[channel]=channel_rbutton
+            self.channel_radio_group.addButton(channel_rbutton, channel)
+            self.channel_is_running[channel]=False  
+        self.channel_active=channel_list[0]
+        self.channel_radio_group.button(self.channel_active).setChecked(True)
 
-
-    # Start potentiostat thread
     @errorDeco(logger='self.Log')
-    def connectPs(self):
-        if hasattr(self, 'bio_thread') and self.bio_thread.isRunning():
-            self.logMsg("> Potentiostat thread is already running.")
-            return
-        
-        self.bio_thread = QThread(self)
-        self.bio_worker = Biologic(self.address_PS, self.path_BinaryPS)
-        self.bio_worker.moveToThread(self.bio_thread)
+    def switchChannel(self, btn):
+        channel = self.channel_radio_group.id(btn)
+        self.channel_active = channel
+        self._pruneChannelPages(channel)
+        self._clearTreeWidget()
+        self._clearPSFrameWidget(self.frame_ps)
+        sequence = self.channel_pages.get(channel, {})
+        if sequence:
+            for item in sequence.keys():
+                try:
+                    if item.parent() is None:
+                        self.treeWidget_Techs.addTopLevelItem(item)
+                except RuntimeError:
+                    continue
+            first_item = self.treeWidget_Techs.topLevelItem(0)
+            if first_item is not None:
+                self.treeWidget_Techs.setCurrentItem(first_item)
+                self.TreeItemClicked(first_item, 0)
 
-        self.bio_thread.started.connect(self.bio_worker.connectDevice)
+    @errorDeco(logger='self.Log')
+    def stopChannel(self, channel:list):
+        self.requestStopChannels.emit(channel)
+        if hasattr(self, 'bio_worker') and hasattr(self.bio_worker, 'channel_is_running'):
+            self.channel_is_running.update(self.bio_worker.channel_is_running)
 
-        self.bio_worker.signalData.connect(self._onBiologicData)
-        self.bio_worker.signalConnected.connect(self.getChannelInfo)
-        self.bio_worker.signalChannelOption.connect(self.updateChannelOption)
-        self.bio_worker.signalFinished.connect(self.bio_thread.quit)
-        self.bio_worker.signalLog.connect(self.Log.appendPlainText)
-        self.bio_thread.finished.connect(lambda: self._setPotentiostatConnected(False))
-        self.bio_thread.finished.connect(self.bio_thread.deleteLater)
-
-        self.bio_thread.start()
-
+    ##=====================================================================================##
+    # Log page
+    ##=====================================================================================##
 
     def logMsg(self, msg:str):
         self.Log.appendPlainText(msg)
-
-    
 
     @errorDeco(logger='self.Log')
     def evalLogInput(self):
@@ -480,23 +473,8 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.logMsg(msg)
             print(msg)
 
-    @errorDeco(logger='self.Log')
-    def switchChannel(self, btn):
-        channel = self.group_ChannelRbtn.id(btn)
-        self.channel_Current = channel
-        self._clearTreeWidget()
-        self._clearPSFrameWidget(self.frame_ps)
-        sequence = self.dict_ChannelTechs.get(channel, {})
-        if sequence:
-            for item, page in sequence.items():
-                self.treeWidget_Techs.addTopLevelItem(item)
-            first_item = self.treeWidget_Techs.topLevelItem(0)
-            if first_item is not None:
-                self.treeWidget_Techs.setCurrentItem(first_item)
-                self.TreeItemClicked(first_item, 0)
-                
     ##=====================================================================================##
-    # Potentiostat related methods
+    # Helper functions
     ##=====================================================================================##
 
     def _clearPSFrameWidget(self, widget: QWidget):
@@ -505,11 +483,11 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             layout = QVBoxLayout(widget)
             layout.setContentsMargins(0, 0, 0, 0)
         while layout.count():
-            layoutItem = layout.takeAt(0)
-            childWidget = layoutItem.widget()
-            if childWidget:
-                childWidget.hide()
-                childWidget.setParent(None)
+            layout_item = layout.takeAt(0)
+            child_widget = layout_item.widget()
+            if child_widget:
+                child_widget.hide()
+                child_widget.setParent(None)
 
     def _clearTreeWidget(self):
         while self.treeWidget_Techs.topLevelItemCount() > 0:
@@ -521,70 +499,169 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         except TypeError:
             obj = ui_class()
         if hasattr(obj, "nameChanged") and isinstance(obj.nameChanged, Signal):
-            obj.nameChanged.connect(lambda new_name, item=item: item.setText(0, new_name))
+            obj.nameChanged.connect(lambda new_name, item=item, page=obj: self._onTechNameChanged(item, page, new_name))
         if hasattr(obj, "setupUi") and not isinstance(obj, QWidget):
             container = QWidget()
             obj.setupUi(container)
             return container
         return obj
 
-    def _iter_tree_items(self, parent: QTreeWidgetItem | None = None):
+    def _extractTechSuffix(self, tech_type: str, display_name: str) -> str:
+        name = str(display_name or "").strip()
+        prefix = f"{tech_type}_"
+        if not name:
+            return ""
+        if name.upper().startswith(prefix):
+            return name[len(prefix):].strip()
+        if name.upper() == tech_type:
+            return ""
+        return name
+
+    def _ensureUniqueTechName(self, page, item: QTreeWidgetItem, channel: int, requested_name: str | None = None):
+        tech_type = str(getattr(page, "tech", "")).upper().strip()
+        if not tech_type:
+            return
+
+        taken_suffixes = set()
+        for existing_item, existing_page in self.channel_pages.get(channel, {}).items():
+            if existing_item is item:
+                continue
+            if str(getattr(existing_page, "tech", "")).upper().strip() != tech_type:
+                continue
+            existing_text = existing_item.text(0)
+            if existing_text:
+                taken_suffixes.add(self._extractTechSuffix(tech_type, existing_text))
+
+        requested_suffix = ""
+        if requested_name is not None:
+            requested_suffix = self._extractTechSuffix(tech_type, requested_name)
+
+        if not requested_suffix or requested_suffix in taken_suffixes:
+            n = 1
+            while str(n) in taken_suffixes:
+                n += 1
+            unique_suffix = str(n)
+        else:
+            unique_suffix = requested_suffix
+
+        unique_display_name = f"{tech_type}_{unique_suffix}"
+        page.name = unique_suffix
+
+        if hasattr(page, "lineEditName") and page.lineEditName is not None:
+            page.lineEditName.blockSignals(True)
+            page.lineEditName.setText(unique_suffix)
+            page.lineEditName.blockSignals(False)
+
+        item.setText(0, unique_display_name)
+
+    def _onTechNameChanged(self, item: QTreeWidgetItem, page, new_name: str):
+        self._ensureUniqueTechName(page, item, self.channel_active, requested_name=new_name)
+
+    def _iterTreeItems(self, parent: QTreeWidgetItem | None = None):
         if parent is None:
             for idx in range(self.treeWidget_Techs.topLevelItemCount()):
                 item = self.treeWidget_Techs.topLevelItem(idx)
                 if item is None:
                     continue
                 yield item
-                yield from self._iter_tree_items(item)
+                yield from self._iterTreeItems(item)
             return
         for idx in range(parent.childCount()):
             item = parent.child(idx)
             if item is None:
                 continue
             yield item
-            yield from self._iter_tree_items(item)
+            yield from self._iterTreeItems(item)
 
-    def _onTechItemRemoved(self, item: QTreeWidgetItem):
-        if self.channel_Current in self.dict_ChannelTechs:
-            page = self.dict_ChannelTechs[self.channel_Current].pop(item, None)
+    def _isValidTreeItem(self, item: QTreeWidgetItem | None) -> bool:
+        if item is None:
+            return False
+        try:
+            item.text(0)
+            return True
+        except RuntimeError:
+            return False
+
+    def _iterSubtreeItems(self, root: QTreeWidgetItem | None):
+        if root is None:
+            return
+        if not self._isValidTreeItem(root):
+            return
+        yield root
+        for idx in range(root.childCount()):
+            child = root.child(idx)
+            yield from self._iterSubtreeItems(child)
+
+    def _pruneChannelPages(self, channel: int):
+        pages = self.channel_pages.get(channel)
+        if not pages:
+            return
+        for item in list(pages.keys()):
+            if self._isValidTreeItem(item):
+                continue
+            page = pages.pop(item, None)
             if page is not None:
                 page.setParent(None)
                 page.deleteLater()
 
-    def _onTechItemsReordered(self):
-        if self.channel_Current not in self.dict_ChannelTechs:
+    def _onTechItemRemoved(self, item: QTreeWidgetItem):
+        if self.channel_active not in self.channel_pages:
             return
+        pages = self.channel_pages[self.channel_active]
+        for subtree_item in list(self._iterSubtreeItems(item)):
+            page = pages.pop(subtree_item, None)
+            if page is not None:
+                page.setParent(None)
+                page.deleteLater()
+        self._pruneChannelPages(self.channel_active)
+
+    def _onTechItemsReordered(self):
+        if self.channel_active not in self.channel_pages:
+            return
+        self._pruneChannelPages(self.channel_active)
         # Reorder the dict to match the full tree order (top-level + children)
         new_dict = {}
-        for item in self._iter_tree_items():
-            if item in self.dict_ChannelTechs[self.channel_Current]:
-                new_dict[item] = self.dict_ChannelTechs[self.channel_Current][item]
-        self.dict_ChannelTechs[self.channel_Current] = new_dict
+        for item in self._iterTreeItems():
+            if item in self.channel_pages[self.channel_active]:
+                new_dict[item] = self.channel_pages[self.channel_active][item]
+        self.channel_pages[self.channel_active] = new_dict
 
     def _setPotentiostatConnected(self, connected: bool):
-        self.is_PSConnected = connected
+        self.is_ps_connected = connected
         self._updateStatusBar()
 
     def _updateStatusBar(self):
-        message = f"Potentiostat Channel: {self.channel_Current}" if self.is_PSConnected else "Potentiostat Disconnected"
+        message = f"Potentiostat Channel: {self.channel_active}" if self.is_ps_connected else "Potentiostat Disconnected"
         self.statusBar().showMessage(message)
     
     def _refreshTechOptions(self):
-        current_dictTechs = self.dict_ChannelTechs.get(self.channel_Current, {})
-        for page in current_dictTechs.values():
-            if hasattr(page, "setCR") and self.channel_Current in self.dict_CR:
-                page.setCR(self.dict_CR[self.channel_Current])
-            if hasattr(page, "setPR") and self.channel_Current in self.dict_PR:
-                page.setPR(self.dict_PR[self.channel_Current])
-            if hasattr(page, "setBW") and self.channel_Current in self.dict_BW:
-                page.setBW(self.dict_BW[self.channel_Current])
+        channel_active_techs = self.channel_pages.get(self.channel_active, {})
+        for page in channel_active_techs.values():
+            if hasattr(page, "setCR") and self.channel_active in self.channel_current_ranges:
+                page.setCR(self.channel_current_ranges[self.channel_active])
+            if hasattr(page, "setPR") and self.channel_active in self.channel_potential_ranges:
+                page.setPR(self.channel_potential_ranges[self.channel_active])
+            if hasattr(page, "setBW") and self.channel_active in self.channel_bandwidths:
+                page.setBW(self.channel_bandwidths[self.channel_active])
+            
+    ##=====================================================================================##
+    # Event functions
+    ##=====================================================================================##
 
     def closeEvent(self, event):
+        if any(self.channel_is_running.values()):
+            running_channels = [str(ch) for ch, running in self.channel_is_running.items() if running]
+            QMessageBox.warning(
+                self,
+                "Channels Running",
+                f"Channel(s) {', '.join(running_channels)} are still running. Stop all running channels before closing."
+            )
+            event.ignore()
+            return
+        self.requestDisconnect.emit()
         if hasattr(self, 'bio_thread') and self.bio_thread.isRunning():
-            self.bio_worker.stopExperiment(disconnect=True)
             self.bio_thread.quit()
             self.bio_thread.wait()
-        self._setPotentiostatConnected(False)
         event.accept()
     
 
@@ -592,11 +669,11 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
 
 if __name__ =='__main__':
     try:
-        Qapp=QApplication(sys.argv)
-        Qapp.styleHints().setColorScheme(Qt.ColorScheme.Light)
-        Qapp.setStyle("Fusion")
+        app_qt=QApplication(sys.argv)
+        app_qt.styleHints().setColorScheme(Qt.ColorScheme.Light)
+        app_qt.setStyle("Fusion")
         app=ECO_pot()
-        sys.exit(Qapp.exec())
+        sys.exit(app_qt.exec())
     except Exception as ex:
         error_msg = exception2msg(ex)
         print(error_msg)

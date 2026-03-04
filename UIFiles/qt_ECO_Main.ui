@@ -470,7 +470,7 @@ All</string>
              </font>
             </property>
             <property name="text">
-             <string>Potentiostat</string>
+             <string>Parameters</string>
             </property>
            </widget>
           </item>

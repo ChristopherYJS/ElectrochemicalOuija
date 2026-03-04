@@ -14,7 +14,7 @@ def _float_or_none(text: str) -> float | None:
 class EIS(QWidget, Ui_Form, PSTech):
     tech = "EIS"
     
-    def __init__(self, *, i_ranges: list[str] = None, e_ranges: list[str] = None):
+    def __init__(self, *, i_ranges: list[str] | None = None, e_ranges: list[str] | None = None):
         QWidget.__init__(self)
         PSTech.__init__(self)
         Ui_Form.__init__(self)
@@ -24,18 +24,18 @@ class EIS(QWidget, Ui_Form, PSTech):
         self.name: str = "EIS"
         self.potential: float | None = None
         self.duration: int | float = 0
-        self.sampleTime: int | float = 0
-        self.sampleCurrent: int | float = 0
-        self.freqInit: float = 100000  # Initial frequency in Hz
-        self.freqFin: float = 0.01  # Final frequency in Hz
-        self.sweepLinear: bool = False  # False = logarithmic, True = linear
+        self.sample_time: int | float = 0
+        self.sample_current: int | float = 0
+        self.freq_init: float = 100000  # Initial frequency in Hz
+        self.freq_fin: float = 0.01  # Final frequency in Hz
+        self.sweep_linear: bool = False  # False = logarithmic, True = linear
         self.amplitude: float = 0.01  # AC amplitude in V
         self.number: int = 50  # Number of frequencies
         self.average: int = 1  # Number of averages
         self.correct: bool = False  # Non-stationary correction
-        self.correctNum: int = 3  # Number of periods for correction
-        self.CR: str | None = None  # current range
-        self.ER: str | None = None  # potential range
+        self.correct_num: int = 3  # Number of periods for correction
+        self.current_range: str | None = None  # current range
+        self.potential_range: str | None = None  # potential range
 
         # 3) Load combobox options from main UI (if comboboxes exist in future)
         # if i_ranges:   self.comboBoxCR.addItems(i_ranges)
@@ -94,27 +94,27 @@ class EIS(QWidget, Ui_Form, PSTech):
             self.name = self.lineEditName.text()
             self.potential = _float_or_none(self.lineEditPotential.text())
             self.duration = float(self.lineEditDuration.text() or 0)
-            self.sampleTime = float(self.lineEditSampleTime.text() or 0)
-            self.sampleCurrent = float(self.lineEditSampleCurrent.text() or 0)
-            self.freqInit = float(self.lineEditFreqInit.text() or 100000)
-            self.freqFin = float(self.lineEditFreqFin.text() or 0.01)
+            self.sample_time = float(self.lineEditSampleTime.text() or 0)
+            self.sample_current = float(self.lineEditSampleCurrent.text() or 0)
+            self.freq_init = float(self.lineEditFreqInit.text() or 100000)
+            self.freq_fin = float(self.lineEditFreqFin.text() or 0.01)
             self.amplitude = float(self.lineEditAmp.text() or 0.01)
             self.number = int(self.lineEditNumber.text() or 50)
             self.average = int(self.lineEditAverage.text() or 1)
-            self.correctNum = int(self.lineEditCorrectNum.text() or 3)
-            self.sweepLinear = self.checkBoxSweep.isChecked()
+            self.correct_num = int(self.lineEditCorrectNum.text() or 3)
+            self.sweep_linear = self.checkBoxSweep.isChecked()
             self.correct = self.checkBoxCorrect.isChecked()
             # self.CR = self.comboBoxCR.currentText() or None
             # self.ER = self.comboBoxER.currentText() or None
             # Default ranges if no combobox
-            self.CR = "I_RANGE_AUTO"
-            self.ER = "E_RANGE_AUTO"
+            self.current_range = "I_RANGE_AUTO"
+            self.potential_range = "E_RANGE_AUTO"
 
         except ValueError as e:
             QMessageBox.warning(self, "Parse error", str(e))
             return
 
-    def _validate_before_output(self) -> bool:
+    def _validateParams(self) -> bool:
         checks = [
             ("Potential", self.lineEditPotential.text().strip(), float),
             ("Duration", self.lineEditDuration.text().strip(), float),
@@ -130,7 +130,7 @@ class EIS(QWidget, Ui_Form, PSTech):
 
         for field_name, raw_value, expected_type in checks:
             if raw_value == "":
-                QMessageBox.warning(self, "Missing field", f"{field_name} cannot be empty.")
+                QMessageBox.warning(self, "Missing field", f"{self.tech}_{self.name}: {field_name} cannot be empty.")
                 return False
             try:
                 if expected_type is float:
@@ -138,14 +138,14 @@ class EIS(QWidget, Ui_Form, PSTech):
                 elif expected_type is int:
                     int(raw_value)
             except ValueError:
-                QMessageBox.warning(self, "Invalid type", f"{field_name} must be {expected_type.__name__}.")
+                QMessageBox.warning(self, "Invalid type", f"{self.tech}_{self.name}: {field_name} must be {expected_type.__name__}.")
                 return False
 
         return True
 
     def outputParam(self) -> dict:
         self._pullFields()  # Ensure model is up-to-date with UI
-        if not self._validate_before_output():
+        if not self._validateParams():
             return {}
         """Return current parameters as a dict."""
         eis_settings = {
@@ -153,18 +153,18 @@ class EIS(QWidget, Ui_Form, PSTech):
             'name': self.name,  # User-defined name for this EIS step
             'potential': self.potential,  # DC potential in V vs ref
             'duration': self.duration,  # Duration before EIS in s
-            'record_dt': self.sampleTime,  # Record at each time increment in s
-            'record_dI': self.sampleCurrent,  # Record at each current increment in A
-            'freq_init': self.freqInit,  # Initial frequency in Hz
-            'freq_final': self.freqFin,  # Final frequency in Hz
-            'sweep_linear': self.sweepLinear,  # Linear (True) or logarithmic (False) sweep
+            'record_dt': self.sample_time,  # Record at each time increment in s
+            'record_dI': self.sample_current,  # Record at each current increment in A
+            'freq_init': self.freq_init,  # Initial frequency in Hz
+            'freq_final': self.freq_fin,  # Final frequency in Hz
+            'sweep_linear': self.sweep_linear,  # Linear (True) or logarithmic (False) sweep
             'amplitude': self.amplitude,  # AC amplitude in V
             'freq_number': self.number,  # Number of frequency points
             'average': self.average,  # Number of measurements to average
             'correction': self.correct,  # Enable non-stationary correction
-            'correction_periods': self.correctNum,  # Number of periods for correction
-            'i_range': self.CR,  # Current range
-            'e_range': self.ER,  # Potential range
+            'correction_periods': self.correct_num,  # Number of periods for correction
+            'i_range': self.current_range,  # Current range
+            'e_range': self.potential_range,  # Potential range
             'timebase': 0.000026,
 
             'loop': self.loop # Loop count for this technique (from base class)

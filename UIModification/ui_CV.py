@@ -25,17 +25,17 @@ class CV(QWidget, Ui_Form, PSTech):
 
         # 2) Model defaults
         self.name: str = "CV"
-        self.Ei: float | int | None = None
-        self.E1: float | int | None = None
-        self.E2: float | int | None = None
-        self.Ef: float | int | None = None
-        self.scanRate: int | float = 0
-        self.scanNumber: int = 2
-        self.samplePotential: int | float = 0
+        self.ei: float | int | None = None
+        self.e1: float | int | None = None
+        self.e2: float | int | None = None
+        self.ef: float | int | None = None
+        self.scan_rate: int | float = 0
+        self.scan_number: int = 2
+        self.sample_potential: int | float = 0
         self.repeat: int = 1
         self.average: bool = False
-        self.stepBegin: int | float = 0
-        self.stepEnd: int | float = 1
+        self.step_begin: int | float = 0
+        self.step_end: int | float = 1
 
         # 3) Validators on edits
         self.lineEditPotentialInit.setValidator(QDoubleValidator(self))
@@ -79,21 +79,21 @@ class CV(QWidget, Ui_Form, PSTech):
         """Pull current UI values into the model (with light parsing)."""
         try:
             self.name = self.lineEditName.text()
-            self.Ei = _float_or_none(self.lineEditPotentialInit.text())
-            self.E1 = _float_or_none(self.lineEditPotentialFirst.text())
-            self.E2 = _float_or_none(self.lineEditPotentialSecond.text())
-            self.Ef = _float_or_none(self.lineEditPotentialFin.text())
-            self.scanRate = float(self.lineEditRate.text() or 0)
-            self.samplePotential = float(self.lineEditSamplePotential.text() or 0)
+            self.ei = _float_or_none(self.lineEditPotentialInit.text())
+            self.e1 = _float_or_none(self.lineEditPotentialFirst.text())
+            self.e2 = _float_or_none(self.lineEditPotentialSecond.text())
+            self.ef = _float_or_none(self.lineEditPotentialFin.text())
+            self.scan_rate = float(self.lineEditRate.text() or 0)
+            self.sample_potential = float(self.lineEditSamplePotential.text() or 0)
             self.repeat = int(self.lineEditRepeat.text() or 1)
             self.average = self.checkBoxAverage.isChecked()
-            self.stepBegin = float(self.lineEditStepBegin.text() or 0)
-            self.stepEnd = float(self.lineEditStepEnd.text() or 1)
+            self.step_begin = float(self.lineEditStepBegin.text() or 0)
+            self.step_end = float(self.lineEditStepEnd.text() or 1)
         except ValueError as e:
             QMessageBox.warning(self, "Parse error", str(e))
             return
 
-    def _validate_before_output(self) -> bool:
+    def _validateParams(self) -> bool:
         checks = [
             ("Initial Potential", self.lineEditPotentialInit.text().strip(), float),
             ("First Vertex", self.lineEditPotentialFirst.text().strip(), float),
@@ -108,7 +108,7 @@ class CV(QWidget, Ui_Form, PSTech):
 
         for field_name, raw_value, expected_type in checks:
             if raw_value == "":
-                QMessageBox.warning(self, "Missing field", f"{field_name} cannot be empty.")
+                QMessageBox.warning(self, "Missing field", f"{self.tech}_{self.name}: {field_name} cannot be empty.")
                 return False
             try:
                 if expected_type is float:
@@ -116,29 +116,29 @@ class CV(QWidget, Ui_Form, PSTech):
                 elif expected_type is int:
                     int(raw_value)
             except ValueError:
-                QMessageBox.warning(self, "Invalid type", f"{field_name} must be {expected_type.__name__}.")
+                QMessageBox.warning(self, "Invalid type", f"{self.tech}_{self.name}: {field_name} must be {expected_type.__name__}.")
                 return False
 
         return True
 
     def outputParam(self) -> dict:
         self._pullFields()  # Ensure model is up-to-date with UI
-        if not self._validate_before_output():
+        if not self._validateParams():
             return {}
         cv_settings = {
             "technique": "cv",
             "name": self.name,
-            "Ei": self.Ei,
-            "E1": self.E1,
-            "E2": self.E2,
-            "Ef": self.Ef,
-            "scan_rate": self.scanRate,
-            "scan_number": self.scanNumber,
-            "record_dE": self.samplePotential,
+            "Ei": self.ei,
+            "E1": self.e1,
+            "E2": self.e2,
+            "Ef": self.ef,
+            "scan_rate": self.scan_rate,
+            "scan_number": self.scan_number,
+            "record_dE": self.sample_potential,
             "N_cycles": self.repeat,
             "average_dE": self.average,
-            "begin_step": self.stepBegin,
-            "end_step": self.stepEnd,
+            "begin_step": self.step_begin,
+            "end_step": self.step_end,
 
             "loop": self.loop # Loop count for this technique (from base class)
         }

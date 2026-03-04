@@ -10,7 +10,8 @@ class TechTreeWidget(QTreeWidget):
     def _is_loop_item(self, item: QTreeWidgetItem | None) -> bool:
         if item is None:
             return False
-        return item.text(0).strip().startswith('Loop')
+        label = item.text(0).strip().upper()
+        return label == "LOOP" or label.startswith("LOOP_")
 
     def dropEvent(self, event):
         target = self.itemAt(event.position().toPoint())

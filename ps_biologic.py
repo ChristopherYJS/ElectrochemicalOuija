@@ -34,27 +34,27 @@ class Biologic(QObject):
     signalChannelOption=Signal(list)
     def __init__(self,address,binary_path):
         super().__init__()
-        self.recordTimers = {}  # dict of channel: QTimer
+        self.timer_record = {}  # dict of channel: QTimer
         self.address=address
         self.binary_path=binary_path
         self.api = None
         self.id_ = None
-        self.dictChannelStatus = {}
-        self.dictChannelTechParams = {}
-        self.active_channels = set()
+        self.channel_is_running = {}
+        self.channel_params = {}
+        self.filename_user = None
 
         self.force_load_firmware=True
         if c_is_64b:
-            DLL_file = "EClib64.dll"
+            dll_file = "EClib64.dll"
         else:
-            DLL_file = "EClib.dll"
+            dll_file = "EClib.dll"
 
-        self.DLL_path = f"{binary_path}{os.sep}{DLL_file}"
+        self.dll_path = f"{binary_path}{os.sep}{dll_file}"
 
     @errorDeco(signal='self.signalLog')
     def connectDevice(self):
         # API initialize
-        self.api = KBIO_api(self.DLL_path)
+        self.api = KBIO_api(self.dll_path)
         # BL_GetLibVersion
         version = self.api.GetLibVersion()
         self.signalLog.emit(f"> EcLib version: {version}")
@@ -77,7 +77,7 @@ class Biologic(QObject):
             timer = QTimer()
             timer.setInterval(1000)
             timer.timeout.connect(lambda ch=ch: self.recordData(ch))
-            self.recordTimers[ch] = timer
+            self.timer_record[ch] = timer
         
         # Use the first channel as default
         self.channel = self.channels[0]
@@ -133,60 +133,45 @@ class Biologic(QObject):
         self.signalConnected.emit(self.channels_options)
 
     @errorDeco(signal='self.signalLog')
-    def runSequence(self, sequence, channels, filename_user=None):
+    def runSequence(self, sequences, filename_user):
+        verbosity = 1
+        self.filename_user=filename_user
         #check if potentiostat is connected and kernel is loaded
         if not hasattr(self, "api") or not self.api:
             self.signalLog.emit("> Device not connected. Please connect to the device first.")
             return
-        if isinstance(channels, int):
-            run_channels = [channels]
-        elif isinstance(channels, (list, tuple, set)):
-            run_channels = sorted(set(channels))
-        else:
-            self.signalLog.emit("> Invalid channel selection.")
-            return
+        # Check which channel(s) to run on
+        channels=list(sequences.keys())
 
-        if not run_channels:
+        if not channels:
             self.signalLog.emit("> No channels selected.")
             return
 
-        if isinstance(sequence, dict):
-            dictChannelTechParams = {ch: sequence.get(ch, []) for ch in run_channels}
-        else:
-            dictChannelTechParams = {ch: sequence for ch in run_channels}
-
-        self.dictChannelTechParams = {}
         loaded_channels = []
-        verbosity = 1
-
-        for ch in run_channels:
-            sequence_ch = dictChannelTechParams.get(ch, [])
+        for ch in channels:
+            sequence_ch = sequences.get(ch, [])
             if not sequence_ch:
                 self.signalLog.emit(f"> CH {ch}: no techniques to load, skipping.")
                 continue
 
             tech_to_load = []
-            for measurement in sequence_ch:
-                if isinstance(measurement, dict):
-                    measurement_param = measurement
-                elif hasattr(measurement, "outputParam") and callable(measurement.outputParam):
-                    measurement_param = measurement.outputParam()
-                else:
-                    self.signalLog.emit(f"> CH {ch}: invalid measurement item {measurement}, skipping.")
-                    continue
+            for tech_params in sequence_ch:
+                if not isinstance(tech_params, dict):
+                    self.signalLog.emit(f"> CH {ch}: invalid technique parameter object: {tech_params}.")
+                    return
 
-                technique = str(measurement_param.get('technique', '')).lower()
+                technique = str(tech_params.get('technique', '')).lower()
                 match technique:
                     case 'ca':
-                        tech_file, ecc_parms = ca_parm(self.board_type, self.api, measurement_param)
+                        tech_file, ecc_parms = ca_parm(self.board_type, self.api, tech_params)
                     case 'ocv':
-                        tech_file, ecc_parms = ocv_parm(self.board_type, self.api, measurement_param)
+                        tech_file, ecc_parms = ocv_parm(self.board_type, self.api, tech_params)
                     case 'cv':
-                        tech_file, ecc_parms = cv_parm(self.board_type, self.api, measurement_param)
+                        tech_file, ecc_parms = cv_parm(self.board_type, self.api, tech_params)
                     case 'cp':
-                        tech_file, ecc_parms = cp_parm(self.board_type, self.api, measurement_param)
+                        tech_file, ecc_parms = cp_parm(self.board_type, self.api, tech_params)
                     case _:
-                        self.signalLog.emit(f"> CH {ch}: technique {measurement_param.get('technique')} is not valid, skipping.")
+                        self.signalLog.emit(f"> CH {ch}: technique {tech_params.get('technique')} is not valid, skipping.")
                         continue
                 tech_to_load.append((tech_file, ecc_parms))
 
@@ -199,93 +184,81 @@ class Biologic(QObject):
                 last = index == len(tech_to_load) - 1
                 self.api.LoadTechnique(self.id_, ch, tech_file, ecc_parms, first=first, last=last, display=(verbosity > 1))
 
-            self.dictChannelTechParams[ch] = sequence_ch
+            self.channel_params[ch] = sequence_ch
             loaded_channels.append(ch)
 
         if not loaded_channels:
-            self.signalLog.emit("> No channel could be prepared. Experiment not started.")
-            return
-
-        self.filenameUser = filename_user if filename_user else self._getUserFilename()
-        if not self.filenameUser:
-            self.signalLog.emit("> Data file save cancelled. Experiment not started.")
+            self.signalLog.emit("> No channels loaded with valid techniques.")
             return
 
         if len(loaded_channels) == 1:
             ch = loaded_channels[0]
             self.api.StartChannel(self.id_, ch)
-            if self.recordTimers[ch].isActive():
-                self.recordTimers[ch].stop()
-            self.recordTimers[ch].start()
-            self.signalLog.emit(f"> Experiment started on channel {ch}.")
+            if self.timer_record[ch].isActive():
+                self.timer_record[ch].stop()
+            self.timer_record[ch].start()
         else:
             channel_map = self.api.channel_map(set(loaded_channels))
             self.api.StartChannels(self.id_, channel_map)
             for ch in loaded_channels:
-                if self.recordTimers[ch].isActive():
-                    self.recordTimers[ch].stop()
-                self.recordTimers[ch].start()
-            self.signalLog.emit(f"> Experiment started on channels {loaded_channels}.")
+                if self.timer_record[ch].isActive():
+                    self.timer_record[ch].stop()
+                self.timer_record[ch].start()
 
-        self.sequence = self.dictChannelTechParams.get(loaded_channels[0], [])
         self.channel = loaded_channels[0]
-        self.active_channels = set(loaded_channels)
         for ch in loaded_channels:
-            self.dictChannelStatus[ch] = True
+            self.channel_is_running[ch] = True
 
     @errorDeco(signal='self.signalLog')
     def recordData(self, channel):
         data = self.api.GetData(self.id_, channel)
         current_values, data_info, _ = data
-        techIndex=data_info.TechniqueIndex
+        tech_index=data_info.TechniqueIndex
 
-        sequence_ch = self.dictChannelTechParams.get(channel, self.sequence)
-        step_data = sequence_ch[techIndex - 1] if sequence_ch and techIndex - 1 < len(sequence_ch) else None
+        sequence_ch = self.channel_params.get(channel, None)
+        if not sequence_ch:
+            self.signalLog.emit(f"> CH {channel}: no loaded sequence .")
+            return
 
-        if isinstance(step_data, dict):
-            loop = step_data.get('loop', [])
-            expName = step_data.get('name', 'step')
-        else:
-            loop = getattr(step_data, 'loop', []) if step_data is not None else []
-            expName = getattr(step_data, 'name', 'step') if step_data is not None else 'step'
+        if tech_index <= 0 or tech_index > len(sequence_ch):
+            self.signalLog.emit(f"> CH {channel}: technique index {tech_index} out of range (1..{len(sequence_ch)}).")
+            return
 
-        filename=f'{self.filenameUser}_CH{channel}_loop{loop}_{expName}.csv'
+        tech_params = sequence_ch[tech_index - 1]
+        loop = tech_params.get('loop', [])
+        exp_name = tech_params.get('name', 'step')
+        
+        filename=f'{self.filename_user}_CH{channel}_loop{loop}_{exp_name}.csv'
         status, tech_name = get_info_data(self.api, data)
         
         for output in get_experiment_data(self.api, data, tech_name, self.board_type):
-            self.writeData(output, filename)
-            self.signalData.emit(tech_name, output)
+            self._writeData(output, filename)
 
         if status == "STOP":
-            self.recordTimers[channel].stop()
-            self.dictChannelStatus[channel] = False
-            if channel in self.active_channels:
-                self.active_channels.remove(channel)
-            if not self.active_channels:
-                self.signalLog.emit(f"\nExperiment finished. Data recorded in {self.filenameUser} series.")
-            else:
-                self.signalLog.emit(f"> Channel {channel} finished. Remaining channels: {sorted(self.active_channels)}")
+            self.timer_record[channel].stop()
+            self.channel_is_running[channel] = False
+            self.signalLog.emit(f"\nExperiment finished. Data recorded in {self.filename_user} series.")
 
     @errorDeco(signal='self.signalLog')
-    def stopExperiment(self, disconnect: bool = False):
-        for ch, timer in self.recordTimers.items():
-            if timer.isActive():
-                timer.stop()
-
-        if self.api and self.id_ is not None and any(self.dictChannelStatus.values()):
-            for ch in self.channels:
+    def stopExperiment(self, channels):
+        for ch in channels:
+            if ch in self.timer_record and self.timer_record[ch].isActive() and isinstance(self.api, KBIO_api) and self.id_ is not None:
                 self.api.StopChannel(self.id_, ch)
-            self.signalLog.emit(f"> Experiments stopped on all channels.")
-            for ch in self.channels:
-                self.dictChannelStatus[ch] = False
-
-        if disconnect and self.api and self.id_ is not None:
+                self.timer_record[ch].stop()
+                self.signalLog.emit(f"> Channel {ch} recording stopped.")
+                self.channel_is_running[ch] = False
+            
+    @errorDeco(signal='self.signalLog')
+    def disconnectDevice(self):
+        if hasattr(self, "api") and isinstance(self.api, KBIO_api) and self.id_ is not None:
             self.api.Disconnect(self.id_)
-            self.signalLog.emit(f"> Disconnected from device[{self.address}].")
-            self.api = None
-            self.id_ = None
+            self.signalLog.emit("> Device disconnected.")
             self.signalFinished.emit()
-    
+
+    ##=====================================================================================##
+    # Helper functions
+    ##=====================================================================================##
+
     def _getUserFilename(self) -> str:
 
         default_name = f"{time.strftime('%Y%m%d')}.csv"
@@ -327,7 +300,7 @@ class Biologic(QObject):
                 available.append(item)
         return available
     
-    def writeData(self, output, filename: str):
+    def _writeData(self, output, filename: str):
         if isinstance(output, dict):
             values = output.values()
         elif isinstance(output, (list, tuple)):
@@ -338,3 +311,5 @@ class Biologic(QObject):
         data_line = ','.join(str(item) for item in values) + '\n'
         with open(filename, 'a', encoding='utf-8') as data_file:
             data_file.write(data_line)
+
+    

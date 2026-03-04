@@ -4,6 +4,8 @@ from PySide6.QtCore import Signal
 class MOTech():
     def __init__(self):
         self.loop = [1]
+        self.name = None
+        self.validated=False
 
 class PSTech(MOTech):
     nameChanged = Signal(str)
