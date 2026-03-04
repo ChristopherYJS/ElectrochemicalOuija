@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_Loop.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.10.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -28,22 +28,22 @@ class Ui_Form(object):
         self.labelIter = QLabel(Form)
         self.labelIter.setObjectName(u"labelIter")
 
-        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.labelIter)
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.labelIter)
 
         self.lineEditIter = QLineEdit(Form)
         self.lineEditIter.setObjectName(u"lineEditIter")
 
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.lineEditIter)
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.lineEditIter)
 
         self.labelName = QLabel(Form)
         self.labelName.setObjectName(u"labelName")
 
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.labelName)
+        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.labelName)
 
         self.lineEditName = QLineEdit(Form)
         self.lineEditName.setObjectName(u"lineEditName")
 
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.lineEditName)
+        self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.lineEditName)
 
 
         self.retranslateUi(Form)

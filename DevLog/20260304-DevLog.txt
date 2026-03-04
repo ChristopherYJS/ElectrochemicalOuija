@@ -19,3 +19,48 @@ File: c:\GitProject\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Fu
 File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 209	| Function: addTech
 File: c:\GitProject\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 514	| Function: _ensureUniqueTechName
 Error End.
+2026-03-04 17:20:31>>>Traceback Error: BL_Error: ECC file not compatible with the channel firmware
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ps_biologic.py	| Line: 185	| Function: runSequence
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\kbio\kbio_api.py	| Line: 207	| Function: LoadTechnique
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\kbio\kbio_api.py	| Line: 808	| Function: guarded_call
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\kbio\kbio_api.py	| Line: 589	| Function: check
+Error End.
+2026-03-04 17:27:06>>>Traceback Error: ValueError: CH 1: technique index 0 out of range (1..1).
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ps_biologic.py	| Line: 223	| Function: recordData
+Error End.
+2026-03-04 17:27:07>>>Traceback Error: ValueError: CH 1: technique index 0 out of range (1..1).
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ps_biologic.py	| Line: 223	| Function: recordData
+Error End.
+2026-03-04 17:27:08>>>Traceback Error: ValueError: CH 1: technique index 0 out of range (1..1).
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ps_biologic.py	| Line: 223	| Function: recordData
+Error End.
+2026-03-04 17:27:09>>>Traceback Error: ValueError: CH 1: technique index 0 out of range (1..1).
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ps_biologic.py	| Line: 223	| Function: recordData
+Error End.
+2026-03-04 17:27:10>>>Traceback Error: ValueError: CH 1: technique index 0 out of range (1..1).
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ps_biologic.py	| Line: 223	| Function: recordData
+Error End.
+2026-03-04 17:27:11>>>Traceback Error: ValueError: CH 1: technique index 0 out of range (1..1).
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ps_biologic.py	| Line: 223	| Function: recordData
+Error End.
+2026-03-04 18:15:06>>>Traceback Error: BL_Error: ECC file not compatible with the channel firmware
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ps_biologic.py	| Line: 184	| Function: runSequence
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\kbio\kbio_api.py	| Line: 207	| Function: LoadTechnique
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\kbio\kbio_api.py	| Line: 808	| Function: guarded_call
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\kbio\kbio_api.py	| Line: 589	| Function: check
+Error End.
+2026-03-04 18:34:37>>>Traceback Error: AttributeError: 'CA' object has no attribute 'loop'
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\misc_handleException.py	| Line: 75	| Function: wrapper
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 265	| Function: startChannels
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 345	| Function: _buildSequence
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\ui_Entry_ECWindow.py	| Line: 356	| Function: _buildSequence
+File: c:\ECOuija_SECCM\ElectrochemicalOuija\UIModification\ui_CA.py	| Line: 135	| Function: outputParam
+Error End.

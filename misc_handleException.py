@@ -73,10 +73,25 @@ def errorDeco(signal=None, logger=None):
         def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except Exception as ex:
-                error_msg = exception2msg(ex)
-                print(error_msg)
-                msg2file(error_msg)
+            except BaseException as ex:
+                try:
+                    error_msg = exception2msg(ex)
+                except Exception as format_ex:
+                    error_msg = (
+                        f"Decorator failed to format exception for {func.__name__}: "
+                        f"{type(format_ex).__name__}: {format_ex}. "
+                        f"Original: {type(ex).__name__}: {ex}"
+                    )
+
+                try:
+                    print(error_msg)
+                except Exception:
+                    pass
+
+                try:
+                    msg2file(error_msg)
+                except Exception:
+                    pass
                 
                 # Emit via signal if specified
                 if signal and len(args) > 0:
@@ -92,7 +107,7 @@ def errorDeco(signal=None, logger=None):
                         # Emit the message through the signal
                         if hasattr(signal_obj, 'emit'):
                             signal_obj.emit(error_msg)
-                    except (AttributeError, IndexError):
+                    except Exception:
                         pass
                 
                 # Display in logger widget if specified
@@ -109,7 +124,7 @@ def errorDeco(signal=None, logger=None):
                         # Append to logger widget
                         if isinstance(logger_obj, QPlainTextEdit):
                             logger_obj.appendPlainText(error_msg)
-                    except (AttributeError, IndexError):
+                    except Exception:
                         pass
         
         return wrapper

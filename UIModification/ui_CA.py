@@ -14,8 +14,8 @@ def _float_or_none(text: str) -> float | None:
 class CA(QWidget, Ui_Form, PSTech):
     tech="CA"
     def __init__(self, *,i_ranges: list[str] | None = None):
-        QWidget.__init__(self)
         PSTech.__init__(self)
+        QWidget.__init__(self)
         Ui_Form.__init__(self)
         self.setupUi(self)
 
@@ -29,7 +29,13 @@ class CA(QWidget, Ui_Form, PSTech):
         self.repeat: int = 1
         self.current_range: str | None = None       # current range
 
-
+        self.lineEditPotential.setText('0.5')
+        self.lineEditDuration.setText('10')
+        self.lineEditSampleTime.setText('1')
+        self.lineEditSampleCurrent.setText('999')
+        self.lineEditRepeat.setText('0')
+        self.comboBoxCR.setCurrentIndex(12)
+        self._pullFields()
         # 3) Load combobox options from main UI
 
         # 4) Validators on edits (optional but makes UX nicer)

@@ -78,6 +78,31 @@ def get_info_data(api, data, print=False):
     return status, tech_name
 
 
+def _decode_time_seconds(time_base, word0, word1):
+    """Decode BioLogic timestamp words into seconds.
+
+    The OEM buffer provides two 32-bit words for timestamp. Depending on
+    board/firmware binding, the order can appear as (high, low) or (low, high),
+    and ctypes words may be signed. This helper normalizes words to uint32 and
+    chooses a consistent tick count.
+    """
+
+    w0 = int(word0) & 0xFFFFFFFF
+    w1 = int(word1) & 0xFFFFFFFF
+
+    ticks_hl = (w0 << 32) | w1
+    ticks_lh = (w1 << 32) | w0
+
+    if w0 == 0 and w1 != 0:
+        ticks = ticks_hl
+    elif w1 == 0 and w0 != 0:
+        ticks = ticks_lh
+    else:
+        ticks = min(ticks_hl, ticks_lh)
+
+    return float(time_base) * ticks
+
+
 def get_experiment_data(api, data, tech_name, board_type):
     """Unpack the experiment data, decode it according to the technique, display it,
     then return the experiment status"""
@@ -102,9 +127,7 @@ def get_experiment_data(api, data, tech_name, board_type):
             else:
                 raise RuntimeError(f"{tech_name} : unexpected record length ({nb_words})")
 
-            # compute timestamp in seconds
-            t_rel = (t_high << 32) + t_low
-            t = current_values.TimeBase * t_rel
+            t = _decode_time_seconds(current_values.TimeBase, t_high, t_low)
 
             # Ewe is a float
             Ewe = api.ConvertChannelNumericIntoSingle(row[0], board_type)
@@ -133,9 +156,7 @@ def get_experiment_data(api, data, tech_name, board_type):
             # technique cycle is an integer
             cycle = row[2]
 
-            # compute timestamp in seconds
-            t_rel = (t_high << 32) + t_low
-            t = current_values.TimeBase * t_rel
+            t = _decode_time_seconds(current_values.TimeBase, t_high, t_low)
 
             parsed_row = {"t": t, "Ewe": Ewe, "Iwe": Iwe, "cycle": cycle}
 
@@ -156,9 +177,7 @@ def get_experiment_data(api, data, tech_name, board_type):
             # technique cycle is an integer
             cycle = row[2]
 
-            # compute timestamp in seconds
-            t_rel = (t_high << 32) + t_low
-            t = current_values.TimeBase * t_rel
+            t = _decode_time_seconds(current_values.TimeBase, t_high, t_low)
 
             parsed_row = {"t": t, "Ewe": Ewe, "Iwe": Iwe, "cycle": cycle}
 
@@ -174,9 +193,7 @@ def get_experiment_data(api, data, tech_name, board_type):
             else:
                 raise RuntimeError(f"{tech_name} : unexpected record length ({nb_words})")
             
-            # compute timestamp in seconds
-            t_rel = (t_high << 32) + t_low
-            t = current_values.TimeBase * t_rel
+            t = _decode_time_seconds(current_values.TimeBase, t_high, t_low)
 
             if vmp3:
                 Ec= api.ConvertChannelNumericIntoSingle(row[0], board_type)

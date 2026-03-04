@@ -1,8 +1,8 @@
 #& "C:\Users\chrst\AppData\Roaming\Python\Python313\Scripts\pyside6-uic.exe" "uiEC.ui" "-o" "uiEC.py" "--from-imports"
-import sys, os, csv, types
+import sys, os, csv, types, time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit, QRadioButton,QMessageBox, QButtonGroup, QInputDialog, QDialog, QDialogButtonBox, QCheckBox
+from PySide6.QtWidgets import QApplication, QWidget,QTreeWidget,QTreeWidgetItem,QPushButton,QHBoxLayout,QLabel,QMainWindow,QTabWidget, QTabBar,QDockWidget,QVBoxLayout, QPlainTextEdit, QRadioButton,QMessageBox, QButtonGroup, QInputDialog, QDialog, QDialogButtonBox, QCheckBox, QFileDialog
 from PySide6.QtCore import QSize, Qt, QEvent, QMimeData, QModelIndex, QPoint, QRect, QObject, QThread, Signal, Slot, QTimer
 from PySide6.QtWidgets import QAbstractItemView 
 from PySide6.QtGui import QMouseEvent,QDrag,QFont,QShortcut,QCursor,QAction,QKeySequence
@@ -244,11 +244,17 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         if not self.is_ps_connected:
             self.logMsg("> Potentiostat not connected.")
             return
-        # Get filename from user
-        filename, ok = QInputDialog.getText(self, "Enter Filename", "Enter base filename for data files:")
-        if not ok or not filename:
+        # Get save path + base filename from user (UI thread)
+        default_name = f"{time.strftime('%Y%m%d')}.csv"
+        filename, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save Experiment Data Series",
+            default_name,
+            "CSV Files (*.csv);;All Files (*.*)"
+        )
+        if not filename:
             return
-        self.filename_user = filename #?
+        self.filename_user = os.path.splitext(filename)[0]
 
         # Build sequence for the selected channel and start the experiment
         self.channel_params = {}
@@ -256,11 +262,11 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             if self.channel_is_running.get(ch, False):
                 self.logMsg(f"> Channel {ch} is currently running.")
                 return
-            sequence = self._buildSequence(ch)
-            if not sequence:
+            sequence_params = self._buildSequence(ch)
+            if not sequence_params:
                 self.logMsg(f"> Sequence build cancelled on CH {ch} due to invalid technique input.")
                 return
-            self.channel_params[ch] = [page.outputParam() for page in sequence]
+            self.channel_params[ch] = sequence_params
 
         self.requestRunSequence.emit(self.channel_params, self.filename_user)
         self.channel_is_running.update(
@@ -306,7 +312,8 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         else:
             self.startChannels(selected_channels)
 
-    def _buildSequence(self, channel: int, parent=None, path_current=None) -> list[MOTech]:
+    @errorDeco(logger='self.Log')
+    def _buildSequence(self, channel: int, parent=None, path_current=None) -> list[dict]:
         """
         Build the tech sequence for ONE given channel by traversing the tree widget. 
 
@@ -335,29 +342,23 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
                 continue
 
             if page.tech == "Loop":
-                for i in range(1, int(page.iterations) + 1):
+                loop_param = page.outputParam()
+                iterations = int(loop_param.get('iterations', 1))
+                for i in range(1, iterations + 1):
                     loop_seq = self._buildSequence(channel, item, path_current + [i])
                     if not loop_seq:
                         return []
                     seq.extend(loop_seq)
                 continue
 
-            runtime = page.__class__()
-            runtime.tech = page.tech
-            runtime.name = page.name
-            runtime.loop = path_current.copy()
-
+            page.loop = path_current.copy()
             frozen_param = page.outputParam()
-            page.validated = bool(frozen_param)
-            runtime.validated = page.validated
             if not frozen_param:
                 return []
 
-            def _frozen_output(self, _param=frozen_param):
-                return dict(_param)
-
-            runtime.outputParam = types.MethodType(_frozen_output, runtime)
-            seq.append(runtime)
+            frozen_param = dict(frozen_param)
+            frozen_param['loop'] = path_current.copy()
+            seq.append(frozen_param)
 
         return seq
 
@@ -440,9 +441,10 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     ##=====================================================================================##
     # Log page
     ##=====================================================================================##
-
+    @errorDeco(logger='self.Log')
     def logMsg(self, msg:str):
         self.Log.appendPlainText(msg)
+        self.Log.verticalScrollBar().setValue(self.Log.verticalScrollBar().maximum())
 
     @errorDeco(logger='self.Log')
     def evalLogInput(self):

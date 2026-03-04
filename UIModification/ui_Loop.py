@@ -16,8 +16,9 @@ class Loop(QWidget, Ui_Form, MOTech):
 
         # Model defaults
         self.name: str = "Loop"
-        self.iterations: int = 5
-
+        self.iterations: int = 2
+        self.lineEditIter.setText(str(self.iterations))
+        self._pullFields()
         # Validators
         self.lineEditIter.setValidator(QIntValidator(1, 100, self))  # 1 to 100 iterations
 
@@ -37,6 +38,7 @@ class Loop(QWidget, Ui_Form, MOTech):
             return
         
     def outputParam(self) -> dict:
+        self._pullFields()  # Ensure model is updated with latest UI values
         return {
             'technique': self.tech.lower(),
             'name': self.name,

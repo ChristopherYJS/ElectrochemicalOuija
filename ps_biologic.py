@@ -22,7 +22,6 @@ from ps_CP import cp_parm
 from ps_CV import cv_parm
 
 from PySide6.QtCore import Signal,QObject,QTimer
-from PySide6.QtWidgets import QFileDialog
 
 from misc_handleException import errorDeco
 
@@ -75,7 +74,7 @@ class Biologic(QObject):
         # Create timers for each channel
         for ch in self.channels:
             timer = QTimer()
-            timer.setInterval(1000)
+            timer.setInterval(500)
             timer.timeout.connect(lambda ch=ch: self.recordData(ch))
             self.timer_record[ch] = timer
         
@@ -213,22 +212,30 @@ class Biologic(QObject):
     def recordData(self, channel):
         data = self.api.GetData(self.id_, channel)
         current_values, data_info, _ = data
+        
         tech_index=data_info.TechniqueIndex
+        
 
         sequence_ch = self.channel_params.get(channel, None)
         if not sequence_ch:
-            self.signalLog.emit(f"> CH {channel}: no loaded sequence .")
-            return
-
-        if tech_index <= 0 or tech_index > len(sequence_ch):
-            self.signalLog.emit(f"> CH {channel}: technique index {tech_index} out of range (1..{len(sequence_ch)}).")
-            return
-
-        tech_params = sequence_ch[tech_index - 1]
-        loop = tech_params.get('loop', [])
-        exp_name = tech_params.get('name', 'step')
+            self.timer_record[channel].stop()
+            raise ValueError(f"CH {channel}: no loaded sequence.")
         
-        filename=f'{self.filename_user}_CH{channel}_loop{loop}_{exp_name}.csv'
+
+        if tech_index < 0 or tech_index >= len(sequence_ch):
+            self.timer_record[channel].stop()
+            raise ValueError(f"CH {channel}: technique index {tech_index} out of range (0..{len(sequence_ch)-1}).")
+
+
+        tech_params = sequence_ch[tech_index]
+        # self.signalLog.emit(f"CH {channel}: tech_index={tech_index},sequence_ch={sequence_ch}")
+
+        loop = tech_params.get('loop', [])
+        tech_type = tech_params.get('technique', 'techtype').upper()
+        tech_name= tech_params.get('name', 'techName')
+        exp_name=f"{tech_type}_{tech_name}"
+        
+        filename=f'{self.filename_user}_CH{channel}_{exp_name}_loop{loop}.csv'
         status, tech_name = get_info_data(self.api, data)
         
         for output in get_experiment_data(self.api, data, tech_name, self.board_type):
@@ -258,17 +265,6 @@ class Biologic(QObject):
     ##=====================================================================================##
     # Helper functions
     ##=====================================================================================##
-
-    def _getUserFilename(self) -> str:
-
-        default_name = f"{time.strftime('%Y%m%d')}.csv"
-        filename, _ = QFileDialog.getSaveFileName(
-            None,
-            "Save Experiment Data",
-            default_name,
-            "CSV Files (*.csv);;All Files (*.*)"
-        )
-        return filename
     
     def _get_enum_range(self, enum_class, min_value: int, max_value: int) -> list:
         """
@@ -300,6 +296,7 @@ class Biologic(QObject):
                 available.append(item)
         return available
     
+    @errorDeco(signal='self.signalLog')
     def _writeData(self, output, filename: str):
         if isinstance(output, dict):
             values = output.values()
