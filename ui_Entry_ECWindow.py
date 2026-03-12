@@ -8,6 +8,7 @@ from PySide6.QtWidgets import QAbstractItemView
 from PySide6.QtGui import QMouseEvent,QDrag,QFont,QShortcut,QCursor,QAction,QKeySequence
 
 from misc_handleException import exception2msg, msg2file, errorDeco
+from misc_DataPlotter import DataPlotterWidget
 from misc_ModifiedUI import TechTreeWidget
 
 from ps_biologic import Biologic
@@ -21,6 +22,7 @@ from UIModification.ui_OCV import OCV as OCVUI
 from UIModification.ui_EIS import EIS as EISUI
 from UIModification.ui_Loop import Loop as LoopUI
 from UIModification.ui_Move import Move as MoveUI
+from UIModification.ui_TriggerIn import TriggerIn as TriggerInUI
 
 from test_defaultSeq import buildTestSequence
 
@@ -38,6 +40,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             'CV':CVUI,
             'OCV':OCVUI,
             'EIS':EISUI,
+            'TriggerIn':TriggerInUI,
             'Move':MoveUI,
             'Loop':LoopUI
         }
@@ -65,14 +68,16 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.current_tech = None
         self.tech_counters = {}
         self.current_seq_index = -1
+        self.channel_plot_sources = {}
+        self.plotter_status_text = "Load a delimited text file with column titles."
+        self.plotter_live_text = "Idle"
+        self.plotter_cursor_text = "Cursor: idle"
 
         self.setupUi(self)
         self.restyle()
         self.bindTechLabels()
         self.bindSignalSlot()
         self._updateStatusBar()
-
-        self.updateChannelOption([1,2]) #test
 
         ##=====================================================================================## 
         # For checking variables in log 
@@ -113,6 +118,12 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.lineEditLogInput.setPlaceholderText("Enter Python expression and press Enter")
         # Setup potentiostat section - add placeholder for tech details
         self._clearPSFrameWidget(self.frame_ps)
+
+        self.dataPlotterWidget = DataPlotterWidget(self)
+        self.dataPlotterWidget.statusChanged.connect(self._onPlotterStatusChanged)
+        self.dataPlotterWidget.liveInfoChanged.connect(self._onPlotterLiveInfoChanged)
+        self.dataPlotterWidget.cursorInfoChanged.connect(self._onPlotterCursorInfoChanged)
+        self.verticalLayout_Plot.addWidget(self.dataPlotterWidget)
     ##=====================================================================================##
     # Signal-slot binding functions
     ##=====================================================================================##
@@ -166,7 +177,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self.bio_thread.finished.connect(lambda: self._setPotentiostatConnected(False))
         self.bio_thread.finished.connect(self.bio_thread.deleteLater)
 
-        # self.bio_worker.signalData.connect(self._onBiologicData)
+        self.bio_worker.signalData.connect(self._onBiologicData)
         self.bio_worker.signalConnected.connect(self._getChannelInfo)
         self.bio_worker.signalChannelOption.connect(self.updateChannelOption)
         self.bio_worker.signalFinished.connect(self.bio_thread.quit)
@@ -215,6 +226,14 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             self.treeWidget_Techs.setCurrentItem(item)
             if hasattr(page, "setCR") and self.channel_active in self.channel_current_ranges:
                 page.setCR(self.channel_current_ranges[self.channel_active])
+                # check if if previous tech pages has current range set if so set the same current range as the nearest previous one
+                previous_pages = list(self.channel_pages[self.channel_active].values())
+                previous_pages = previous_pages[:-1] #exclude current page
+                previous_pages.reverse() #start checking from the nearest previous one
+                for prev_page in previous_pages:
+                    if hasattr(prev_page, "current_range") and prev_page.current_range is not None:
+                        page.comboBoxCR.setCurrentText(str(prev_page.current_range))
+                        break
             if hasattr(page, "setPR") and self.channel_active in self.channel_potential_ranges:
                 page.setPR(self.channel_potential_ranges[self.channel_active])
             if hasattr(page, "setBW") and self.channel_active in self.channel_bandwidths:
@@ -408,13 +427,16 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
                 self.formLayout_Channel.addWidget(channel_rbutton)
             self.channel_radio_buttons[channel]=channel_rbutton
             self.channel_radio_group.addButton(channel_rbutton, channel)
-            self.channel_is_running[channel]=False  
+            self.channel_is_running[channel]=False
+            self.channel_plot_sources.setdefault(channel, {"filename": "", "payload": {"channel": channel}})
         self.channel_active=channel_list[0]
         self.channel_radio_group.button(self.channel_active).setChecked(True)
+        self._syncPlotterToActiveChannel()
 
     @errorDeco(logger='self.Log')
     def switchChannel(self, btn):
         channel = self.channel_radio_group.id(btn)
+        self.dataPlotterWidget.pauseLiveRefresh()
         self.channel_active = channel
         self._pruneChannelPages(channel)
         self._clearTreeWidget()
@@ -431,6 +453,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
             if first_item is not None:
                 self.treeWidget_Techs.setCurrentItem(first_item)
                 self.TreeItemClicked(first_item, 0)
+        self._syncPlotterToActiveChannel()
 
     @errorDeco(logger='self.Log')
     def stopChannel(self, channel:list):
@@ -633,8 +656,33 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
         self._updateStatusBar()
 
     def _updateStatusBar(self):
-        message = f"Potentiostat Channel: {self.channel_active}" if self.is_ps_connected else "Potentiostat Disconnected"
+        if self.is_ps_connected:
+            message = f"Potentiostat Channel: {self.channel_active}"
+        else:
+            message = "Potentiostat Disconnected"
+
+        extras = []
+        if self.plotter_status_text:
+            extras.append(f"Plot: {self.plotter_status_text}")
+        if self.plotter_live_text:
+            extras.append(f"Live: {self.plotter_live_text}")
+        if self.plotter_cursor_text:
+            extras.append(self.plotter_cursor_text)
+        if extras:
+            message = message + " | " + " | ".join(extras)
         self.statusBar().showMessage(message)
+
+    def _onPlotterStatusChanged(self, text: str):
+        self.plotter_status_text = text
+        self._updateStatusBar()
+
+    def _onPlotterLiveInfoChanged(self, text: str):
+        self.plotter_live_text = text
+        self._updateStatusBar()
+
+    def _onPlotterCursorInfoChanged(self, text: str):
+        self.plotter_cursor_text = text
+        self._updateStatusBar()
     
     def _refreshTechOptions(self):
         channel_active_techs = self.channel_pages.get(self.channel_active, {})
@@ -645,6 +693,50 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
                 page.setPR(self.channel_potential_ranges[self.channel_active])
             if hasattr(page, "setBW") and self.channel_active in self.channel_bandwidths:
                 page.setBW(self.channel_bandwidths[self.channel_active])
+
+    @errorDeco(logger='self.Log')
+    def _onBiologicData(self, filename: str, payload: object):
+        if not isinstance(payload, dict):
+            return
+
+        channel = payload.get('channel')
+        if channel is None:
+            return
+
+        existing_source = self.channel_plot_sources.get(channel, {"filename": "", "payload": {"channel": channel}})
+        merged_payload = dict(existing_source.get("payload", {}))
+        merged_payload.update(payload)
+        resolved_filename = filename or payload.get('filename') or existing_source.get("filename", "")
+        self.channel_plot_sources[channel] = {
+            "filename": resolved_filename,
+            "payload": merged_payload,
+        }
+
+        if channel != self.channel_active:
+            return
+
+        self._syncPlotterToActiveChannel()
+
+    def _syncPlotterToActiveChannel(self):
+        plot_source = self.channel_plot_sources.get(self.channel_active)
+        if not plot_source:
+            self.current_file = None
+            self.current_tech = None
+            self.current_seq_index = -1
+            self.dataPlotterWidget.clearLiveSource(f"CH {self.channel_active}: no plotted data", clear_plot=True)
+            return
+
+        payload = dict(plot_source.get("payload", {}))
+        filename = plot_source.get("filename", "")
+        self.current_file = filename or None
+        self.current_tech = payload.get('technique')
+        self.current_seq_index = payload.get('tech_index', -1)
+
+        if not self.current_file:
+            self.dataPlotterWidget.clearLiveSource(f"CH {self.channel_active}: no plotted data", clear_plot=True)
+            return
+
+        self.dataPlotterWidget.setLiveSource(self.current_file, payload)
             
     ##=====================================================================================##
     # Event functions

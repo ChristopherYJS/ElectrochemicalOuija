@@ -16,9 +16,9 @@ def cp_parm(board_type, api, cp_param):
         case KBIO.BOARD_TYPE.ESSENTIAL.value:
             tech_file = f'cp.ecc'
         case KBIO.BOARD_TYPE.PREMIUM.value:
-            tech_file = f'cp.ecc'
+            tech_file = f'cp4.ecc'
         case KBIO.BOARD_TYPE.DIGICORE.value:
-            tech_file = f'cp.ecc'
+            tech_file = f'cp5.ecc'
         case _:
             print("> Board type detection failed")
             sys.exit(-1)

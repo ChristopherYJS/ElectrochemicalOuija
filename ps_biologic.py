@@ -20,6 +20,8 @@ from ps_CA import ca_parm
 from ps_OCV import ocv_parm
 from ps_CP import cp_parm
 from ps_CV import cv_parm
+from ps_EIS import eis_parm
+from ps_Trigger import trigger_parm
 
 from PySide6.QtCore import Signal,QObject,QTimer
 
@@ -34,6 +36,7 @@ class Biologic(QObject):
     def __init__(self,address,binary_path):
         super().__init__()
         self.timer_record = {}  # dict of channel: QTimer
+        self._file_headers: dict[str, list[str]] = {}
         self.address=address
         self.binary_path=binary_path
         self.api = None
@@ -169,6 +172,10 @@ class Biologic(QObject):
                         tech_file, ecc_parms = cv_parm(self.board_type, self.api, tech_params)
                     case 'cp':
                         tech_file, ecc_parms = cp_parm(self.board_type, self.api, tech_params)
+                    case 'eis':
+                        tech_file, ecc_parms = eis_parm(self.board_type, self.api, tech_params)
+                    case 'trigger':
+                        tech_file, ecc_parms = trigger_parm(self.board_type, self.api, tech_params)
                     case _:
                         self.signalLog.emit(f"> CH {ch}: technique {tech_params.get('technique')} is not valid, skipping.")
                         continue
@@ -212,6 +219,11 @@ class Biologic(QObject):
     def recordData(self, channel):
         data = self.api.GetData(self.id_, channel)
         current_values, data_info, _ = data
+        current_range_code = int(current_values.IRange)
+        try:
+            current_range_name = KBIO.I_RANGE(current_range_code).name
+        except ValueError:
+            current_range_name = f"IRANGE_{current_range_code}"
         
         tech_index=data_info.TechniqueIndex
         
@@ -232,18 +244,57 @@ class Biologic(QObject):
 
         loop = tech_params.get('loop', [])
         tech_type = tech_params.get('technique', 'techtype').upper()
-        tech_name= tech_params.get('name', 'techName')
-        exp_name=f"{tech_type}_{tech_name}"
+        display_name = tech_params.get('name', 'techName')
+        exp_name=f"{tech_type}_{display_name}"
         
         filename=f'{self.filename_user}_CH{channel}_{exp_name}_loop{loop}.csv'
         status, tech_name = get_info_data(self.api, data)
+
+        self.signalData.emit(filename, {
+            'channel': channel,
+            'tech_index': tech_index,
+            'technique': tech_type,
+            'name': display_name,
+            'loop': loop,
+            'status': status,
+            'filename': filename,
+            'current_range': current_range_name,
+            'current_range_code': current_range_code,
+        })
         
         for output in get_experiment_data(self.api, data, tech_name, self.board_type):
-            self._writeData(output, filename)
+            if isinstance(output, dict):
+                wrapped_output = dict(output)
+                wrapped_output['current_range'] = current_range_name
+                wrapped_output['current_range_code'] = current_range_code
+            elif isinstance(output, (list, tuple)):
+                wrapped_output = {
+                    'value': list(output),
+                    'current_range': current_range_name,
+                    'current_range_code': current_range_code,
+                }
+            else:
+                wrapped_output = {
+                    'value': output,
+                    'current_range': current_range_name,
+                    'current_range_code': current_range_code,
+                }
+            self._writeData(wrapped_output, filename)
 
         if status == "STOP":
             self.timer_record[channel].stop()
             self.channel_is_running[channel] = False
+            self.signalData.emit(filename, {
+                'channel': channel,
+                'tech_index': tech_index,
+                'technique': tech_type,
+                'name': display_name,
+                'loop': loop,
+                'status': 'STOP',
+                'filename': filename,
+                'current_range': current_range_name,
+                'current_range_code': current_range_code,
+            })
             self.signalLog.emit(f"\nExperiment finished. Data recorded in {self.filename_user} series.")
 
     @errorDeco(signal='self.signalLog')
@@ -254,6 +305,7 @@ class Biologic(QObject):
                 self.timer_record[ch].stop()
                 self.signalLog.emit(f"> Channel {ch} recording stopped.")
                 self.channel_is_running[ch] = False
+                self.signalData.emit("", {'channel': ch, 'status': 'STOP'})
             
     @errorDeco(signal='self.signalLog')
     def disconnectDevice(self):
@@ -298,15 +350,27 @@ class Biologic(QObject):
     
     @errorDeco(signal='self.signalLog')
     def _writeData(self, output, filename: str):
+        is_new_file = (not os.path.exists(filename)) or (os.path.getsize(filename) == 0)
+
         if isinstance(output, dict):
-            values = output.values()
+            if filename not in self._file_headers:
+                self._file_headers[filename] = list(output.keys())
+            header = self._file_headers[filename]
+            values = [output.get(k, "") for k in header]
         elif isinstance(output, (list, tuple)):
-            values = output
+            if filename not in self._file_headers:
+                self._file_headers[filename] = [f"col{i}" for i in range(len(output))]
+            header = self._file_headers[filename]
+            values = list(output)
         else:
+            if filename not in self._file_headers:
+                self._file_headers[filename] = ["value"]
+            header = self._file_headers[filename]
             values = [output]
 
-        data_line = ','.join(str(item) for item in values) + '\n'
         with open(filename, 'a', encoding='utf-8') as data_file:
-            data_file.write(data_line)
+            if is_new_file:
+                data_file.write(','.join(header) + '\n')
+            data_file.write(','.join(str(item) for item in values) + '\n')
 
     

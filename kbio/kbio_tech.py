@@ -208,7 +208,83 @@ def get_experiment_data(api, data, tech_name, board_type):
                 parsed_row = {"t": t, "I": I, "Ewe": Ewe, "cycle": cycle}
 
         elif tech_name == "EIS":
-            pass
+            inx = ix + data_info.NbCols
+            words = data_record[ix:inx]
+
+            def _to_float(word):
+                return api.ConvertChannelNumericIntoSingle(word, board_type)
+
+            # PEIS data formats depend on ProcessIndex (per local EC-Lab Dev Package PDF).
+            # - Process 0: time-domain samples: t_high, t_low, Ewe, I (, optional step)
+            # - Process 1: frequency-domain points: freq, |Ewe|, |I|, Phase, Zwe, Ewe, I, ...
+            parsed_row = {
+                "process": int(data_info.ProcessIndex),
+                "t": "",
+                "Ewe": "",
+                "I": "",
+                "step": "",
+                "freq": "",
+                "abs_Ewe": "",
+                "abs_I": "",
+                "phase": "",
+                "Zwe": "",
+                "abs_Ece": "",
+                "abs_Ice": "",
+                "phase_ce": "",
+                "Zce": "",
+                "raw": "",
+            }
+
+            if data_info.ProcessIndex == 0:
+                if len(words) < 4:
+                    parsed_row["raw"] = ' '.join(f"0x{int(w) & 0xFFFFFFFF:08X}" for w in words)
+                else:
+                    t_high, t_low, *row = words
+                    t = _decode_time_seconds(current_values.TimeBase, t_high, t_low)
+                    try:
+                        Ewe = _to_float(row[0])
+                        Iwe = _to_float(row[1])
+                        parsed_row["t"] = t
+                        parsed_row["Ewe"] = Ewe
+                        parsed_row["I"] = Iwe
+                        if len(row) >= 3:
+                            parsed_row["step"] = int(row[2])
+                        if len(row) > 3:
+                            parsed_row["raw"] = str(row[3:])
+                    except Exception:
+                        parsed_row["t"] = t
+                        parsed_row["raw"] = str(row)
+
+            elif data_info.ProcessIndex == 1:
+                # Frequency-domain point. Not all series include the same columns (VMP3 adds Ece/Ice/Zce).
+                # Decode the common leading fields when present.
+                try:
+                    if len(words) >= 1:
+                        parsed_row["freq"] = _to_float(words[0])
+                    if len(words) >= 2:
+                        parsed_row["abs_Ewe"] = _to_float(words[1])
+                    if len(words) >= 3:
+                        parsed_row["abs_I"] = _to_float(words[2])
+                    if len(words) >= 4:
+                        parsed_row["phase"] = _to_float(words[3])
+                    if len(words) >= 5:
+                        parsed_row["Zwe"] = _to_float(words[4])
+                    if len(words) >= 6:
+                        parsed_row["Ewe"] = _to_float(words[5])
+                    if len(words) >= 7:
+                        parsed_row["I"] = _to_float(words[6])
+
+                    # If additional columns exist, keep them (and decode common VMP3 extras when possible).
+                    # PDF shows VMP3 can include: |Ece|, |Ice|, Phase, Zce
+                    if len(words) >= 12:
+                        parsed_row["abs_Ece"] = _to_float(words[8])
+                        parsed_row["abs_Ice"] = _to_float(words[9])
+                        parsed_row["phase_ce"] = _to_float(words[10])
+                        parsed_row["Zce"] = _to_float(words[11])
+                    if len(words) > 7:
+                        parsed_row["raw"] = str(words[7:])
+                except Exception:
+                    parsed_row["raw"] = str(words)
         else:
             # besides the previous known techniques, this is provided
             # to show a raw dump of the record

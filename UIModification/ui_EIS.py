@@ -37,6 +37,8 @@ class EIS(QWidget, Ui_Form, PSTech):
         self.current_range: str | None = None  # current range
         self.potential_range: str | None = None  # potential range
 
+        self.lineEditSampleCurrent.setToolTip('set a large value to omit current-based sampling and only sample by time')
+
         # 3) Load combobox options from main UI (if comboboxes exist in future)
         # if i_ranges:   self.comboBoxCR.addItems(i_ranges)
         # if e_ranges:   self.comboBoxER.addItems(e_ranges)

@@ -36,8 +36,7 @@ class CA(QWidget, Ui_Form, PSTech):
         self.lineEditRepeat.setText('0')
         self.comboBoxCR.setCurrentIndex(12)
         self._pullFields()
-        # 3) Load combobox options from main UI
-
+        self.lineEditSampleCurrent.setToolTip('set a large value to omit current-based sampling and only sample by time')
         # 4) Validators on edits (optional but makes UX nicer)
         if i_ranges:
             self.setCR(i_ranges)
@@ -142,3 +141,4 @@ class CA(QWidget, Ui_Form, PSTech):
         for item in i_ranges:
             label = getattr(item, "name", str(item))
             self.comboBoxCR.addItem(label, item)
+        self.comboBoxCR.setCurrentIndex(len(i_ranges)-1) # Default auto range

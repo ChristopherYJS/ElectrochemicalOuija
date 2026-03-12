@@ -29,6 +29,8 @@ class CP(QWidget, Ui_Form, PSTech):
         self.repeat: int = 1
         self.current_range: str | None = None       # current range
 
+        self.lineEditSampleCurrent.setToolTip('set a large value to omit potential-based sampling and only sample by time')
+
         # 3) Load combobox options from main UI
         if i_ranges:
             self._populate_current_ranges(i_ranges)

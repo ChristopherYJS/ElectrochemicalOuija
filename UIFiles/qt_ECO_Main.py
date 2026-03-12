@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'qt_ECO_Main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.2
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -123,7 +123,7 @@ class Ui_MainWindow(object):
         self.scrollAreaOption_Techs.setWidgetResizable(True)
         self.scrollAreaWidgetContents_Tech = QWidget()
         self.scrollAreaWidgetContents_Tech.setObjectName(u"scrollAreaWidgetContents_Tech")
-        self.scrollAreaWidgetContents_Tech.setGeometry(QRect(0, 0, 196, 126))
+        self.scrollAreaWidgetContents_Tech.setGeometry(QRect(0, 0, 196, 145))
         sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
@@ -172,6 +172,13 @@ class Ui_MainWindow(object):
         self.labelLoop.setSizePolicy(sizePolicy4)
 
         self.verticalLayout.addWidget(self.labelLoop)
+
+        self.labelTriggerIn = QLabel(self.scrollAreaWidgetContents_Tech)
+        self.labelTriggerIn.setObjectName(u"labelTriggerIn")
+        sizePolicy4.setHeightForWidth(self.labelTriggerIn.sizePolicy().hasHeightForWidth())
+        self.labelTriggerIn.setSizePolicy(sizePolicy4)
+
+        self.verticalLayout.addWidget(self.labelTriggerIn)
 
         self.scrollAreaOption_Techs.setWidget(self.scrollAreaWidgetContents_Tech)
         self.splitter_Tech.addWidget(self.scrollAreaOption_Techs)
@@ -396,6 +403,7 @@ class Ui_MainWindow(object):
         self.labelTechEIS.setText(QCoreApplication.translate("MainWindow", u"EIS", None))
         self.labelMove.setText(QCoreApplication.translate("MainWindow", u"Move", None))
         self.labelLoop.setText(QCoreApplication.translate("MainWindow", u"Loop", None))
+        self.labelTriggerIn.setText(QCoreApplication.translate("MainWindow", u"Trigger In", None))
         self.pushButton_SingleRun.setText(QCoreApplication.translate("MainWindow", u"Single\n"
 "Run", None))
         self.pushButton_StopSingle.setText(QCoreApplication.translate("MainWindow", u"Single\n"

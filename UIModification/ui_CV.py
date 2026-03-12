@@ -44,6 +44,7 @@ class CV(QWidget, Ui_Form, PSTech):
         self.lineEditPotentialFin.setValidator(QDoubleValidator(self))
         self.lineEditRate.setValidator(QDoubleValidator(self))
         self.lineEditSamplePotential.setValidator(QDoubleValidator(self))
+        self.lineEditSamplePotential.setToolTip('potential step per point (ΔE in V): smaller value = more points')
         self.lineEditRepeat.setValidator(QIntValidator(1, 999, self))
         self.lineEditStepBegin.setValidator(QDoubleValidator(0.0, 1.0, 2, self))
         self.lineEditStepEnd.setValidator(QDoubleValidator(0.0, 1.0, 2, self))

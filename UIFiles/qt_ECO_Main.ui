@@ -199,7 +199,7 @@ Sequence</string>
               <x>0</x>
               <y>0</y>
               <width>196</width>
-              <height>126</height>
+              <height>145</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -284,6 +284,19 @@ Sequence</string>
                </property>
                <property name="text">
                 <string>Loop</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="labelTriggerIn">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Trigger In</string>
                </property>
               </widget>
              </item>

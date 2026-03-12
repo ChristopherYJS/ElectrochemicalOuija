@@ -27,6 +27,8 @@ class OCV(QWidget, Ui_Form, PSTech):
         self.sample_potential: int | float = 0
         self.potential_range: str | None = None  # potential range (E_RANGE)
 
+        self.lineEditSampleCurrent.setToolTip('set a large value to omit potential-based sampling and only sample by time')
+
         # 3) Load combobox options from main UI (if combobox exists in future)
         # if e_ranges:   self.comboBoxER.addItems(e_ranges)
 
