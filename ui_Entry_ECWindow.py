@@ -334,7 +334,7 @@ class ECO_pot(QMainWindow, Ui_MainWindow):
     @errorDeco(logger='self.Log')
     def _buildSequence(self, channel: int, parent=None, path_current=None) -> list[dict]:
         """
-        Build the tech sequence for ONE given channel by traversing the tree widget. 
+        Build the tech sequence for ONE given channel by traversing the QTreeWidget. 
 
         This builds the sequence for both biologic to run and to output correct filename. 
         I dont know how this works but it works, so don't change it.
